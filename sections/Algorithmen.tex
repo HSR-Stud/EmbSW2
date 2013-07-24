@@ -1,0 +1,119 @@
+%------------------------------------------------------------------------------------------------
+%Algorithmen
+%------------------------------------------------------------------------------------------------
+\section{Algorithmen}
+\subsection{Eigenschaften - Zwingende Forderungen}
+\begin{itemize}
+	\item Korrektheit
+	\item Finitheit: Eindeutige Beschreibbarkeit
+	\item Determiniertheit: Erzielt bei gleichen Vorbedingungen immer dasselbe Resultat
+	\item Determinismus: N"achster Schritt zu jedem Zeitpunkt bekannt
+	\item Effizienz 
+	\item Einfachheit/Verst"andlichkeit
+\end{itemize}
+
+\subsection{Eigenschaften - Optionale Forderungen}
+\begin{itemize}
+	\item Effizienz 
+	\item Einfachheit/Verst"andlichkeit
+\end{itemize}
+
+\subsection{Beschreibungsmethoden}
+\begin{itemize}
+	\item Aktivitätsdiagramm
+	\item Konkrete Programmiersprache
+	\item Pseudocode
+	\item UML
+\end{itemize}
+
+\subsection{Korrektheit}
+Kann formal bewiesen werden $\rightarrow$ Mathematisch aufw"andig, selten\\
+Korrektheit mittels Tests verifizieren $\rightarrow$ Nur \textbf{Anwesenheit von Fehlern} kann bewiesen werden, nicht deren Abwesenheit [E.Dijkstra]
+
+\subsection{Effizienz}
+Wird charakterisiert durch: 
+\begin{itemize}
+\item Ben"otigten Speicherplatz
+\item Ben"otigte Rechenzeit (Laufzeit)
+\end{itemize}
+Absolute Rechenzeit h"angt vom Rechner ab, daher wird relatives Mass angegeben. \\
+Wie stark nimmt Rechenzeit relativ mit Gr"osse N einer Liste zu? \\
+Oft wird Best, Worst und Average Fall betrachtet.
+%------------------------------------------------------------------------------------------------
+
+
+
+%------------------------------------------------------------------------------------------------
+%Komplexitätstheorie
+%------------------------------------------------------------------------------------------------
+\section{Komplexit"atstheorie}
+\subsection{Hauptziele}
+\begin{itemize}
+\item Berechngungskomplexit"at: Zeitkomplexit"at aus Anzahl der Rechenoperationen sowie Speicherplatzkomplexit"at
+\item Spezifikation der Probleme und Methode zur Klassifikation in "'praktisch l"osbare"' und "'praktisch unl"osbare"' Probleme
+\item Vergleiche der Effizienz (Berechnungsst"arke) verschiedener Algorithmen (deterministischer, nichtdeterministischer und zufallsgesteuerten)
+\end{itemize}
+\subsection{Asymptotische Absch"atzung}
+Die asymptotische Absch"atzung ist eine Worst-Case Analyse und kann in folgende Notationen aufgeteilt werden:
+
+\subsubsection{O-Notation (H"aufigste Absch"atzung)}
+Laufzeitabsch"atzung nach oben:
+\begin{equation}
+O(g) = {f: X \rightarrow X \mid \exists c_1>0 \wedge \exists c_2>0 \wedge \exists n_0 \in X  \forall n \geq n_0 : f(n) \leq c_1\cdot g(n) + c_2}
+\end{equation}
+Finde eine Funktion g(n), deren Aufwandsfunktion $f(n) \leq c_1 \cdot g(n) + c_2$, dann ist der Aufwand O(g).
+
+\subsubsection{$\Omega$-Notation}
+Laufzeitabsch"atzung nach unten: 
+\begin{equation}
+\Omega(g) = {f: X \rightarrow X \mid \exists c>0 \wedge \exists n_0 \in X  \forall n \geq n_0 : f(n) \geq c\cdot g(n)}
+\end{equation}
+Finde eine Funktion g(n), deren Aufwandsfunktion $f(n) \geq c \cdot g(n)$, dann ist der Aufwand $\Omega(g)$.
+
+\subsubsection{$\Theta$-Notation (Theta-Notation, f"ur de Theo: Helilandeplatz-Notation)}
+O- und $\Omega$ Notation vereint: 
+\begin{equation}
+\Theta(g)= O(g) \cap \Omega(g)
+\end{equation}
+
+\subsubsection{Wachstumsfunktionen}
+\begin{itemize}
+\item Konstantes Wachstum: 1\\
+			Rechenzeit des Programmes bleibt konstant, unabh"angig vom Problem. Idealfall.
+\item Logarithmisches Wachstum: $\log(n)$\\
+			Laufzeit wird mit steigendem n nur allm"ahlich langsamer, Basis ist nicht relevant.
+\item Lineares Wachstum: n\\
+			Laufzeit steigt mit n linear. 
+\item n-log-n Wachstum: $n\cdot \log(n)$\\
+			Laufzeit nicht wesentlich gr"osser als beim linearen Verhalten. Tritt auf, wenn Problem in Teilprobleme aufgeteilt wird, welche unabh"anging voneinander gel"ost werden. 
+\item Polynomiales Wachstum: $n^c$\\
+			Solche Algorithmen sind nur dann vertretbar, wenn nichts anderes "ubrig bleibt.  
+\item Exponentielles Wachstum: $b^n$\\
+			Sehr selten, da Rechenzeit mit wachsendem n f"ormlich explodiert. 
+\end{itemize}
+
+\begin{center}
+{\includegraphics[width=0.5\textwidth]{images/Algorithmen/Wachstumsfunktionen.png}}
+\label{Fig: Verschiedene Wachstumsfunktionen}
+\end{center}
+
+\subsubsection{Komplexit"atsklassen}
+DTM: Deterministische Turingmaschine, f"ur jeden Zustand bei gegebenem Input ist der n"achste Zustand eindeutig definiert. Ist praktisch realisierbar. \\
+NTM: Nicht deterministische Turingmaschine, f"ur einen Zustand bei gegebenem Input ist der n"achste Zustand \textbf{nicht} eindeutig definiert. Heute noch nicht realisierbar, dient jedoch als Algorithmusausf"uhrungsmodell.\\
+Folgende Klassen sind definiert:\\
+\begin{itemize}
+\item NL:       Von NTM auf logarithmischen Platz l"osbar 
+\item P:        Von DTM in polynomialer Zeit l"osbar, $O(n^c)$
+\item NP:       Von NTM in polynomialer Zeit lösbar, $O(n^c)$
+\item PSPACE:   Von DTM auf polynomialem Platz l"osbar
+\item EXPTIME:  Von DTM in exponentieller Zeit l"osbar, $O(2^n)$
+\item EXPSPACE: Von DTM auf exponentiellem Platz l"osbar
+\end{itemize}
+
+Probleme der Klasse P lassen sich in vern"unftiger Zeit lösen. \\
+Viele Probleme der Klasse NP lassen sich vermutlich nicht effizient l"osen.\\
+Best"atigung oder Widerlegung dieses P-NP-Problems ist wohl das wichtigste offene Problem der Informatik.\\
+Bekanntes NP-Problem ist das Travelling Salesman Problem.\\
+
+\subsection{Suchalgorithmen}
+ 
