@@ -116,4 +116,50 @@ Best"atigung oder Widerlegung dieses P-NP-Problems ist wohl das wichtigste offen
 Bekanntes NP-Problem ist das Travelling Salesman Problem.\\
 
 \subsection{Suchalgorithmen}
- 
+\subsubsection{Listensuche}
+Finde Wert in einer Liste. 
+\begin{lstlisting}[style=C]
+int list[listLength];
+int k;	//Zu findender Wert 				
+int i; 	//Listenindex
+\end{lstlisting} 
+1. Art: Lineare Suche\\
+Wenn nicht bekannt ist, ob die Liste irgendwie sortiert ist. \\
+Komplexit"at: O(n)
+\begin{lstlisting}[style=C]
+for(i=0;i<listLength && k!=list[i];i++)
+{}
+found = i < listLength; 
+\end{lstlisting} 
+
+2. Art: Lineare Suche mit Sentinel\\
+Beschleunigung des Codes durch Vereinfachung der Schleifenbedingung. Letztes Element wird durch gesuchtes Element ersetzt.\\
+Die Schleife wird etwas schneller durchlaufen, aber die Komplexit"at ist noch immer O(n).
+\begin{lstlisting}[style=C]
+list[listLength-1] = k; //Sentinel setzen
+for(i=0; k!= list[i]; i++)
+{}
+found = i < listLength-1; 
+\end{lstlisting} 
+
+3.Art: Bin"are Suche\\
+Diese Suche funktioniert nur, wenn die Liste der Reihe nach sortiert ist.\\
+Man geht von der Mitte der Liste aus, ist der gegebene Wert gr"osser als die Mitte sucht man in der oberen H"alfte auf dieselbe Art weiter, ansonsten in der unteren H"alfte.\\
+Liegt der Wert am Rande ist die Suche auf diese Art erfolglos.\\
+Komplexit"at: O(log(n))\\
+\begin{lstlisting}[style=C]
+left = 0; // Index des am weitesten links liegenden Kandidaten
+right = listLength-1; // Index des am weitesten rechts liegenden Kandidaten
+while (left <= right)
+{
+	pos = (left + right) / 2; // pos auf die mittlere Position setzen
+	if (list[pos] == k)
+		return pos;
+	if (list[pos] > k)
+		right = pos - 1;
+	else
+		left = pos + 1;
+}
+return -1; // nicht gefunden
+
+\end{lstlisting} 
