@@ -96,7 +96,13 @@ O- und $\Omega$ Notation vereint:
 {\includegraphics[width=0.5\textwidth]{images/Algorithmen/Wachstumsfunktionen.png}}
 \label{Fig: Verschiedene Wachstumsfunktionen}
 \end{center}
+%------------------------------------------------------------------------------------------------
 
+
+
+%------------------------------------------------------------------------------------------------
+%Komplexitaetsklassen
+%------------------------------------------------------------------------------------------------
 \subsubsection{Komplexit"atsklassen}
 DTM: Deterministische Turingmaschine, f"ur jeden Zustand bei gegebenem Input ist der n"achste Zustand eindeutig definiert. Ist praktisch realisierbar. \\
 NTM: Nicht deterministische Turingmaschine, f"ur einen Zustand bei gegebenem Input ist der n"achste Zustand \textbf{nicht} eindeutig definiert. Heute noch nicht realisierbar, dient jedoch als Algorithmusausf"uhrungsmodell.\\
@@ -114,7 +120,13 @@ Probleme der Klasse P lassen sich in vern"unftiger Zeit lösen. \\
 Viele Probleme der Klasse NP lassen sich vermutlich nicht effizient l"osen.\\
 Best"atigung oder Widerlegung dieses P-NP-Problems ist wohl das wichtigste offene Problem der Informatik.\\
 Bekanntes NP-Problem ist das Travelling Salesman Problem.\\
+%------------------------------------------------------------------------------------------------
 
+
+
+%------------------------------------------------------------------------------------------------
+%Suchalgorithmen
+%------------------------------------------------------------------------------------------------
 \subsection{Suchalgorithmen}
 \subsubsection{Listensuche}
 Finde Wert in einer Liste. 
@@ -163,3 +175,16 @@ while (left <= right)
 return -1; // nicht gefunden
 
 \end{lstlisting} 
+Siehe Beispiele im Skript 00-Algorithmen.pdf
+
+\subsubsection{Mustersuche}
+Ziel der Mustersuche: Ein ganzes Stringmuster (pattern) finden. Wenn man nur ein einzelnes Zeichen sucht, funktioniert dies wie bei der Listensuche oben.\\
+1. Naiver Suchalgorithmus\\
+Pattern wird zeichenweise am Text vorbei geschoben. Dies geschieht so lange bis das Pattern gefunden worden ist oder das Ende des Textes erreicht worden ist. Algorithmus wird ineffizient, wenn bis zum Schluss nichts gefunden worden ist.\\
+Bei effizienteren Suchalgorithmen wird bei einer Nicht"uebereinstimmung nicht nur um ein Zeichen sondern um eine m"oglichst hohe Anzahl Zeichen geschoben. Die Intelligenz liegt hier beim Herausfinden dieser Anzahl.\\
+
+
+
+\subsubsection{Sortieralgorithmen}
+Je nach Form der vorliegenden Daten wird unterschieden zwischen: 
+
