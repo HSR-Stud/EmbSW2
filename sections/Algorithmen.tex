@@ -187,4 +187,131 @@ Bei effizienteren Suchalgorithmen wird bei einer Nicht"uebereinstimmung nicht nu
 
 \subsubsection{Sortieralgorithmen}
 Je nach Form der vorliegenden Daten wird unterschieden zwischen: 
+\begin{itemize}
+\item Interne Sortierverfahren: Daten liegen im Hauptspeicher, auf die Daten besteht wahlfreier Zugriff (random access). Verfahren zum Sortieren von Feldern (Arrays).
+\item Daten sind in Files auf externem Speicher, auf die Daten kann nur sequentiell zugegriffen werden. Sortieren von Files. 
+\end{itemize}
 
+Forderung an interne Sortierverfahren:\\
+\begin{itemize}
+\item Speicher: Algorithmus muss direkt mit dem Hauptspeicher auskommen. Kein Umkopieren, nur feste Anzahl von Hilfsvariabeln. In-Place-Algorithmen arbeiten direkt auf den Eingabedaten, Out-of-Place verwenden separate Ausgabedaten.
+\item Effizienz: Um etwas "uber die Effizienz auszusagen werden vor allem die zwei f"ur das Sortieren wichtigen Operationen Comparison und Move betrachtet.
+\item Stabilit"at: Kein Plan.
+\end{itemize}
+
+Einfache Sortierverfahren:\\
+1. Direktes Aussuchen (Straight Election)\\
+Der unsortierte Teil wird nach dem kleinsten Element durchsucht, dieses wird dann mit dem ersten Element des unsortierten Teils vertauscht.\\
+\begin{lstlisting}[style=C]
+int i; // Laufvariable
+int j; // Laufvariable
+int k; // Index des kleinsten Elementes im nicht sortierten Teil
+for (i = 0; i < listLength-1; ++i)
+{
+	k = i;
+	for (j = i+1; j < listLength; ++j)
+	{
+		if (data[j] < data[k])
+			k = j;
+	}
+	swap(i, k);
+}
+\end{lstlisting} 
+Komplexit"at der Vergleiche: $O(n^2)$\\
+Komplexit"at der Zuweiseungen: $O(n)$\\
+
+2. Direktes Einf"ugen (Straight Insertion)\\
+Das erste unsortierte Element wird im sortierten Teil an die richtige Stelle gesetzt, alle gr"osseren sortierten Elemente m"ussen verschoben werden.
+Ist effizient, wenn die Daten schon etwas sortiert sind. 
+\begin{lstlisting}[style=C]
+int i;
+int j;
+int buf; // Buffer
+for (i = 1; i < listLength; ++i)
+{
+	buf = data[i];
+	j = i;
+	while (j > 0 && buf < data[j-1])
+	{
+		data [j] = data [j-1];
+		j = j-1;
+	}
+	data[j] = buf;
+}
+\end{lstlisting} 
+Komplexit"at der Vergleiche: $O(n^2)$\\
+Komplexit"at der Zuweiseungen: $O(n^2)$\\
+
+3. Bubblesort\\
+Benachbarte Elemente werden vertauscht, wenn sie nicht wie gew"unscht geordnet sind. Das relativ gr"osste Element steigt wie eine Blase im Wasser auf. 
+\begin{lstlisting}[style=C]
+int i;
+int j;
+for (i = listLength-1; i > 0; --i)
+{
+	for (j = 1; j <= i; ++j)
+	{
+		if (data[j-1] > data[j])
+			swap(j-1, j);
+	}
+}
+\end{lstlisting} 
+Komplexit"at der Vergleiche: $O(n^2)$\\
+Komplexit"at der Zuweiseungen: $O(n^2)$\\
+
+Schnelle interne Sortierverfahren:\\
+1. Quicksort\\
+Je gr"osser die Distanz beim Austauschen von Elementen ist, umso effizienter ist der Algorithmus. Dies nutzt Quicksort aus.\\
+Formale Beschreibung: \\
+\begin{enumerate}
+\item W"ahle ein beliebiges Pivot-Element aus (Median oder mittleres Element)
+\item Laufe von linker Arraygrenze so lange nach innen, bis ein Element gefunden wird, welches \textbf{gr"osser gleich} das Pivot ist. 
+\item Laufe von rechter Arraygrenze so lange nach innen, bis ein Element gefunden wird, welches \textbf{kleiner gleich} das Pivot ist. 
+\item Vertausche die beiden Elemente
+\item Wiederhole Schritt 2-4 so lange, bis sich die beiden Indizes getroffen haben
+\item Das linke Teilfeld enth"alt nur noch Werte, die $\leq$ als das Pivot sind. Das rechte Teilfeld enth"alt nur noch Werte, die $\geq$ als das Pivot sind. 
+\item Sortiere diese Felder wiederum rekursiv, bis nur noch Teilfelder mit einem einzigen Element "ubrig sind.
+\end{enumerate}
+
+\begin{lstlisting}[style=C]
+void quickSort(int leftBound, int rightBound)
+{
+	int left = leftBound; // Index der linken Grenze
+	int right = rightBound; // Index der rechten Grenze
+	int pivot = data[(left+right) / 2]; // Gew"ahltes Element in der Mitte
+	do
+	{
+		while (data[left] < pivot)
+			left++;
+		while (data[right] > pivot)
+			right--;
+		if (left <= right)
+		{
+			if (left < right)
+				swap(left, right);
+			left++;
+			right--;
+		}
+	} while (left <= right);
+	if (leftBound < right)
+		quickSort(leftBound, right);
+	if (rightBound > left)
+		quickSort(left, rightBound);
+}
+\end{lstlisting} 
+Bester Fall: Wenn als Pivot jedes mal der Median des Feldes getroffen wird $\rightarrow O(nlog(n))$\\
+Schlechtester Fall: Wenn jedes Mal das Minimum oder Maximum getrofffen wird $\rightarrow O(n^2))$\\
+
+Beispiel von Quicksort: \\
+\begin{center}
+{\includegraphics[width=0.5\textwidth]{images/Algorithmen/Quicksort.png}}
+\label{Fig: Quicksort}
+\end{center}
+
+Wahl des Pivots ist wichtig. Ein Ansatz ist die median-of-3 Strategie, bei welcher der Median aus dem ersten, letzten und mittleren Element eines Bereiches gebildet und als Pivot verwendet. Bei b"osartig zusammengestellten Listen (median-of-3-killers) kann dies jedoch zu Problemen f"uhren.\\
+
+\subsubsection{Effizienz verschiedener interner Suchalgorithmen}
+Siehe Skript 00-Algorithmen.pdf S.24
+
+\subsubsection{Systemfunktionen f"ur Suchen und Sortieren}
+Siehe Skript 00-Algorithmen.pdf S.25
