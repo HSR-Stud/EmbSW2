@@ -166,39 +166,6 @@ void DList::insertAt(int pos,double val)
 
 \subsubsection{Listenelement l"oschen}
 \begin{lstlisting}[style=C]
-void DList::insertAt(int pos,double val)
-{
-	assert(pos >= 0);
-	Node* pEl = new Node;
-	pEl->value = val;
-	if (pos != 0)
-	{
-		Node* p = nodePtr(pos);
-		assert(p != 0);
-		pEl->next = p->next;
-		pEl->prev = p;
-		p->next = pEl;
-	}
-	else // insert at head
-	{
-		pEl->next = pHead;
-		pEl->prev = 0;
-		pHead = pEl;
-	}
-	if (pEl->next != 0) // not last element in list
-	{
-		pEl->next->prev = pEl;
-	}
-	++nr;
-}
-\end{lstlisting}
-\begin{flushleft}
-{\includegraphics[width=0.5\textwidth]{images/Listen/DLL_Insert.png}}
-\label{Fig: Element bei DLL einf"ugen}
-\end{flushleft}
-
-\subsubsection{Listenelement l"oschen}
-\begin{lstlisting}[style=C]
 void DList::deleteAt(int pos)
 {
 	assert(pos > 0 && pos <= nr);
