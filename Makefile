@@ -1,4 +1,4 @@
-TARGET=EmbSW1.pdf
+TARGET=EmbSW2.pdf
 LL=latexmk -pdf
 CLEAN=latexmk -C
 
