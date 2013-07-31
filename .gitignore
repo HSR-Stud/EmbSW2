@@ -31,7 +31,8 @@
 *.vrb
 *.xdy
 *.tdo
-*.pdf
 *.fls
 /tmp/*
 revision.tex
+EmbSW2.pdf
+EmbSW2_Praktika.pdf
