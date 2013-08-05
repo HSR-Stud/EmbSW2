@@ -1,7 +1,57 @@
 \section{Simulation}
 
+\subsection{Motivation}
+\begin{itemize}
+	\item Das Verhalten kann mittels Simulationen analysiert werden
+	\item Mit Simulationen können Zeiten verkürzt werden
+	\item Durch Simulationen kann die Reaktion der Steuerung auf Ausnahmesituationen überprüft werden
+\end{itemize}
+
 \subsection{Eingabewerte}
+\subsubsection{Vernünftige Eingabewerte}
+\begin{itemize}
+	\item Reale, Eingabewerte entsprechen möglichst gut der Realität
+	\item Häufig sollen bei Simulationen zufällige Eingabewerte verwendet werden, die nicht notwendigerweise gleichverteilt sind.
+	\begin{itemize}
+		\item Gleichverteilung
+		\item Normalverteilung (Gauss'sche Glockenkurve)
+		\item Rayleigh-Verteilung
+		\item Weibull-Verteilung
+	\end{itemize}
+	\item Die Simulationen sollen reproduzierbar sein.
+\end{itemize}
 
 \subsection{Pseudozufällige Zahlen}
+\begin{itemize}
+	\item Echt zufällige Zahlen können nur durch einen physikalischen Prozess erzeugt werden, z.B. durch Würfel oder Thermisches Rauschen
+	\item Eine deterministische Maschine wie der Computer kann keine echt zufälligen Zahlen generieren.
+	\item Pseudozufällige Zahlen sind deterministisch. Bei einem gegebenen	Anfangswert (random seed) und gegebener Funktion ist die zufällige Zahlenfolge immer identisch.
+\end{itemize}
+
+\subsubsection{Pseudozufallszahlen-Generator}
+
+\textbf{Forderungen}
+\begin{itemize}
+	\item Gleichverteilung
+	\item nächste Zahl nicht vorhersehbar
+\end{itemize}
+\begin{equation}
+	r_{i+1} = (a \cdot r_i + c)mod (m)
+\end{equation}
+
+\subsubsection{Mapping}
+rand() = Gleichverteilung\\
+
+\begin{tabular}{|l|c|}
+	\hline
+	\textbf{rand()}                              & liefert ganzzahlige Werte im Bereich [0, RAND\_MAX] \\ \hline
+	\textbf{(double)rand()/RAND\_MAX}            &         liefert Werte im Bereich [0, 1.0]          \\ \hline
+	\textbf{(double)rand()/RAND\_MAX $\cdot$(b-a) + a} &          liefert Werte im Bereich [a, b]           \\ \hline
+\end{tabular} \\\\
+
+\textbf{Bei einer Umwandlung in eine ganze Zahlmuss beachtet werden, ob runden oder abschneiden die richtige Operation ist.}\\
+
+$static\_cast<int> (static\_cast<double> (rand()) / (RAND\_MAX + 1.0) \cdot (high - low + 1)) + low$
+
 
 \subsection{Wahrscheinlichkeitsverteilungen}
