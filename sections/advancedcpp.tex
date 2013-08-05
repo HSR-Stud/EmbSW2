@@ -1,10 +1,137 @@
 \section{Advanced C++}
 
-\subsection{Static vx. Dynamic Binding}
+\subsection{Static vs. Dynamic Binding}
+\begin{itemize}
+	\item Static binding (early binding, statische Bindung)
+		\begin{itemize}
+			\item bereits zur Compilezeit wird festgelegt, welcher (Elementfunktions-) Code
+				ausgeführt wird (Normalfall)
+			\item ''normale`` Klassen, templates
+		\end{itemize}
+	\item Dynamic binding (late binding, dynamische Bindung)
+		\begin{itemize}
+			\item erst zur Laufzeit wird in Abhängigkeit des Objekts festgelegt, welcher
+				(Elementfunktions-) Code ausgeführt wird
+			\item Run-Time Polymorphismus, virtual
+			\item Laufzeit mehraufwand, weniger effizient
+		\end{itemize}
+\end{itemize}
+
+\subsubsection{Virtuelle Memberfunktionen}
+
+Soll die Funktion überschrieben werden können, muss \emph{virtual} verwendet werden.
+Wird virtual nicht verwendet, wird die Funktion nur ''versteckt``.
+\lstinputlisting{code/virttest.cpp}
 
 
-\subsection{RAII}
+\subsection[RAII]{RAII - RESOURCE ACQUISITION IS INITIALISATION}
 
+\paragraph{Motivation}
+Resourcen müssen vor Gebrauch angefordert und danach freigegeben werden.
+Dazwischen könnte aber z.B. eine Exception auftreten.
+
+\paragraph{Lösung}
+Damit die Resource trotzdem freigegeben wird, kann sie mit einer Klasse gekappselt werden:
+\begin{itemize}
+	\item Konstruktor fordert die Resource an
+	\item Destruktor gibt sie wieder frei
+\end{itemize}
+
+
+\paragraph{Heap-Objekte}
+Für Heap-Objekte stellt die Boost-Library Templates für diesen Zweck zur Verfügung.
+
+\begin{lstlisting}
+void f()
+{
+	Person* p = new Person("irgendwer");
+	// mach etwas mit p
+	// was ist, wenn vorher eine Exception geworfen wird?
+	delete p;
+}
+void f()
+{
+	boost::shared_ptr<Person> p(new Person("irgendwer"));
+	// mach etwas mit p
+	// Beim Verlassen des Blocks raeumt Destruktor von shared_ptr
+	// automatisch auf und loescht die Person
+}
+\end{lstlisting}
+
+
+\paragraph{Semaphoren} Für Semaphoren könnte die folgende Implementierung verwendet werden
+
+
+\begin{lstlisting}
+class Semaphore
+{
+public:
+	Semaphore(int s=0): id(s) {getSem(s);}
+	~Semaphore() {releaseSem(id);}
+private:
+	int id;
+};
+void f()
+{
+	// kritischer Abschnitt
+	{
+		Semaphore myS;
+	} // hier wird Semaphore freigegeben
+}
+\end{lstlisting}
+
+
+\subsection[pImpl]{pImpl - Pointer to Implementation}
+
+\paragraph{Problem} Wie kann man die Implementierung einer Klasse so verstecken, dass man sie
+ändern kann, ohne alle Module, welche die Klasse nutzen, bei einer Änderung
+neu übersetzen zu müssen?
+Nützlich zum Beispiel für eine shared library / DLL.
+
+\paragraph{Lösung}
+\begin{itemize}
+\item Implementierung in separates File.
+\item Im Header nur noch öffentliche Schnittstelle und Pointer zu Implementierung
+\end{itemize}
+
+\begin{lstlisting}
+#ifndef HIDDENCOUNTER_H_
+#define HIDDENCOUNTER_H_
+#include <boost/shared_ptr.hpp>
+class HiddenCounter
+{
+public:
+	HiddenCounter(int i=0);
+	void inc();
+	int count() const;
+	void dec();
+	void reset();
+private:
+	boost::shared_ptr<class CounterImpl> pImpl;
+};
+#endif /* HIDDENCOUNTER_H_ */
+
+
+#include "HiddenCounter.h"
+class CounterImpl
+{
+public:
+	CounterImpl(int i): counter(i) {}
+	void inc() { ++counter; }
+	int count() const { return counter;}
+	void dec() { --counter;}
+	void reset() { counter=0; }
+private:
+	int counter;
+};
+HiddenCounter::HiddenCounter(int i)
+:pImpl(new CounterImpl(i)) {}
+void HiddenCounter::inc() {pImpl->inc();}
+int HiddenCounter::count() const
+	{ return pImpl->count(); }
+void HiddenCounter::dec() {pImpl->dec();}
+void HiddenCounter::reset() {pImpl->reset();}
+\end{lstlisting}
 
 \subsection{Performance}
 
