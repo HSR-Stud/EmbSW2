@@ -1,0 +1,132 @@
+\section{Simulation}
+
+\subsection{Motivation}
+\begin{itemize}
+	\item Das Verhalten kann mittels Simulationen analysiert werden
+	\item Mit Simulationen können Zeiten verkürzt werden
+	\item Durch Simulationen kann die Reaktion der Steuerung auf Ausnahmesituationen überprüft werden
+\end{itemize}
+
+\subsection{Eingabewerte}
+\subsubsection{Vernünftige Eingabewerte}
+\begin{itemize}
+	\item Reale, Eingabewerte entsprechen möglichst gut der Realität
+	\item Häufig sollen bei Simulationen zufällige Eingabewerte verwendet werden, die nicht notwendigerweise gleichverteilt sind.
+	\begin{itemize}
+		\item Gleichverteilung
+		\item Normalverteilung (Gauss'sche Glockenkurve)
+		\item Rayleigh-Verteilung
+		\item Weibull-Verteilung
+	\end{itemize}
+	\item Die Simulationen sollen reproduzierbar sein.
+\end{itemize}
+
+\subsection{Pseudozufällige Zahlen}
+\begin{itemize}
+	\item Echt zufällige Zahlen können nur durch einen physikalischen Prozess erzeugt werden, z.B. durch Würfel oder Thermisches Rauschen
+	\item Eine deterministische Maschine wie der Computer kann keine echt zufälligen Zahlen generieren.
+	\item Pseudozufällige Zahlen sind deterministisch. Bei einem gegebenen	Anfangswert (random seed) und gegebener Funktion ist die zufällige Zahlenfolge immer identisch.
+\end{itemize}
+
+\subsubsection{Pseudozufallszahlen-Generator}
+
+\textbf{Forderungen}
+\begin{itemize}
+	\item Gleichverteilung
+	\item nächste Zahl nicht vorhersehbar
+\end{itemize}
+\begin{equation}
+	r_{i+1} = (a \cdot r_i + c)mod (m)
+\end{equation}
+
+\subsubsection{Mapping}
+rand() = Gleichverteilung\\
+
+\begin{tabular}{|l|c|}
+	\hline
+	\textbf{rand()}                              & liefert ganzzahlige Werte im Bereich [0, RAND\_MAX] \\ \hline
+	\textbf{(double)rand()/RAND\_MAX}            &         liefert Werte im Bereich [0, 1.0]          \\ \hline
+	\textbf{(double)rand()/RAND\_MAX $\cdot$(b-a) + a} &          liefert Werte im Bereich [a, b]           \\ \hline
+\end{tabular} \\\\
+
+\textbf{Bei einer Umwandlung in eine ganze Zahl muss beachtet werden, ob runden oder abschneiden die richtige Operation ist.}\\
+
+$static\_cast<int> (static\_cast<double> (rand()) / (RAND\_MAX + 1.0) \cdot (high - low + 1)) + low$
+
+
+\subsection{Wahrscheinlichkeitsverteilungen}
+
+\subsubsection{Normalverteilung}
+\textbf{Zentrale Grenzwertsatz}\\
+Die Summe von n unabhängigen, identisch verteilten Zufallszahlen stellt für n gegen unendlich eine Normalverteilung dar.
+
+Eine Normalverteilung kann somit angenähert werden, wenn eine grosse Anzahl gleichverteilter Zahlen summiert wird.
+
+\begin{lstlisting}[style=C]
+	do
+	{
+		v1 = 2 * static_cast<double> (rand()) / RAND_MAX - 1.0;
+		v2 = 2 * static_cast<double> (rand()) / RAND_MAX - 1.0;
+		s = v1 * v1 + v2 * v2;
+	} while (s >= 1.0 || s == 0.0);
+	
+	double temp = sqrt(-2.0 * log(s) / s);
+	return lround(v1 * temp * sdev + mean);
+\end{lstlisting} 
+
+\subsubsection{Rayleigh Verteilung}
+Eine Rayleigh-verteilte Zahl R kann aus zwei normalverteilten Zahlen $N_1$, $N_2$ mit Mittelwert 0 und Standardabweichung $\sigma$ wie folgt erhalten werden:
+
+\begin{equation}
+	R(\sigma) = \sqrt{N_1^2 + N_2^2}
+\end{equation}
+
+ \begin{equation}
+ 	R(\sigma) = \sigma \sqrt{-2 \ln(U)} \qquad U \neq 0
+ \end{equation}\\
+
+\begin{lstlisting}[style=C]
+	do
+	{
+		v1 = 2 * static_cast<double> (rand()) / RAND_MAX - 1.0;
+		v2 = 2 * static_cast<double> (rand()) / RAND_MAX - 1.0;
+		s = v1 * v1 + v2 * v2;
+	} while (s >= 1.0 || s == 0.0);
+	
+	double temp = sqrt(-2.0 * log(s) / s);
+	w1 = (v1 * temp * sdev);
+	w2 = (v2 * temp * sdev);
+	return lround(sqrt(w1 * w1 + w2 * w2));
+
+\end{lstlisting} 
+
+\subsubsection{Weibull Verteilung}
+Die Dichtefunktion der Weibull-Verteilung kann mit 2 Parametern $\alpha$, $\beta$ wie folgt beschrieben werden:
+
+\begin{equation}
+	W_{\alpha,\beta}(x) = \alpha \cdot \beta \cdot x^\beta \cdot e^{-\alpha \cdot x^\beta} 
+\end{equation}
+
+\begin{itemize}
+	\item $\beta = 1$:  Exponentialverteilung
+	\item $\beta = 3.4$:  Normalverteilung
+	\item $\beta > 1$:  Alterndes System
+\end{itemize}
+
+
+Eine Weibull-verteilte Zahl $W$ kann aus einer in $[0, 1.0[$ gleichverteilten Zahl $U$ mit folgender Formel berechnet werden:
+
+\begin{equation}
+	W(\alpha,\beta) = \beta \cdot (-\ln(1.0-U))^\frac{1}{\alpha}  \qquad U \neq 1.0
+\end{equation}\\
+
+
+\textbf{Anwendung der Weibull-Verteilung}
+
+\begin{itemize}
+	\item Untersuchung von Lebensdauern in der Qualitätssicherung
+	\item Materialermüdungen von spröden Werkstoffen
+	\item Ausfälle von elektronischen Bauteilen
+	\item Verteilung von Windgeschwindigkeiten (oft wird hierzu auch die Rayleigh-Verteilung herangezogen)
+	\item Allgemein: Systeme mit im Laufe der Zeit steigender Ausfallrate (Systeme mit konstanter Ausfallrate sind exponentialverteilt)
+\end{itemize}
