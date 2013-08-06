@@ -1,0 +1,49 @@
+%------------------------------------------------------------------------------------------------
+%Simulationen
+%------------------------------------------------------------------------------------------------
+\section{Simulationen}
+\subsection{Motivation}
+\begin{itemize}
+\item Viele Prozesse sind zu komplex, um analytische L"osung f"ur ihr Verhalten zu finden
+	\begin{itemize}
+	\item Verhalten kann mittels Simulation analysiert werden
+	\end{itemize}
+\item Bei langsamen Prozessen dauert das Testen viel zu lange
+	\begin{itemize}
+	\item Simulationen verk"urzen diese Zeit
+	\end{itemize}
+\item Herstellung von Ausnahmesituation mit realem System sehr schwierig
+	\begin{itemize}
+	\item Durch Simulation kann die Reaktion auf solche Situationen "uberpr"uft werden
+	\end{itemize}
+\end{itemize}
+
+\subsection{Eingabewerte}
+Simulator erh"alt Eingabewerte worauf seine Reaktion darauf gepr"uft wird. 
+\subsubsection{Reale Eingabewerte}
+H"aufig werden zuf"allige Eingabewerte gew"ahlt, die nicht unbedingt gleichverteilt sind.\\
+H"aufige Verteilungen:\\
+\begin{itemize}
+\item Gleichverteilung
+\item Normalverteilung (Gauss)
+\item Rayleigh-Verteilung
+\item Weibull-Verteilung
+\end{itemize}
+Die Wahrscheinlichkeitsverteilung gibt an, wie h"aufig ein Wert einer Zufallsvariabel bei einem stochastischen Prozess vorkommt. 
+
+\subsection{Pseudo-Random Numbers}
+Echt zuf"allige Zahlen k"onnen nur durch einen physikalischen Prozess erzeugt werden (bspw. Thermisches Rauschen). Der Computer als deterministische Maschine kann nur pseudozuf"allige Zahlen generieren. 
+Pseudozuf"allige Zahlen sind deterministisch, d.h. bei gegebenem Anfangswert (random seed) und gegebener Funktion ist die zuf"allige Zahlenfolge immer identisch.\\
+Vorteil: Simulation ist reproduzierbar
+Nachteil: Keine wirklche Zuf"alligkeit
+
+\subsection{Pseudozufallszahlen-Generator}
+Liefern gleichverteilte Werte in einem bestimmten Bereich. 
+\begin{lstlisting}[style=C]
+int rand(void); //Liefert gleichverteilte Zahlen im Bereich [0,RAND_MAX]
+void srand(unsigned int seed) //Setzt Anfangswert (random seed)
+\end{lstlisting}
+\subsection{Mapping von Zufallszahlen auf beliebigen Bereich}
+Zufallszahlen auf bestimmten Bereich mappen: 
+rand(n) \% n $\rightarrow$ Bereich [0,n-1]
+
