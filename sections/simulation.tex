@@ -51,7 +51,9 @@ rand() = Gleichverteilung\\
 
 \textbf{Bei einer Umwandlung in eine ganze Zahl muss beachtet werden, ob runden oder abschneiden die richtige Operation ist.}\\
 
-$static\_cast<int> (static\_cast<double> (rand()) / (RAND\_MAX + 1.0) \cdot (high - low + 1)) + low$
+\begin{lstlisting}
+static_cast<int>(static_cast<double>(rand()) / (RAND_MAX + 1.0) * (high-low + 1)) + low
+\end{lstlisting}
 
 
 \subsection{Wahrscheinlichkeitsverteilungen}
