@@ -123,8 +123,12 @@ y_{k+1} = y_k\cdot (2-x\cdot y_k)
 \end{equation}
 Wobei $x$ die Zahl aus dem Reziprokwert ist und $y_k$ ein vern"unftiger Anfangswert ist. \\
 
-Somit kann auch die Quadratwurzel berechnet werden und zwar via: $\frac{1}{\sqrt{x}} \cdot x = \sqrt{x}$
-
+Somit kann auch die Quadratwurzel berechnet werden und zwar via: $\frac{1}{\sqrt{x}} \cdot x = \sqrt{x}$\\
+Wobei der Bruch $\frac{1}{\sqrt{x}}$ wie folgt berechnet werden kann:
+\begin{equation}
+y_{k+1} = 0.5y_k\cdot (3-x\cdot y_k^2)
+\end{equation}
+Das Newton Verfahren konvergiert quadratisch, d.h mit jedem Durchlauf kann die Genauigkeit verdoppelt werden.\\
 Ablauf Addition/Subtraktion/Multiplikation/Division siehe Folien.\\
 Ausserdem siehe dort auch Infos zu Beispielarchitekturen.
 
