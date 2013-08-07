@@ -108,6 +108,14 @@ Eine Methode, welche schneller konvergiert ist das Newton-Raphson Verfahren:
 \begin{equation}
 y_{k+1} = y_k - \frac{f(y_k)}{\frac{\partial}{\partial y}f(y_k)}
 \end{equation}
+Zur Berechnung einer Reziproken $g(x)=\frac{1}{x}=y$ ergibt sich folgende Formel: 
+\begin{equation}
+y_{k+1} = y_k\cdot (2-x\cdot y_k)
+\end{equation}
+Wobei $x$ die Zahl aus dem Reziprokwert ist und $y_k$ ein vern"unftiger Anfangswert ist. \\
+
+Somit kann auch die Quadratwurzel berechnet werden und zwar via: $\frac{1}{\sqrt{x}} \cdot x = \sqrt{x}$
+
 Ablauf Addition/Subtraktion/Multiplikation/Division siehe Folien.\\
 Ausserdem siehe dort auch Infos zu Beispielarchitekturen.
 
