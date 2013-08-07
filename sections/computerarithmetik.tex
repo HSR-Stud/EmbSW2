@@ -33,60 +33,68 @@ Implementation Hardware: Schnell, viel Aufwand\\
 Mit Subtraktion, Schieberegister und Ablaufsteuerung. 
 Implementation wie oben, jedoch HW-Dividierer eher selten, da Operation eher selten. Schiebe Zahl x um n Stellen nach \textbf{rechts} $\rightarrow$ Division von x durch die n-ten Zweierpotenz.\\
 \subsubsection{Addierer}
-Wichtigste arithmetische Funktion, n-Addierer werden auf 1-Bit Addierer zur"uck gef"uhrt. \\
-Halbaddierer:\\
-\begin{tabular}{|c | c | c | c |}
-\hline
-A & B & Sum & Carry\\
-\hline
-0 & 0 & 0 & 0\\
-\hline
-0 & 1 & 1 & 0\\
-\hline
-1 & 0 & 1 & 0\\
-\hline
-1 & 1 & 0 & 1\\
-\hline
-\end{tabular}
-\begin{flushleft}
-{\includegraphics[width=0.3\textwidth]{images/Arithmetik/halbaddierer.png}}
-\label{Fig: Halbaddierer}
-\end{flushleft}
+Wichtigste arithmetische Funktion, n-Addierer werden auf 1-Bit Addierer zur"uck gef"uhrt. \\ \\
+\textbf{Halbaddierer:}\\ \\
+\begin{minipage}{0.5\textwidth}
+	\centering
+	\begin{tabular}{|c | c | c | c |}
+	\hline
+	A & B & Sum & Carry\\
+	\hline
+	0 & 0 & 0 & 0\\
+	\hline
+	0 & 1 & 1 & 0\\
+	\hline
+	1 & 0 & 1 & 0\\
+	\hline
+	1 & 1 & 0 & 1\\
+	\hline
+	\end{tabular}
+\end{minipage}
+\begin{minipage}{0.9\textwidth}
+	\centering
+	\begin{flushleft}
+	{\includegraphics[width=0.3\textwidth]{images/Arithmetik/halbaddierer.png}}
+	\label{Fig: Halbaddierer}
+	\end{flushleft}
+\end{minipage}\\ \\
 
-Volladierer:\\
+\textbf{Volladierer:}\\ \\
 
+\begin{minipage}{0.5\textwidth}
+	\begin{tabular}{|c | c | c | c | c |}
+	\hline
+	A & B & Carry In & Sum & Carry Out\\
+	\hline
+	0 & 0 & 0 & 0 & 0\\
+	\hline
+	0 & 0 & 1 & 1 & 0\\
+	\hline
+	0 & 1 & 0 & 1 & 0\\
+	\hline
+	0 & 1 & 1 & 0 & 1\\
+	\hline
+	1 & 0 & 0 & 1 & 0\\
+	\hline
+	1 & 0 & 1 & 0 & 1\\
+	\hline
+	1 & 1 & 0 & 0 & 1\\
+	\hline
+	1 & 1 & 1 & 1 & 1\\
+	\hline
+	\end{tabular}
+\end{minipage}
+\begin{minipage}{0.9\textwidth}
+	\begin{flushleft}
+	{\includegraphics[width=0.5\textwidth]{images/Arithmetik/volladdierer.png}}
+	\label{Fig: Volladdierer}
+	\end{flushleft}
+\end{minipage}\\ \\
 
-\begin{tabular}{|c | c | c | c | c |}
-\hline
-A & B & Carry In & Sum & Carry Out\\
-\hline
-0 & 0 & 0 & 0 & 0\\
-\hline
-0 & 0 & 1 & 1 & 0\\
-\hline
-0 & 1 & 0 & 1 & 0\\
-\hline
-0 & 1 & 1 & 0 & 1\\
-\hline
-1 & 0 & 0 & 1 & 0\\
-\hline
-1 & 0 & 1 & 0 & 1\\
-\hline
-1 & 1 & 0 & 0 & 1\\
-\hline
-1 & 1 & 1 & 1 & 1\\
-\hline
-\end{tabular}
-
-\begin{flushleft}
-{\includegraphics[width=0.5\textwidth]{images/Arithmetik/volladdierer.png}}
-\label{Fig: Volladdierer}
-\end{flushleft}
-
-Subtrahierer:\\
+\textbf{Subtrahierer:}\\
 Subtraktion = Addition einer negativen Zahl (Bits invertieren plus 1)\\
 
-S"attigungsarithmetik:\\
+\textbf{S"attigungsarithmetik:}\\
 Es gibt keinen Over- bzw. Underflow, sondern der h"ochste bzw. niedrigste Wert wird einfach bei behalten.\\
 \subsection{Fixpunkt}
 Dezimalpunkt sitzt an fester Stelle, die unteren Dezimalstellen werden als negative Zweierpotenzen interpretiert. \\
