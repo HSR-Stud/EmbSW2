@@ -1,1 +1,102 @@
 \section{Verifikation und Validation}
+\subsection{Softwareentwicklung}
+Projektphasen:
+\begin{itemize}
+\item Analyse
+	\begin{itemize}
+		\item T"atigkeit: Analyse des Problems, Erarbeiten der Spezifikation
+		\item Erzeugnis: Spezifikation der funktionalen und nicht funktionalen Anforderungen 
+	\end{itemize}
+\item Design 
+		\begin{itemize}
+			\item T"atigkeit: Architektur der Software festlegen (Grobdesign), Design der Units (Detaildesign)
+			\item Erzeugnis Grobdesign: Beschreibung der Architektur, Festlegung der Schnittstellen der Units
+			\item Erzeugnis Detaildesign: Beschreibung der Algorithmen (Aktivit"atsdiagramme), Beschreibung der Units (Klassendiagramme) 
+		\end{itemize}
+\item Implementation 
+	\begin{itemize}
+		\item T"atigkeit: Codierung des Designs, Durchf"uhren der Unittests
+		\item Erzeugnis: Dokumentierter/Kommentierter Code, Testvorschriften und Protokolle der Unittests, Testprogramme  
+	\end{itemize}
+\item Test (dreistufig)
+	\begin{itemize}
+		\item Unittest
+			\begin{itemize}
+				\item Teil der Implementationsphase
+				\item Whitebox-Test
+				\item Durch Programmierer
+			\end{itemize}
+		\item Integrationstest
+				\begin{itemize}
+						\item Zusammenf"ugen mehrerer Units
+						\item Blackbox-Test
+						\item Schwerpunkt: Unit-Schnittstellen
+						\item Nicht durch Programmierer
+				\end{itemize}
+		\item Systemtest
+				\begin{itemize}
+						\item Testen des Gesamtsystems in Originalumgebung
+						\item Blackbox-Test
+						\item Schwerpunkt: Externes Verhalten des Systems
+						\item Nicht durch Programmierer
+				\end{itemize}
+		\item Erzeugnis: Spezifikation der funktionalen und nicht funktionalen Anforderungen 
+	\end{itemize}
+\item Abnahmetest
+	\begin{itemize}
+		\item Ziel der oberen Tests: Fehler finden
+		\item Ziel der Abnahmetest: Erf"ullung von festgelegten Kriterien f"ur geforderte Funktionen nachweisen 
+		\item Durch Auftraggeber
+	\end{itemize}
+\end{itemize}
+
+
+\subsection{Verifikation und Validation}
+\textbf{Verifikation:}\\
+Machen wir das Produkt richtig? Software soll den Anforderungen entsprechen.\\
+\textbf{Validation:}\\
+Machen wir das richtige Produkt? Die Software soll machen, was der Benutzer wirklich ben"otigt.\\
+V\&V muss in jeder Phase angewendet werden.\\
+\textbf{Ziele:}\\
+Defekte entdecken und heraus finden, ob System brauchbar ist.\\
+\textbf{Unterschied V\&V und Debugging:}\\
+V\&V: Fehler finden\\ 
+Debugging: Fehler lokalisieren und korrigieren\\
+Fehlerterminologie:\\
+\begin{itemize}
+\item Person macht Fehler: \textbf{mistake}
+\item Software hat Defekt: \textbf{defect,fault}
+\item Wir Defekt gefunden: \textbf{finding}
+\item Ausf"uhren von defekter Software f"uhrt zum: \textbf{error}
+\item Fehler kann zum Ausfall f"uhren: \textbf{failure}
+\item Fehlerursache finden und flicken: \textbf{debugging}
+\end{itemize}
+Pr"ufverfahren:\\
+\begin{itemize}
+\item Review
+\item Statische Tests (Ohne Ausf"uhrung des Programms)
+\item Dynamische Tests (Durch Ausf"uhrung des Programms)
+\item Simulation
+\item Prototypen (Kritische Teile vorab untersuchen)
+\end{itemize}
+
+\subsection{Testdurchf"uhrung}
+Siehe Folien\\
+Infinite Faults:\\
+Wenn trotz Testen und Debugging die Fehlerzahl um einen unakzeptabel hohen Wert oszilliert.\\
+Kosten f"ur zus"atzlich eliminierten Fehler: $\infty$\\
+Massnahme: Projektabbruch
+
+\subsection{Testen von EmbSys}
+EmbSys in hardware-unabh"angige und hardware-abh"angige Teile strukturieren:\\
+HW-unabh"angig: Unittests auf Entwicklungsplattform (PC)
+HW-abh"angig: Externe Testhardware f"ur Driver und Stubs
+
+\subsection{Reviewtechnik}
+"Offentliche, verbale Begutachtungen eines erstellten Arbeitspakets. Zwischenmenschliche Angelegenheit, Erfolg h"angt von der Zusammenarbeit ab.
+Warum ist Review gut? 
+\begin{itemize}
+\item Fehlerursachen finden nicht nur Symptome
+\item Mit Reviews werden am meisten Fehler gefunden
+\item Alle lernen was
+\end{itemize}
