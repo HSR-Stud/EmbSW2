@@ -82,6 +82,7 @@ void f()
 
 
 \subsection[pImpl]{pImpl - Pointer to Implementation}
+\label{sec:pimpl}
 
 \paragraph{Problem} Wie kann man die Implementierung einer Klasse so verstecken, dass man sie
 ändern kann, ohne alle Module, welche die Klasse nutzen, bei einer Änderung
@@ -95,7 +96,7 @@ Nützlich zum Beispiel für eine shared library / DLL.
 \end{itemize}
 
 \begin{lstlisting}
-#ifndef HIDDENCOUNTER_H_
+#ifndef HIDDENCOUNTER_H_ // public file
 #define HIDDENCOUNTER_H_
 #include <boost/shared_ptr.hpp>
 class HiddenCounter
@@ -104,22 +105,19 @@ public:
 	HiddenCounter(int i=0);
 	void inc();
 	int count() const;
-	void dec();
 	void reset();
 private:
 	boost::shared_ptr<class CounterImpl> pImpl;
 };
-#endif /* HIDDENCOUNTER_H_ */
+#endif // HIDDENCOUNTER_H_
 
-
-#include "HiddenCounter.h"
+#include "HiddenCounter.h" // private file
 class CounterImpl
 {
 public:
 	CounterImpl(int i): counter(i) {}
 	void inc() { ++counter; }
 	int count() const { return counter;}
-	void dec() { --counter;}
 	void reset() { counter=0; }
 private:
 	int counter;
@@ -129,9 +127,100 @@ HiddenCounter::HiddenCounter(int i)
 void HiddenCounter::inc() {pImpl->inc();}
 int HiddenCounter::count() const
 	{ return pImpl->count(); }
-void HiddenCounter::dec() {pImpl->dec();}
 void HiddenCounter::reset() {pImpl->reset();}
 \end{lstlisting}
 
+
 \subsection{Performance}
+
+\subsubsection{Variablen}
+\begin{itemize}
+	\item Wenn möglich immer Standardtypen verwenden (int, unsigned int), da
+		diese den Registerbreiten entsprechen
+	\item Typen wie short und char sparen kaum Platz und sind meistens
+		langsamer, da sie speziell behandelt werden müssen.
+	\item Werden definierte Bitlängen benötigt, sollten die Typen aus
+		$<inttypes.h>$ bzw. $<stdint.h>$ (ab C99): 
+		intN\_t,  uintN\_t z.b. uint8\_t \\
+		Sie können auch selbst getypedeft werden.
+\end{itemize}
+
+Lokale Variablen sollte man so verwenden, dass sie in Registern gebraucht werden können.
+Z.b. verhindern Pointer auf lokale Variablen, dass diese in ein Register gelegt werden.
+
+\subsubsection{Lächerliches}
+++i soll angeblich schneller sein als i++, da aber i++ viel hübscher aussieht sollte man es eher verwenden ;)
+
+\subsubsection{C++ vs. C}
+\begin{itemize}
+	\item No-Cost C++ features
+		\begin{itemize}
+			\item Klassen
+			\item Namespaces
+			\item Statische Funktionen und Daten
+			\item Nicht virtuelle Funktionen
+			\item Überladung
+			\item Default Parameter, es ist aber zu beachten, dass diese immer übergeben werden, bei grossen Objekten ist dies ineffizient:
+				\begin{lstlisting}
+void doThat(const std\dotsstring& name = "Unnamed"); // Bad
+const std\dotsstring defaultName = "Unnamed";
+void doThat(const std\dotsstring& name = defaultName); // Better
+				\end{lstlisting}
+			\item  Konstruktoren / Destruktoren, sofern korrekt verwendet
+			\item Einfache Vererbung
+		\end{itemize}
+	\item Low-Cost C++ features
+		\begin{itemize}
+			\item Exceptions, jedoch kann anderes Error-Handling, z.B. via return values auch teuer sein.
+		\end{itemize}
+	\item High-Cost C++ features, wenn falsch verwendet
+		\begin{itemize}
+			\item Temporäre Objekte, Objektkopieen (z.B. gibt a+b ein temporäres Objekt zurück), kann einfach vermieden werden
+			\item Templates können zu Code-Bloat führen
+		\end{itemize}
+\end{itemize}
+
+\subsubsection{Inlining}
+\begin{itemize}
+	\item Vorteile
+		\begin{itemize}
+			\item Kein Funktionsaufruf
+			\item daher schneller
+		\end{itemize}
+	\item Nachteile
+		\begin{itemize}
+			\item Mehr Code
+			\item schwerer zu debuggen
+		\end{itemize}
+	\item Beschränkungen
+		\begin{itemize}
+			\item Compiler kann inlining ignorieren
+			\item Inlining unmöglich für:
+				\begin{itemize}
+					\item Funktionen auf die ein Pointer zeigt
+					\item Virtuelle Funktionen
+					\item Rekursive Funktionen
+				\end{itemize}
+			\item Linker kann selten Inlinen, daher inlinefunktionen im Header definieren
+		\end{itemize}
+\end{itemize}
+
+\subsubsection{Polymorphismus}
+\begin{itemize}
+	\item Runtime
+		\begin{itemize}
+			\item Vererbung virtuelle Funktionen
+			\item Teurer Laufzeitaufwand
+		\end{itemize}
+	\item Link-Time
+		\begin{itemize}
+			\item Separat complierte Funktionen mit gleicher definition (z.B.
+				Hardware abhängiger code)
+			\item Statisches oder dynamisches linken, siehe \nameref{sec:pimpl}
+		\end{itemize}
+	\item Compile-Time
+		\begin{itemize}
+			\item Templates, \#ifdef's, const expressions
+		\end{itemize}
+\end{itemize}
 
