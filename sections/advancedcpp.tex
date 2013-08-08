@@ -288,3 +288,88 @@ Folgendes ist ROMable:
 \item Warum sind \#define schlecht? $\rightarrow$ Sie respektieren den Scope nicht, sie sind weder private noch protected $\rightarrow$ Besser mit const. 
 \item Werden geROMt, wenn: Als const definiert, wenn sie keine mutierenden Daten enthalten, Wenn sie mit bekannten Werten initialisiert werden w"ahrend der Compilation. 
 \end{itemize}
+
+
+\subsubsection{Modeling Memory-Mapped I/O}
+Viele Systeme haben ihre I/O (\textit{ memory-mapped IO devices}) im Programm-Adresse Bereich. Mit C++ ist es einfach diese \textit{ memory-mapped IO devices} mithilfe von Objekten anzusteuern.\\ \\
+
+\textbf{Modeling Memory-Mapped IO}
+\begin{itemize}
+	\item Atomic reads/writes may require explicit synchronization.
+	\item Individual bits may sometimes be read-only, other times write-only.
+	\item Clearing a bit may require assigning a 1 to it.
+	\item One status register may control more than one data register.
+		E.g., bits 0-3 are for one data register, bits 4-7 for another.	
+\end{itemize}
+
+\textbf{Modeling a Control Register}
+
+\begin{lstlisting}
+enum { bit0 = 0x1, bit1 = 0x2, ... , bit31 = 0x80000000 };
+
+class ControlReg {
+public:
+	bool ready() const 	{ return regValue & bit0; }
+	bool interruptsEnabled() const { return regValue & bit2; }
+	void enableInterrupts() { regValue |= bit2; }
+	void disableInterrupts(){ regValue &= ~bit2; }
+private:
+	volatile unsigned regValue;		// data in the register may change
+									// outside program control
+};
+\end{lstlisting}
+
+All functions are inline, so their existence should incur no cost.\\ \\
+
+\textbf{Placement new}
+
+Operator new’s fundamental job is not to allocate memory, it’s to identify where an object should go.
+
+\begin{itemize}
+	\item You can pass operator new where you want to put something, and it will return that location
+	\item This form of operator new is called placement new.
+			It’s a standard form available everywhere.
+	
+\end{itemize}
+
+Beispiel mit Pointer:
+\begin{lstlisting}
+ControlReg * const pcr = new (reinterpret_cast<void*>(0xFFFF0000)) ControlReg;
+
+while (!pcr->ready()) ; 			// wait until the ready bit is on
+pcr->enableInterrupts(); 			// enable device interrupts
+if (pcr->interruptsEnabled())... 	// if interrupts are enabled...
+
+\end{lstlisting}
+
+Beispiel mit Referenz:
+\begin{lstlisting}
+ControlReg& cr = *new (reinterpret_cast<void*>(0xFFFF0000)) ControlReg;
+
+while (!cr.ready()) ; 				// wait until the ready bit is on
+cr.enableInterrupts(); 				// enable device interrupts
+if (cr.interruptsEnabled()) ... 	// if interrupts are enabled...
+\end{lstlisting}
+\hspace*{\fill} \\\\
+Mit \textit{placement new} wird kein Speicher alloziert.\\ \\
+
+\textbf{Raw Casts}
+\begin{lstlisting}
+ControlReg *pcr = reinterpret_cast<ControlReg*>(0xFFFF0000);	// pointer version
+
+ControlReg& cr = *reinterpret_cast<ControlReg*>(0xFFFF0000);	// reference version
+\end{lstlisting}
+
+
+\textbf{Placement new vs. Raw Casts}
+
+
+\textit{Placement new} wird normalerweise dem \textit{ raw reinterpret_cast} Vorgezogen.
+
+
+
+
+
+
+
+
