@@ -8,8 +8,6 @@
 	\item Finitheit: Eindeutige Beschreibbarkeit
 	\item Determiniertheit: Erzielt bei gleichen Vorbedingungen immer dasselbe Resultat
 	\item Determinismus: N"achster Schritt zu jedem Zeitpunkt bekannt
-	\item Effizienz 
-	\item Einfachheit/Verst"andlichkeit
 \end{itemize}
 
 \subsection{Eigenschaften - Optionale Forderungen}
@@ -56,10 +54,10 @@ Oft wird Best, Worst und Average Fall betrachtet.
 \subsection{Asymptotische Absch"atzung}
 Die asymptotische Absch"atzung ist eine Worst-Case Analyse und kann in folgende Notationen aufgeteilt werden:
 
-\subsubsection{O-Notation (H"aufigste Absch"atzung)}
+\subsubsection{$\mathcal{O}$-Notation (H"aufigste Absch"atzung)}
 Laufzeitabsch"atzung nach oben:
 \begin{equation}
-O(g) = {f: X \rightarrow X \mid \exists c_1>0 \wedge \exists c_2>0 \wedge \exists n_0 \in X  \forall n \geq n_0 : f(n) \leq c_1\cdot g(n) + c_2}
+	\mathcal{O}(g) = {f: X \rightarrow X \mid \exists c_1>0 \wedge \exists c_2>0 \wedge \exists n_0 \in X  \forall n \geq n_0 : f(n) \leq c_1\cdot g(n) + c_2}
 \end{equation}
 Finde eine Funktion g(n), deren Aufwandsfunktion $f(n) \leq c_1 \cdot g(n) + c_2$, dann ist der Aufwand O(g).
 
