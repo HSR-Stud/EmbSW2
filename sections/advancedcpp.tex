@@ -224,7 +224,7 @@ void doThat(const std\dotsstring& name = defaultName); // Better
 		\end{itemize}
 \end{itemize}
 
-\subsubsection{Dynamic Memory Managment}
+\subsection{Dynamic Memory Managment}
 Die vier Sorgen:
 \begin{itemize}
 \item Schnelligkeit: Sind \textbf{new/delete/malloc/free} schnell genug?
@@ -244,7 +244,7 @@ Allocation Strategies:
 
 Fully Static Allocation: 
 \begin{itemize}
-\item Daten nicht auf dem Heap $\rightarrow$ Exakte bzw. max. Anzahl der Obejkte ist determinierbar. 
+\item Daten nicht auf dem Heap $\rightarrow$ Exakte bzw. max. Anzahl der Objekte ist determinierbar.
 \item \textbf{Speed}: praktisch unendlich, deterministisch
 \item \textbf{Fragmentation}: Nicht m"oglich
 \item \textbf{Memory leaks}: Nicht m"oglich
@@ -280,11 +280,19 @@ Block Allocation:
 
 Region Allocation: N"utzlich wenn alle Heapobjekte simultan frei gegeben werden. 
 
-\subsubsection{C++ and ROM}
+\subsection{C++ and ROM}
 Folgendes ist ROMable: 
 \begin{itemize}
 \item Wert ist vor Laufzeit bekannt
 \item Wert kann zur Laufzeit nicht modifiziert werden
-\item Warum sind \#define schlecht? $\rightarrow$ Sie respektieren den Scope nicht, sie sind weder private noch protected $\rightarrow$ Besser mit const. 
-\item Werden geROMt, wenn: Als const definiert, wenn sie keine mutierenden Daten enthalten, Wenn sie mit bekannten Werten initialisiert werden w"ahrend der Compilation. 
+\item Warum sind \#define schlecht?
+	\begin{itemize}
+		\item Sie respektieren den Scope nicht
+		\item weder private noch protected
+		\item kein Typ
+	\end{itemize}
+	$\rightarrow$ Besser mit const.
+\item Werden geROMt, wenn: Als const definiert, wenn sie keine mutierenden
+	Daten enthalten, Wenn sie mit bekannten Werten initialisiert werden
+	w"ahrend der Kompilation.
 \end{itemize}
