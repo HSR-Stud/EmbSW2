@@ -224,3 +224,67 @@ void doThat(const std\dotsstring& name = defaultName); // Better
 		\end{itemize}
 \end{itemize}
 
+\subsubsection{Dynamic Memory Managment}
+Die vier Sorgen:
+\begin{itemize}
+\item Schnelligkeit: Sind \textbf{new/delete/malloc/free} schnell genug?
+\item Fragmentation: Entstehen im Heap unbrauchbar kleine Bereiche?
+\item Speicherlecks: Werden einige Bereiche nicht frei gegeben?
+\item Speicherersch"opfung: Wird eine Allokation nicht gemacht?
+\end{itemize}
+
+Allocation Strategies: 
+\begin{itemize}
+\item Fully Static Allocation
+\item LIFO Allocation
+\item Pool Allocation
+\item Block Allocation
+\item Region Allocation
+\end{itemize}
+
+Fully Static Allocation: 
+\begin{itemize}
+\item Daten nicht auf dem Heap $\rightarrow$ Exakte bzw. max. Anzahl der Obejkte ist determinierbar. 
+\item \textbf{Speed}: praktisch unendlich, deterministisch
+\item \textbf{Fragmentation}: Nicht m"oglich
+\item \textbf{Memory leaks}: Nicht m"oglich
+\item \textbf{Memory exhaustion}: Nicht m"oglich
+\end{itemize}
+
+LIFO Heap Allocation: 
+\begin{itemize}
+\item Dynamische Allokation ausserhalb des runtime Stacks $\rightarrow$ Diese Allokationen sind immer LIFO (wie beim Stack)
+\item \textbf{Speed}: Sehr schnell, deterministisch 
+\item \textbf{Fragmentation}: M"oglich, einfach zu erkennen
+\item \textbf{Memory leaks}: M"oglich, einfach zu erkennen
+\item \textbf{Memory exhaustion}: M"oglich
+\end{itemize}
+
+Pool Allocation: 
+\begin{itemize}
+\item Heap Allokationen sind alle gleich gross (bzw. alle so gross, wie das gr"osste Element) 
+\item \textbf{Speed}: Sehr schnell, deterministisch 
+\item \textbf{Fragmentation}: Nicht m"oglich
+\item \textbf{Memory leaks}: M"oglich
+\item \textbf{Memory exhaustion}: M"oglich
+\end{itemize}
+
+Block Allocation: 
+\begin{itemize}
+\item Verschiedene Sets von Pools mit verschiedenen Gr"ossen 
+\item \textbf{Speed}: Schnell, praktisch deterministisch 
+\item \textbf{Fragmentation}: Nicht m"oglich
+\item \textbf{Memory leaks}: M"oglich
+\item \textbf{Memory exhaustion}: M"oglich
+\end{itemize}
+
+Region Allocation: N"utzlich wenn alle Heapobjekte simultan frei gegeben werden. 
+
+\subsubsection{C++ and ROM}
+Folgendes ist ROMable: 
+\begin{itemize}
+\item Wert ist vor Laufzeit bekannt
+\item Wert kann zur Laufzeit nicht modifiziert werden
+\item Warum sind \#define schlecht? $\rightarrow$ Sie respektieren den Scope nicht, sie sind weder private noch protected $\rightarrow$ Besser mit const. 
+\item Werden geROMt, wenn: Als const definiert, wenn sie keine mutierenden Daten enthalten, Wenn sie mit bekannten Werten initialisiert werden w"ahrend der Compilation. 
+\end{itemize}
