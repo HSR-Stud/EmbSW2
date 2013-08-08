@@ -181,7 +181,7 @@ Siehe Beispiele im Skript 00-Algorithmen.pdf
 Ziel der Mustersuche: Ein ganzes Stringmuster (pattern) finden. Wenn man nur ein einzelnes Zeichen sucht, funktioniert dies wie bei der Listensuche oben.\\
 1. Naiver Suchalgorithmus\\
 Pattern wird zeichenweise am Text vorbei geschoben. Dies geschieht so lange bis das Pattern gefunden worden ist oder das Ende des Textes erreicht worden ist. Algorithmus wird ineffizient, wenn bis zum Schluss nichts gefunden worden ist.\\
-Bei effizienteren Suchalgorithmen wird bei einer Nicht"uebereinstimmung nicht nur um ein Zeichen sondern um eine m"oglichst hohe Anzahl Zeichen geschoben. Die Intelligenz liegt hier beim Herausfinden dieser Anzahl.\\
+Bei effizienteren Suchalgorithmen wird bei einer Nicht"ubereinstimmung nicht nur um ein Zeichen sondern um eine m"oglichst hohe Anzahl Zeichen geschoben. Die Intelligenz liegt hier beim Herausfinden dieser Anzahl.\\
 
 
 
@@ -189,7 +189,7 @@ Bei effizienteren Suchalgorithmen wird bei einer Nicht"uebereinstimmung nicht nu
 Je nach Form der vorliegenden Daten wird unterschieden zwischen: 
 \begin{itemize}
 \item Interne Sortierverfahren: Daten liegen im Hauptspeicher, auf die Daten besteht wahlfreier Zugriff (random access). Verfahren zum Sortieren von Feldern (Arrays).
-\item Daten sind in Files auf externem Speicher, auf die Daten kann nur sequentiell zugegriffen werden. Sortieren von Files. 
+\item Externe Sortierverfahren: Daten sind in Files auf externem Speicher, auf die Daten kann nur sequentiell zugegriffen werden. Sortieren von Files. 
 \end{itemize}
 
 Forderung an interne Sortierverfahren:\\
@@ -218,7 +218,7 @@ for (i = 0; i < listLength-1; ++i)
 }
 \end{lstlisting} 
 Komplexit"at der Vergleiche: $O(n^2)$\\
-Komplexit"at der Zuweiseungen: $O(n)$\\
+Komplexit"at der Zuweisungen: $O(n)$\\
 
 2. Direktes Einf"ugen (Straight Insertion)\\
 Das erste unsortierte Element wird im sortierten Teil an die richtige Stelle gesetzt, alle gr"osseren sortierten Elemente m"ussen verschoben werden.
@@ -240,7 +240,7 @@ for (i = 1; i < listLength; ++i)
 }
 \end{lstlisting} 
 Komplexit"at der Vergleiche: $O(n^2)$\\
-Komplexit"at der Zuweiseungen: $O(n^2)$\\
+Komplexit"at der Zuweisungen: $O(n^2)$\\
 
 3. Bubblesort\\
 Benachbarte Elemente werden vertauscht, wenn sie nicht wie gew"unscht geordnet sind. Das relativ gr"osste Element steigt wie eine Blase im Wasser auf. 
@@ -257,11 +257,12 @@ for (i = listLength-1; i > 0; --i)
 }
 \end{lstlisting} 
 Komplexit"at der Vergleiche: $O(n^2)$\\
-Komplexit"at der Zuweiseungen: $O(n^2)$\\
+Komplexit"at der Zuweisungen: $O(n^2)$\\
 
 Schnelle interne Sortierverfahren:\\
 1. Quicksort\\
 Je gr"osser die Distanz beim Austauschen von Elementen ist, umso effizienter ist der Algorithmus. Dies nutzt Quicksort aus.\\
+\textbf{Median}: Der Median einer Anzahl von Werten ist die Zahl, welche an der mittleren Stelle steht, wenn man die Werte nach Größe sortiert. Bsp: {4, 1, 37, 2, 1} Median = 2\\
 Formale Beschreibung: \\
 \begin{enumerate}
 \item W"ahle ein beliebiges Pivot-Element aus (Median oder mittleres Element)
@@ -311,7 +312,19 @@ Beispiel von Quicksort: \\
 Wahl des Pivots ist wichtig. Ein Ansatz ist die median-of-3 Strategie, bei welcher der Median aus dem ersten, letzten und mittleren Element eines Bereiches gebildet und als Pivot verwendet. Bei b"osartig zusammengestellten Listen (median-of-3-killers) kann dies jedoch zu Problemen f"uhren.\\
 
 \subsubsection{Effizienz verschiedener interner Suchalgorithmen}
-Siehe Skript 00-Algorithmen.pdf S.24
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Algorithmus & $C_{min}$ & $C_{ave}$ & $C_{max}$ & $O_C(\cdot)$ \\
+\hline
+Straight Selection & $\frac{n}{2}\cdot (n-1)$ & $\frac{n}{2}\cdot (n-1)$ & $\frac{n}{2}\cdot (n-1)$ & $n^2$ \\
+\hline
+Straight Insertion & $n-1$ & $\frac{1}{4}\cdot (n^2 + 3n -4)$ & $\frac{1}{2}\cdot (n^2+n-2)$ & $n^2$ \\
+\hline
+Bubblesort & $\frac{n}{2}\cdot (n-1)$ & $\frac{n}{2}\cdot (n-1)$ & $\frac{n}{2}\cdot (n-1)$ & $n^2$ \\
+\hline
+Quicksort & $n\cdot ld(n)$ & $2\cdot n \cdot ln(n)$ & $\frac{1}{2}\cdot (n+3)(n+2)-10$ & $n^2$ \\
+\hline
+\end{tabular}
 
 \subsubsection{Systemfunktionen f"ur Suchen und Sortieren}
 Siehe Skript 00-Algorithmen.pdf S.25

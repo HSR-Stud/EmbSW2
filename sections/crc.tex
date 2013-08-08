@@ -137,7 +137,7 @@ Crc crcSlow(const uint8_t message[], unsigned int nBytes)
 	\item Jedes Bit wird einzeln behandelt
 	\begin{itemize}
 		\item Pro Bit: AND, CMP, BNE, SHL, XOR
-		\item sehr aufwendig	
+		\item Sehr aufwendig	
 	\end{itemize}
 	\item Langsam
 \end{itemize}
@@ -146,7 +146,7 @@ Crc crcSlow(const uint8_t message[], unsigned int nBytes)
 \subsubsection{Tabelle}
 \textbf{Ansatz}
 \begin{itemize}
-	\item ein Byte hat 256 mögliche Werte, für jeden dieser Werte ist der dazugehörige CRC definiert. Dieser Wert liegt in einer Tabelle vor.
+	\item Ein Byte hat 256 mögliche Werte, für jeden dieser Werte ist der dazugehörige CRC definiert. Dieser Wert liegt in einer Tabelle vor.
 	\item Dadurch erzielt man eine Geschwindigkeitssteigerung um den Faktor 8	
 \end{itemize}
 
