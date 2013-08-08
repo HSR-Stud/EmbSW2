@@ -211,18 +211,97 @@ void doThat(const std\dotsstring& name = defaultName); // Better
 	\item Runtime
 		\begin{itemize}
 			\item Vererbung virtuelle Funktionen
-			\item Teurer Laufzeitaufwand
+			\item Am flexibelsten, kann Informationen verwenden die erst zur Laufzeit bekannt sind
+			\item Teurer Laufzeitaufwand, vptrs, vtpls, alles non-inline
 		\end{itemize}
 	\item Link-Time
 		\begin{itemize}
-			\item Separat complierte Funktionen mit gleicher definition (z.B.
-				Hardware abhängiger code)
-			\item Statisches oder dynamisches linken, siehe \nameref{sec:pimpl}
+			\item Separat kompilierte Funktionen mit gleicher Definition (gleicher Header) (z.B.
+				Hardware abhängiger Code)
+			\item Statisches oder dynamisches linken, siehe auch \nameref{sec:pimpl}
 		\end{itemize}
 	\item Compile-Time
 		\begin{itemize}
-			\item Templates, \#ifdef's, const expressions
+			\item typedefs um Klasse zu wählen, Templates, \#ifdef's, const expressions
 		\end{itemize}
+\end{itemize}
+
+\subsubsection{Templates}
+\paragraph{Unnötiges Inlining}
+Obwohl Template Funktionen typischerweise im header definiert werden, müssen sie nicht implizit inlince deklariert werden. Beispiel:
+\begin{lstlisting}
+template<typename T>
+class SomeClass {
+public:
+SomeClass() { ... } // implizit inline
+void mf1() { ... }  // implizit inline
+void mf2();         // nicht implizit inline
+...
+};
+template<typename T>
+void SomeClass<T>::mf2() { ... } // im Header definiert, aber nicht inline
+\end{lstlisting}
+Unnötiges Inlining kann zu bloat führen.
+
+\paragraph{Templates extern definieren}
+Die Vorteile alles im header zu haben sind
+\begin{itemize}
+	\item Alles an einem Ort
+	\item Template kann implizit instanziert werden
+\end{itemize}
+Nachteile
+\begin{itemize}
+	\item Höhere Compilationszeit
+	\item Mehr Abhängigkeiten für Verwender des Templates
+\end{itemize}
+
+\paragraph{Explizit instanzieren}
+.h file wie immer, in einem .cpp file:
+\begin{lstlisting}
+... // Definitionen der nicht-inline Funktionen von SomeClass
+
+template
+class SomeClass<double>; // Explizite Instanzierung von allen SomeClass
+                         // Funktionen mit T=double; der kompilierte
+                         // Code kommt ins .obj File von diesem cpp
+template
+void SomeClass<int>::smf2(); // Explizite Instanzierung von SomeClass::mf2
+                             // mit T=int; kompilierter code ebenfalls im .obj File
+\end{lstlisting}
+
+Dies ist nützlich um:
+\begin{itemize}
+	\item Eine Bibliothek von Instanzen zu erstellen
+	\item Um Code-Bloat von schlechen Compilern/Linkern zu vermeiden, welche immer alle Funktionen einer Template-Klasse instanzieren.
+\end{itemize}
+
+\paragraph{Code duplizierung Vermeiden}
+Typ-unabhängiger Code sollte in eine Basisklasse verschoben werden um
+Code-Bloat zu vermeiden.
+\begin{lstlisting}ype template parameters:
+template<typename T, std::size_t BUFSZ> // Suspect design: each
+class Buffer {                          // BUFSZ value will yield a
+T buffer[BUFSZ];                        // new set of member functions
+public:
+...
+};
+template<typename T>
+class BufferBase { // Better design: BufferBase
+...                // is independent of BUFSZ
+};
+template<typename T, std::size_t BUFSZ> // Buffer does only BUFSZ-
+class Buffer: public BufferBase<T> {    // dependent operations.
+...                                     // Ideally, all are inline, so
+};                                      // Buffer classes cost nothing
+\end{lstlisting}
+
+\subsubsection{Zusammenfassung}
+\begin{itemize}
+\item Consider disabling support for exceptions.
+\item Consider stdio instead of iostreams.
+\item Avoid excessive inlining, especially with templates.
+\item Judiciously use explicit instantiation to avoid code duplication.
+\item Hoist parameter-independent code out of templates.
 \end{itemize}
 
 \subsection{Dynamic Memory Managment}
