@@ -272,13 +272,13 @@ void SomeClass<int>::smf2(); // Explizite Instanzierung von SomeClass::mf2
 Dies ist nützlich um:
 \begin{itemize}
 	\item Eine Bibliothek von Instanzen zu erstellen
-	\item Um Code-Bloat von schlechen Compilern/Linkern zu vermeiden, welche immer alle Funktionen einer Template-Klasse instanzieren.
+	\item Um Code-Bloat von schlechten Compilern / Linkern zu vermeiden, welche immer alle Funktionen einer Template-Klasse instanzieren.
 \end{itemize}
 
-\paragraph{Code duplizierung Vermeiden}
+\paragraph{Code Duplizierung Vermeiden}
 Typ-unabhängiger Code sollte in eine Basisklasse verschoben werden um
 Code-Bloat zu vermeiden.
-\begin{lstlisting}ype template parameters:
+\begin{lstlisting}
 template<typename T, std::size_t BUFSZ> // Suspect design: each
 class Buffer {                          // BUFSZ value will yield a
 T buffer[BUFSZ];                        // new set of member functions
@@ -308,7 +308,7 @@ class Buffer: public BufferBase<T> {    // dependent operations.
 Die vier Sorgen:
 \begin{itemize}
 \item Schnelligkeit: Sind \textbf{new/delete/malloc/free} schnell genug?
-\item Fragmentation: Entstehen im Heap unbrauchbar kleine Bereiche?
+\item Fragmentierung: Entstehen im Heap unbrauchbar kleine Bereiche?
 \item Speicherlecks: Werden einige Bereiche nicht frei gegeben?
 \item Speicherersch"opfung: Wird eine Allokation nicht gemacht?
 \end{itemize}
@@ -379,9 +379,10 @@ Folgendes ist ROMable:
 
 
 \subsubsection{Modeling Memory-Mapped I/O}
-Viele Systeme haben ihre I/O (\textit{ memory-mapped IO devices}) im Programm-Adresse Bereich. Mit C++ ist es einfach diese \textit{ memory-mapped IO devices} mithilfe von Objekten anzusteuern.\\ \\
+Viele Systeme haben ihre I/O (\textit{memory-mapped IO devices}) im Programm-Adressbereich.
+Mit C++ ist es einfach diese \textit{memory-mapped IO devices} mithilfe von Objekten anzusteuern.
 
-\textbf{Modeling Memory-Mapped IO}
+\paragraph{Modeling Memory-Mapped IO}
 \begin{itemize}
 	\item Atomic reads/writes may require explicit synchronization.
 	\item Individual bits may sometimes be read-only, other times write-only.
@@ -390,8 +391,7 @@ Viele Systeme haben ihre I/O (\textit{ memory-mapped IO devices}) im Programm-Ad
 		E.g., bits 0-3 are for one data register, bits 4-7 for another.	
 \end{itemize}
 
-\textbf{Modeling a Control Register}
-
+\paragraph{Modeling a Control Register}~
 \begin{lstlisting}
 enum { bit0 = 0x1, bit1 = 0x2, ... , bit31 = 0x80000000 };
 
@@ -407,17 +407,15 @@ private:
 };
 \end{lstlisting}
 
-All functions are inline, so their existence should incur no cost.\\ \\
+All functions are inline, so their existence should incur no cost.
 
-\textbf{Placement new}
-
+\paragraph{Placement new}~\\
 Operator new’s fundamental job is not to allocate memory, it’s to identify where an object should go.
 
 \begin{itemize}
 	\item You can pass operator new where you want to put something, and it will return that location
 	\item This form of operator new is called placement new.
 			It’s a standard form available everywhere.
-	
 \end{itemize}
 
 Beispiel mit Pointer:
@@ -438,19 +436,18 @@ while (!cr.ready()) ; 				// wait until the ready bit is on
 cr.enableInterrupts(); 				// enable device interrupts
 if (cr.interruptsEnabled()) ... 	// if interrupts are enabled...
 \end{lstlisting}
-\hspace*{\fill} \\\\
-Mit \textit{placement new} wird kein Speicher alloziert.\\ \\
+~ \\
+Mit \textit{placement new} wird kein Speicher alloziert.
 
-\textbf{Raw Casts}
+\paragraph{Raw Casts}~
 \begin{lstlisting}
 ControlReg *pcr = reinterpret_cast<ControlReg*>(0xFFFF0000);	// pointer version
 
 ControlReg& cr = *reinterpret_cast<ControlReg*>(0xFFFF0000);	// reference version
 \end{lstlisting}
 
-
-\textbf{Placement new vs. Raw Casts}
-
-
-\textit{Placement new} wird normalerweise dem \textit{ raw reinterpret\_cast} Vorgezogen.
-
+\paragraph{Placement new vs. Raw Casts}~\\
+\emph{Placement new} wird normalerweise dem \emph{raw} \texttt{reinterpret\_cast} Vorgezogen, \emph{placement new} den Konstruktor aufruft, was mit \texttt{reinterpret\_cast} selber gemacht werden müsste:
+\begin{lstlisting}
+pcr->ControlReg();
+\end{lstlisting}

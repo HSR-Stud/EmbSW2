@@ -102,9 +102,8 @@ Bei zyklischen Codes werden zur mathematischen Behandlung Code-Sequenzen addiert
 	das oberste Bit des Remainders eine 1 ist, d.h. das oberste Bit des Resultats ist
 	immer 0.
 \end{itemize}
-
+\newpage
 \subsection{Implementation}
-
 \subsubsection{Bit by Bit}
 \begin{lstlisting}[style=C]
 typedef uint8_t Crc;
@@ -168,9 +167,3 @@ Crc crcFast(const uint8_t message[], unsigned int nBytes)
 	return remainder;
 }
 \end{lstlisting}
-
-
-
-
-
-
