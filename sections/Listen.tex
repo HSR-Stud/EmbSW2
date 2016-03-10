@@ -1,25 +1,18 @@
-%------------------------------------------------------------------------------------------------
-%Listen
-%------------------------------------------------------------------------------------------------
-\section{Listen}
+\section{Listen - x}
 \subsection{Eigenschaften von Listen}
 \begin{itemize}
-  \item Unterschied Array $\leftrightarrow$ Liste :
+  \item Array vs. Liste :
   	\begin{itemize}
-	  	\item Array: Anzahl Elemente \textbf{statisch} 
-	  	\item Liste: Anzahl Elemente \textbf{dynamisch}
+	  	\item \textbf{Array:} Anzahl Elemente statisch $\rightarrow$ \lstinline{double statArray[20];} 
+	  	\item \textbf{Dynamisch allozierter Array:} Anzahl Elemente werden erst zur Laufzeit festgelegt, bleiben dann aber fix $\rightarrow$
+	  	\item Liste: Anzahl Elemente \textbf{dynamisch} $\rightarrow$
   	\end{itemize}
+  	
   \item Listenelement = Knoten oder Node
   \item Listenanfang: Muss immer gegeben sein, da von diesem ausgegangen wird. 
   \item Listenende: Wird durch Nullpointer definiert
 \end{itemize}
-%------------------------------------------------------------------------------------------------
 
-
-
-%------------------------------------------------------------------------------------------------
-%Single Linked Lists
-%------------------------------------------------------------------------------------------------
 \subsection{Einfach verkettete Liste - Single Linked List}
 \begin{flushleft}
 {\includegraphics[width=0.1\textwidth]{images/Listen/SLL.png}}
@@ -33,6 +26,7 @@ struct Node
 	Node* next; //Pointer auf na"chstes Listenelement
 };
 \end{lstlisting}
+
 
 \subsubsection{Definition Listenanfang}
 \begin{lstlisting}[style=C]
@@ -109,13 +103,9 @@ int SList::search(double val) const
 	return 0; // not found
 }
 \end{lstlisting}
-%------------------------------------------------------------------------------------------------
 
 
 
-%------------------------------------------------------------------------------------------------
-%Double Linked Lists
-%------------------------------------------------------------------------------------------------
 \subsection{Doppelt verkettete Liste - Double Linked List}
 \begin{flushleft}
 {\includegraphics[width=0.1\textwidth]{images/Listen/DLL.png}}
