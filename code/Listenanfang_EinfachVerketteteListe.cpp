@@ -1,0 +1,1 @@
+Node* pHead; // Kopf der Liste
