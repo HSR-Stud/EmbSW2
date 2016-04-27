@@ -1,51 +1,71 @@
 \section{Algorithmen - x}
-\subsection{Eigenschaften - Zwingende Forderungen}
-\begin{itemize}
-	\item Korrektheit
-	\item Finitheit: Eindeutige Beschreibbarkeit
-	\item Determiniertheit: Erzielt bei gleichen Vorbedingungen immer dasselbe Resultat
-	\item Determinismus: N"achster Schritt zu jedem Zeitpunkt bekannt
-\end{itemize}
-
-\subsection{Eigenschaften - Optionale Forderungen}
-\begin{itemize}
-	\item Effizienz 
-	\item Einfachheit/Verst"andlichkeit
-\end{itemize}
 
 \subsection{Beschreibungsmethoden}
 \begin{itemize}
-	\item Aktivitätsdiagramm
-	\item Konkrete Programmiersprache
+	\item Aktivitätsdiagramm $\rightarrow$ gute Variante!
+	\item Konkrete Programmiersprache $\rightarrow$ gute Variante!
 	\item Pseudocode
-	\item UML
+	\item Struktogramme $\rightarrow$ veraltet
+	\item Programmablaufpläne $\rightarrow$ veraltet
 \end{itemize}
 
+\subsection{Formale Eigenschaften}
+\subsubsection{Korrektheit}
+    \begin{itemize}
+	    \item Die Korrektheit eines Algorithmus kann formal bewiesen werden. Dies ist jedoch häufig mit enormem Aufwand verbunden und wird in der Praxis nur selten durchgeführt $\rightarrow$ In der Praxis wird die Korrektheit mit Tests verifiziert.
+	    \item Nur \textbf{Anwesenheit von Fehlern} kann bewiesen werden, nicht deren Abwesenheit [E.Dijkstra]
+    \end{itemize}
+\subsubsection{Finitheit}
+    \begin{itemize}
+	    \item Der Algorithmus muss eindeutig mit einer endlichen Anzahl Schritten beschrieben werden können.
+    \end{itemize}
+\subsubsection{Bestimmtheit}
+    \begin{itemize}
+	    \item Der Algorithmus erzielt bei gleichen Vorbedingungen immer dasselbe Resultat (bei Algorithmen, die mit Zufallskomponenten arbeiten, trifft das nicht zu).
+    \end{itemize}
+\subsubsection{Determinismus}
+    \begin{itemize}
+	    \item Zu jedem Zeitpunkt ist der nächste Schritt des Algorithmus eindeutig bestimmt.
+    \end{itemize}
+\subsubsection{Effizienz}
+    \begin{itemize}
+	    \item Laufzeiteffizienz
+	    \item Speicherplatzeffizienz
+	    \item Verschiedene Betrachtungsweisen:
+	    \begin{itemize}
+	        \item Best Case: Optimistischer Fall
+	        \item Average Case: Durchschnittlicher Fall
+	        \item Worst case (üblich): Pessimistischer Fall
+	    \end{itemize}
+    \end{itemize}
+\subsubsection{Optionale formale Eigenschaften}
+    \begin{itemize}
+	    \item Einfachheit
+	    \item Verständlichkeit
+    \end{itemize}
 
-\subsection{Korrektheit}
-Kann formal bewiesen werden $\rightarrow$ Mathematisch aufw"andig, selten\\
-Korrektheit mittels Tests verifizieren $\rightarrow$ Nur \textbf{Anwesenheit von Fehlern} kann bewiesen werden, nicht deren Abwesenheit [E.Dijkstra]
 
-\subsection{Effizienz}
-Wird charakterisiert durch: 
-\begin{itemize}
-\item Ben"otigten Speicherplatz
-\item Ben"otigte Rechenzeit (Laufzeit)
-\end{itemize}
-Absolute Rechenzeit h"angt vom Rechner ab, daher wird relatives Mass angegeben. \\
-Wie stark nimmt Rechenzeit relativ mit Gr"osse N einer Liste zu? \\
-Oft wird Best, Worst und Average Fall betrachtet.
+\subsection{Komplexitätstheorie}
+\subsubsection{Hauptziele}
+    \begin{itemize}
+        \item Berechngungskomplexität: Zeitkomplexität aus Anzahl der Rechenoperationen sowie Speicherplatzkomplexität
+        \item Spezifikation der Probleme und Methode zur Klassifikation in "'praktisch lösbare"' und "'praktisch unlösbare"' Probleme
+        \item Vergleiche der Effizienz (Berechnungsstärke) verschiedener Algorithmen (deterministischer, nichtdeterministischer und zufallsgesteuerten)
+    \end{itemize}
+\subsubsection{Zu betrachtende Operationen}
+    \begin{itemize}
+        \item Zuweisungen
+        \item Vergleiche
+        \item Rechenoperationen
+        \item Unterprogrammaufrufe
+        \item Verzweigungen
+    \end{itemize}
 
 
-\section{Komplexit"atstheorie}
-\subsection{Hauptziele}
-\begin{itemize}
-\item Berechngungskomplexit"at: Zeitkomplexit"at aus Anzahl der Rechenoperationen sowie Speicherplatzkomplexit"at
-\item Spezifikation der Probleme und Methode zur Klassifikation in "'praktisch l"osbare"' und "'praktisch unl"osbare"' Probleme
-\item Vergleiche der Effizienz (Berechnungsst"arke) verschiedener Algorithmen (deterministischer, nichtdeterministischer und zufallsgesteuerten)
-\end{itemize}
-\subsection{Asymptotische Absch"atzung}
-Die asymptotische Absch"atzung ist eine Worst-Case Analyse und kann in folgende Notationen aufgeteilt werden:
+------- HIER --------
+
+\subsubsection{Asymptotische Abschätzung}
+Die asymptotische Abschätzung ist eine Worst-Case Analyse und kann in folgende Notationen aufgeteilt werden:
 
 \subsubsection{$\mathcal{O}$-Notation (H"aufigste Absch"atzung)}
 Laufzeitabsch"atzung nach oben:

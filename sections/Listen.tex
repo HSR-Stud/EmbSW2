@@ -1,4 +1,4 @@
-\section{Listen - x}
+\section{Listen}
 \subsection{Speicherung mehrerer Elemente desselben Typs}
 \begin{itemize}
   \item Array: wenn die Anzahl Elemente statisch ist \\ $\rightarrow$  \lstinline{double statArray[20];} 
@@ -19,6 +19,8 @@
 \subsection{Einfach verkettete Liste - Single Linked List}
 \begin{itemize}
   \item Eine einfach verkettete Liste verbindet die Listenelemente nur einfach, d.h. es gibt eine Pointerverbindung nur in eine Richtung.
+  \item Rückwärts kann nicht navigiert werden, es geht nur von vorne nach hinten.
+  \item Nachteil beim Löschen: da keine Rückwärtsnavigation möglich ist, muss mit einem zusätzlichen Hilfspointer gearbeitet werden.
 \end{itemize}
 
 \subsubsection{Definition eines Listenelementes}
@@ -61,93 +63,51 @@
 \subsubsection{Listenelement suchen}
 \lstinputlisting[language=C++]{code/ListenelementSuchen_EinfachVerketteteListe.cpp}
 
------ BIS HIER!!!!!! ------
 
 \subsection{Doppelt verkettete Liste - Double Linked List}
-\begin{flushleft}
-{\includegraphics[width=0.1\textwidth]{images/Listen/DLL.png}}
-\label{Fig: Double Linked List}
-\end{flushleft}
-\subsubsection{Definition Node}
-\begin{lstlisting}[style=C]
-struct Node
-{
-	Item value; // der gespeicherte Wert, z.B. double
-	Node* next; // Pointer auf das naechste Listenelement
-	Node* prev; // Pointer auf das vorheriges Listenelement
-};
-\end{lstlisting}
+\begin{itemize}
+  \item Eine doppelt verkettete Liste verbindet die Listenelemente in beiden Richtungen.
+  \item Dadurch kann einfach in der Liste navigiert werden, speziell rückwärts beim Löschen oder Einfügen.
+  \item Der Verdrahtungsaufwand ist grösser als bei der einfach verketteten Liste.
+  \item Jeder Knoten braucht einen Pointer mehr, d.h. der Speicherbedarf nimmt leicht zu.
+\end{itemize}
 
-\subsubsection{Listenelement einf"ugen}
-\begin{lstlisting}[style=C]
-void DList::insertAt(int pos,double val)
-{
-	assert(pos >= 0);
-	Node* pEl = new Node;
-	pEl->value = val;
-	if (pos != 0)
-	{
-		Node* p = nodePtr(pos);
-		assert(p != 0);
-		pEl->next = p->next;
-		pEl->prev = p;
-		p->next = pEl;
-	}
-	else // insert at head
-	{
-		pEl->next = pHead;
-		pEl->prev = 0;
-		pHead = pEl;
-	}
-	if (pEl->next != 0) // not last element in list
-	{
-		pEl->next->prev = pEl;
-	}
-	++nr;
-}
-\end{lstlisting}
+\subsubsection{Definition eines Listenelementes}
+\begin{flushleft}
+  {\includegraphics[width=0.1\textwidth]{images/Listen/DLL.png}}
+  \label{Fig: Double Linked List}
+\end{flushleft}
+\lstinputlisting[language=C++]{code/Node_DoppeltVerketteteListe.cpp}
+
+\subsubsection{Bezeichnung des Listenanfangs}
+\begin{flushleft}
+  {\includegraphics[width=0.1\textwidth]{images/Listen/SLL_Anfang.jpg}}
+  \label{Fig: Single Linked List}
+\end{flushleft}
+\lstinputlisting[language=C++]{code/Listenanfang_EinfachVerketteteListe.cpp}
+
+\subsubsection{Bezeichnung des Listenendes}
+\begin{itemize}
+  \item Das Listenende wird mit einem Nullpointer gekennzeichnet.
+\end{itemize}
+\begin{flushleft}
+  {\includegraphics[width=0.15\textwidth]{images/Listen/SLL_Ende.jpg}}
+  \label{Fig: Single Linked List}
+\end{flushleft}
+
+\subsubsection{Listenelement einfügen}
 \begin{flushleft}
 {\includegraphics[width=0.5\textwidth]{images/Listen/DLL_Insert.png}}
 \label{Fig: Element bei DLL einf"ugen}
 \end{flushleft}
+\lstinputlisting[language=C++]{code/ListenelementEinfuegen_DoppeltVerketteteListe.cpp}
 
-\subsubsection{Listenelement l"oschen}
-\begin{lstlisting}[style=C]
-void DList::deleteAt(int pos)
-{
-	assert(pos > 0 && pos <= nr);
-	Node* pDel = nodePtr(pos); // node to be deleted
-	assert (pDel != 0);
-	if (pos == 1) // first element
-		pHead = pHead->next;
-	else
-	{
-		pDel->prev->next = pDel->next;
-	}
-	if (pDel->next != 0) // not last element in list
-	pDel->next->prev = pDel->prev;
-	delete pDel;
-	--nr;
-}
-\end{lstlisting}
+\subsubsection{Listenelement löschen}
 \begin{flushleft}
 {\includegraphics[width=0.5\textwidth]{images/Listen/DLL_Delete.png}}
 \label{Fig: Element bei DLL l"oschen}
 \end{flushleft}
+\lstinputlisting[language=C++]{code/ListenelementLoeschen_DoppeltVerketteteListe.cpp}
 
 \subsubsection{Listenelement suchen}
-\begin{lstlisting}[style=C]
-int DList::search(double val) const
-{
-	Node* p = pHead; // p points to element at pos 1, if not empty
-	for (int i = 1; p; i++)
-	{
-		if (p->value == val)
-		{
-			return i;
-		}
-		p = p->next;
-	}
-	return 0; // not found
-}
-\end{lstlisting}
+\lstinputlisting[language=C++]{code/ListenelementSuchen_DoppeltVerketteteListe.cpp}
