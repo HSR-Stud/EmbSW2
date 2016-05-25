@@ -222,8 +222,7 @@ Komplexität der Zuweisungen: $O(n^2)$\\
 
 \subsubsection{Schnelle interne Sortierverfahren}
 \textbf{Variante 1: Quicksort}\\
-Je grösser die Distanz beim Austauschen von Elementen ist, umso effizienter ist der Algorithmus. Dies nutzt Quicksort aus.\\
-\textbf{Median}: Der Median einer Anzahl von Werten ist die Zahl, welche an der mittleren Stelle steht, wenn man die Werte nach Größe sortiert. Bsp: {4, 1, 37, 2, 1} Median = 2\\\\
+Je grösser die Distanz beim Austauschen von Elementen ist, umso effizienter ist der Algorithmus. Dies nutzt Quicksort aus.\\\\
 Formale Beschreibung:
 \begin{enumerate}
 \item Wähle einen beliebigen Pivotwert aus dem Array aus.
@@ -239,31 +238,12 @@ Element als der Pivotwert gefunden wird.
 \lstinputlisting[language=C++]{code/Quicksort.cpp}
 \includegraphics[width=0.5\textwidth]{images/Algorithmen/Quicksort.png} \ \\ \ \\
 \end{multicols}
-Quicksort ist dann am besten, wenn beim Pivot immer der Median gefunden würde. Im schlimmsten Fall ist die Komplexität bei Quicksort $O(n^2)$. Das ist dann der Fall, wenn als Pivot immer ein Extremwert (Minimum oder Maximum) genommen würde. Dieser Fall ist für praktische Fälle nahezu unmöglich, d.h. der Worst-Case ist sehr unwahrscheinlich.\\
-
-\ \newline
-
-
-
-
-
-1. Quicksort\\
-
-
-
-
 Bester Fall: Wenn als Pivot jedes mal der Median des Feldes getroffen wird $\rightarrow O(nlog(n))$\\
-Schlechtester Fall: Wenn jedes Mal das Minimum oder Maximum getrofffen wird $\rightarrow O(n^2))$\\
+Schlechtester Fall: Wenn jedes Mal das Minimum oder Maximum getrofffen wird $\rightarrow O(n^2))$\\\\
+\textbf{Median}: Der Median einer Anzahl von Werten ist die Zahl, welche an der mittleren Stelle steht, wenn man die Werte nach Größe sortiert. Bsp: {4, 1, 37, 2, 1} Median = 2\\\\
+Eine vernünftige Wahl des Pivots ist also wichtig. Ein Ansatz ist die median-of-3 Strategie, bei welcher der Median aus dem ersten, letzten und mittleren Element eines Bereiches gebildet und als Pivot verwendet wird. Bei bösartig zusammengestellten Listen (median-of-3-killers) kann dies jedoch zu Problemen führen.
 
-Beispiel von Quicksort: \\
-\begin{center}
-{\includegraphics[width=0.5\textwidth]{images/Algorithmen/Quicksort.png}}
-\label{Fig: Quicksort}
-\end{center}
-
-Wahl des Pivots ist wichtig. Ein Ansatz ist die median-of-3 Strategie, bei welcher der Median aus dem ersten, letzten und mittleren Element eines Bereiches gebildet und als Pivot verwendet. Bei bösartig zusammengestellten Listen (median-of-3-killers) kann dies jedoch zu Problemen führen.\\
-
-\subsubsection{Effizienz verschiedener interner Suchalgorithmen}
+\subsubsection{Anzahl der Vergleiche bei Sortieralgorithmen}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
 Algorithmus & $C_{min}$ & $C_{ave}$ & $C_{max}$ & $O_C(\cdot)$ \\
@@ -274,9 +254,24 @@ Straight Insertion & $n-1$ & $\frac{1}{4}\cdot (n^2 + 3n -4)$ & $\frac{1}{2}\cdo
 \hline
 Bubblesort & $\frac{n}{2}\cdot (n-1)$ & $\frac{n}{2}\cdot (n-1)$ & $\frac{n}{2}\cdot (n-1)$ & $n^2$ \\
 \hline
-Quicksort & $n\cdot ld(n)$ & $2\cdot n \cdot ln(n)$ & $\frac{1}{2}\cdot (n+3)(n+2)-10$ & $n^2$ \\
+Quicksort & $n\cdot log_{2}(n)$ & $2\cdot n \cdot ln(n)$ & $\frac{1}{2}\cdot (n+3)(n+2)-10$ & $n^2$ \\
 \hline
 \end{tabular}
 
-\subsubsection{Systemfunktionen für Suchen und Sortieren}
-Siehe Skript 00-Algorithmen.pdf S.25
+--- HIER ----
+
+\subsubsection{Anzahl der Zuweisungen bei Sortieralgorithmen}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Algorithmus & $C_{min}$ & $C_{ave}$ & $C_{max}$ & $O_C(\cdot)$ \\
+\hline
+Straight Selection & $\frac{n}{2}\cdot (n-1)$ & $\frac{n}{2}\cdot (n-1)$ & $\frac{n}{2}\cdot (n-1)$ & $n^2$ \\
+\hline
+Straight Insertion & $n-1$ & $\frac{1}{4}\cdot (n^2 + 3n -4)$ & $\frac{1}{2}\cdot (n^2+n-2)$ & $n^2$ \\
+\hline
+Bubblesort & $\frac{n}{2}\cdot (n-1)$ & $\frac{n}{2}\cdot (n-1)$ & $\frac{n}{2}\cdot (n-1)$ & $n^2$ \\
+\hline
+Quicksort & $n\cdot log_{2}(n)$ & $2\cdot n \cdot ln(n)$ & $\frac{1}{2}\cdot (n+3)(n+2)-10$ & $n^2$ \\
+\hline
+\end{tabular}
+
