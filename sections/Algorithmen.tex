@@ -222,7 +222,8 @@ Komplexität der Zuweisungen: $O(n^2)$\\
 
 \subsubsection{Schnelle interne Sortierverfahren}
 \textbf{Variante 1: Quicksort}\\
-Schnell, weil das Austauschen von unsortierten Elementen über möglichst grosse Distanzen erfolgt.\\\\
+Je grösser die Distanz beim Austauschen von Elementen ist, umso effizienter ist der Algorithmus. Dies nutzt Quicksort aus.\\
+\textbf{Median}: Der Median einer Anzahl von Werten ist die Zahl, welche an der mittleren Stelle steht, wenn man die Werte nach Größe sortiert. Bsp: {4, 1, 37, 2, 1} Median = 2\\\\
 Formale Beschreibung:
 \begin{enumerate}
 \item Wähle einen beliebigen Pivotwert aus dem Array aus.
@@ -234,14 +235,12 @@ Element als der Pivotwert gefunden wird.
 \item Das nun entstandene Teilfeld links besteht nur aus Elementen, die kleiner oder gleich dem Pivotwert sind, das Teilfeld rechts besteht nur aus Elementen, die grösser oder gleich dem Pivotwert sind. 
 \item Sortiere diese beiden Teilfelder wiederum (rekursiv), bis nur noch Teilfelder mit einem einzigen Element übrig bleiben.
 \end{enumerate}
-
---- HIER ---
-
-Quicksort ist dann am besten, wenn beim Pivot immer der Median gefunden würde. Im schlimmsten Fall ist die Komplexität bei Quicksort $O(n^2)$. Das ist dann der Fall, wenn als Pivot immer ein Extremwert (Minimum oder Maximum) genommen würde. Dieser Fall ist für praktische Fälle nahezu unmöglich, d.h. der Worst-Case ist sehr unwahrscheinlich.\\
 \begin{multicols}{2}
-\lstinputlisting[language=C++]{code/DirektesEinfuegen.cpp}
-\includegraphics[width=0.5\textwidth]{images/Algorithmen/DirektesEinfuegen.png}
+\lstinputlisting[language=C++]{code/Quicksort.cpp}
+\includegraphics[width=0.5\textwidth]{images/Algorithmen/Quicksort.png} \ \\ \ \\
 \end{multicols}
+Quicksort ist dann am besten, wenn beim Pivot immer der Median gefunden würde. Im schlimmsten Fall ist die Komplexität bei Quicksort $O(n^2)$. Das ist dann der Fall, wenn als Pivot immer ein Extremwert (Minimum oder Maximum) genommen würde. Dieser Fall ist für praktische Fälle nahezu unmöglich, d.h. der Worst-Case ist sehr unwahrscheinlich.\\
+
 \ \newline
 
 
@@ -249,45 +248,10 @@ Quicksort ist dann am besten, wenn beim Pivot immer der Median gefunden würde. 
 
 
 1. Quicksort\\
-Je grösser die Distanz beim Austauschen von Elementen ist, umso effizienter ist der Algorithmus. Dies nutzt Quicksort aus.\\
-\textbf{Median}: Der Median einer Anzahl von Werten ist die Zahl, welche an der mittleren Stelle steht, wenn man die Werte nach Größe sortiert. Bsp: {4, 1, 37, 2, 1} Median = 2\\
-Formale Beschreibung: \\
-\begin{enumerate}
-\item Wähle ein beliebiges Pivot-Element aus (Median oder mittleres Element)
-\item Laufe von linker Arraygrenze so lange nach innen, bis ein Element gefunden wird, welches \textbf{grösser gleich} das Pivot ist. 
-\item Laufe von rechter Arraygrenze so lange nach innen, bis ein Element gefunden wird, welches \textbf{kleiner gleich} das Pivot ist. 
-\item Vertausche die beiden Elemente
-\item Wiederhole Schritt 2-4 so lange, bis sich die beiden Indizes getroffen haben
-\item Das linke Teilfeld enthält nur noch Werte, die $\leq$ als das Pivot sind. Das rechte Teilfeld enthält nur noch Werte, die $\geq$ als das Pivot sind. 
-\item Sortiere diese Felder wiederum rekursiv, bis nur noch Teilfelder mit einem einzigen Element übrig sind.
-\end{enumerate}
 
-\begin{lstlisting}[style=C]
-void quickSort(int leftBound, int rightBound)
-{
-	int left = leftBound; // Index der linken Grenze
-	int right = rightBound; // Index der rechten Grenze
-	int pivot = data[(left+right) / 2]; // Gewähltes Element in der Mitte
-	do
-	{
-		while (data[left] < pivot)
-			left++;
-		while (data[right] > pivot)
-			right--;
-		if (left <= right)
-		{
-			if (left < right)
-				swap(left, right);
-			left++;
-			right--;
-		}
-	} while (left <= right);
-	if (leftBound < right)
-		quickSort(leftBound, right);
-	if (rightBound > left)
-		quickSort(left, rightBound);
-}
-\end{lstlisting} 
+
+
+
 Bester Fall: Wenn als Pivot jedes mal der Median des Feldes getroffen wird $\rightarrow O(nlog(n))$\\
 Schlechtester Fall: Wenn jedes Mal das Minimum oder Maximum getrofffen wird $\rightarrow O(n^2))$\\
 
