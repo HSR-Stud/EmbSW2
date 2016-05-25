@@ -2,7 +2,7 @@ void quickSort(int leftBound, int rightBound)
 {
   int left = leftBound;                // Index der linken Grenze
   int right = rightBound;              // Index der rechten Grenze
-  int pivot = data[(left+right) / 2];  // Gewähltes Element in der Mitte
+  int pivot = data[(left+right) / 2];  // Gewaehltes Element in der Mitte
   do
   {
     while (data[left] < pivot)

@@ -1,4 +1,4 @@
-\section{Algorithmen - x}
+\section{Algorithmen}
 
 \subsection{Beschreibungsmethoden}
 \begin{itemize}
@@ -172,7 +172,7 @@ Bei der Mustersuche (string search) geht es darum, ein ganzes Stringmuster (Patt
 Der naive Algorithmus ist sehr einfach, es wird einfach Buchstabe um Buchstabe verglichen, bis eine Diskrepanz eintritt. Anschliessend wird das Pattern um eine Position weitergeschoben und wieder
 Buchstabe um Buchstabe verglichen. Wenn die Diskrepanz schon bei einem der ersten Buchstaben auftritt, ist die Performance des Algorithmus OK. Wenn jedoch viele Buchstaben übereinstimmen bis endlich eine Diskrepanz auftritt, dann ist die Performance sehr schlecht. Im schlechtesten Fall ist der Algorithmus O(n·m), wobei n die Länge des Textes und m die Länge des Patterns ist.
 \lstinputlisting[language=C++]{code/NaiverAlgorithmus.cpp}
-Bei effizienteren Suchalgorithmen (z.B. KMP-Algorithmus oder BM-Algorithmus) wird bei einer Nichtübereinstimmung nicht nur um ein Zeichen sondern um eine möglichst hohe Anzahl Zeichen geschoben. Die Intelligenz liegt hier beim Herausfinden dieser Anzahl.\\
+Bei effizienteren Suchalgorithmen (z.B. KMP-Algorithmus oder BM-Algorithmus) wird bei einer Nichtübereinstimmung nicht nur um ein Zeichen sondern um eine möglichst hohe Anzahl Zeichen geschoben. Die Intelligenz liegt hier beim Herausfinden dieser Anzahl.
 
 
 \subsection{Sortieralgorithmen}
@@ -192,6 +192,11 @@ Bei effizienteren Suchalgorithmen (z.B. KMP-Algorithmus oder BM-Algorithmus) wir
 \end{itemize}
 
 \subsubsection{Einfache Sortierverfahren}
+\begin{itemize}
+    \item Gut verständlich
+    \item Meist stabil
+    \item Komplexität $O(n^2)$
+\end{itemize}
 \textbf{Variante 1: Direktes Aussuchen (Straight selection)}\\
 Beim direkten Aussuchen wird der noch unsortierte Teil nach seinem kleinsten Element durchsucht. Dieses wird dann mit dem ersten Element im unsortierten Teil vertauscht.\\
 Komplexität der Vergleiche: $O(n^2)$\\
@@ -200,7 +205,7 @@ Komplexität der Zuweisungen: $O(n)$\\
 \lstinputlisting[language=C++]{code/DirektesAussuchen.cpp}
 \includegraphics[width=0.5\textwidth]{images/Algorithmen/DirektesAussuchen.png}
 \end{multicols}
-\ \newpage
+\ \newline
 \textbf{Variante 2: Direktes Einfügen (Straight insertion)}\\
 Das erste Element des unsortierten Teiles wird im sortierten Teil direkt an der richtigen Stelle entsprechend seiner Grösse eingefügt. Alle grösseren bereits sortierten Elemente müssen verschoben werden.\\
 Komplexität der Vergleiche: $O(n^2)$\\
@@ -218,9 +223,13 @@ Komplexität der Zuweisungen: $O(n^2)$\\
 \lstinputlisting[language=C++]{code/Bubblesort.cpp}
 \includegraphics[width=0.5\textwidth]{images/Algorithmen/Bubblesort.png}
 \end{multicols}
-\ \newpage
 
 \subsubsection{Schnelle interne Sortierverfahren}
+\begin{itemize}
+    \item Schwerer verständlich als einfache Sortierverfahren
+    \item Instabil
+    \item Komplexität $O(n\cdot log(n))$
+\end{itemize}
 \textbf{Variante 1: Quicksort}\\
 Je grösser die Distanz beim Austauschen von Elementen ist, umso effizienter ist der Algorithmus. Dies nutzt Quicksort aus.\\\\
 Formale Beschreibung:
@@ -238,10 +247,16 @@ Element als der Pivotwert gefunden wird.
 \lstinputlisting[language=C++]{code/Quicksort.cpp}
 \includegraphics[width=0.5\textwidth]{images/Algorithmen/Quicksort.png} \ \\ \ \\
 \end{multicols}
-Bester Fall: Wenn als Pivot jedes mal der Median des Feldes getroffen wird $\rightarrow O(nlog(n))$\\
+Bester Fall: Wenn als Pivot jedes mal der Median des Feldes getroffen wird $\rightarrow O(n\cdot log(n))$\\
 Schlechtester Fall: Wenn jedes Mal das Minimum oder Maximum getrofffen wird $\rightarrow O(n^2))$\\\\
 \textbf{Median}: Der Median einer Anzahl von Werten ist die Zahl, welche an der mittleren Stelle steht, wenn man die Werte nach Größe sortiert. Bsp: {4, 1, 37, 2, 1} Median = 2\\\\
-Eine vernünftige Wahl des Pivots ist also wichtig. Ein Ansatz ist die median-of-3 Strategie, bei welcher der Median aus dem ersten, letzten und mittleren Element eines Bereiches gebildet und als Pivot verwendet wird. Bei bösartig zusammengestellten Listen (median-of-3-killers) kann dies jedoch zu Problemen führen.
+Eine vernünftige Wahl des Pivots ist also wichtig. Ein Ansatz ist die median-of-3 Strategie, bei welcher der Median aus dem ersten, letzten und mittleren Element eines Bereiches gebildet und als Pivot verwendet wird. Bei bösartig zusammengestellten Listen (median-of-3-killers) kann dies jedoch zu Problemen führen.\\
+\ \newline
+\textbf{Variante 2: Introsort}
+\begin{itemize}
+    \item Ist in jedem Fall $O(n\cdot log(n))$
+    \item Setzt bei den Schwächen von Quicksort an $\rightarrow$ startet mit Quicksort und wechselt automatisch auf Heapsort (ein weiterer Algorithmus), wenn die Rekursionstiefe einen definierten Wert überschreitet.
+\end{itemize}
 
 \subsubsection{Anzahl der Vergleiche bei Sortieralgorithmen}
 \begin{tabular}{|c|c|c|c|c|}
@@ -258,20 +273,44 @@ Quicksort & $n\cdot log_{2}(n)$ & $2\cdot n \cdot ln(n)$ & $\frac{1}{2}\cdot (n+
 \hline
 \end{tabular}
 
---- HIER ----
-
 \subsubsection{Anzahl der Zuweisungen bei Sortieralgorithmen}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-Algorithmus & $C_{min}$ & $C_{ave}$ & $C_{max}$ & $O_C(\cdot)$ \\
+Algorithmus & $M_{min}$ & $M_{ave}$ & $M_{max}$ & $O_M(\cdot)$ \\
 \hline
-Straight Selection & $\frac{n}{2}\cdot (n-1)$ & $\frac{n}{2}\cdot (n-1)$ & $\frac{n}{2}\cdot (n-1)$ & $n^2$ \\
+Straight Selection & $3\cdot (n-1)$ & $3\cdot (n-1)$ & $3\cdot (n-1)$ & $n$ \\
 \hline
-Straight Insertion & $n-1$ & $\frac{1}{4}\cdot (n^2 + 3n -4)$ & $\frac{1}{2}\cdot (n^2+n-2)$ & $n^2$ \\
+Straight Insertion & $3\cdot (n-1)$ & $\frac{1}{4}\cdot (n^2 + 11n -12)$ & $\frac{1}{2}\cdot (n^2+5n-6)$ & $n^2$ \\
 \hline
-Bubblesort & $\frac{n}{2}\cdot (n-1)$ & $\frac{n}{2}\cdot (n-1)$ & $\frac{n}{2}\cdot (n-1)$ & $n^2$ \\
+Bubblesort & $0$ & $\frac{3}{4}\cdot n\cdot (n-1)$ & $\frac{3}{2}\cdot n\cdot (n-1)$ & $n^2$ \\
 \hline
-Quicksort & $n\cdot log_{2}(n)$ & $2\cdot n \cdot ln(n)$ & $\frac{1}{2}\cdot (n+3)(n+2)-10$ & $n^2$ \\
+Quicksort & $0$ & $n\cdot ln(n)$ & $\frac{3}{4}\cdot n\cdot log_{2}(n)$ & $n\cdot log_{10}(n)$ \\
+\hline
+\end{tabular}
+
+\subsection{Systemfunktionen für Suchen und Sortieren}
+
+\subsubsection{In C}
+\begin{tabular}{|llll|}
+\hline
+\textbf{Funktion} & \textbf{Bibliothek} & \textbf{Algorithmus} & \textbf{Bemerkungen} \\
+\hline
+bsearch() & \textless stdlib.h\textgreater & Binäre Suche in Arrays & \\
+\hline
+qsort() & \textless stdlib.h\textgreater & Quicksort & instabil \\
+\hline
+\end{tabular}
+
+\subsubsection{In C++}
+\begin{tabular}{|llll|}
+\hline
+\textbf{Funktion} & \textbf{Bibliothek} & \textbf{Algorithmus} & \textbf{Bemerkungen} \\
+\hline
+binary\_search() & \textless algorithm\textgreater & Binäre Suche & \\
+\hline
+sort() & \textless algorithm\textgreater & Introsort & instabil \\
+\hline
+stable\_sort() & \textless algorithm\textgreater & Mergesort & stabil \\
 \hline
 \end{tabular}
 
