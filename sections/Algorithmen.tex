@@ -48,232 +48,218 @@
 \subsection{Komplexitätstheorie}
 \subsubsection{Hauptziele}
     \begin{itemize}
-        \item Berechngungskomplexität: Zeitkomplexität aus Anzahl der Rechenoperationen sowie Speicherplatzkomplexität
+        \item Berechngungskomplexität: Zeitkomplexität als Anzahl der Rechenoperationen sowie Speicherplatzkomplexität
         \item Spezifikation der Probleme und Methode zur Klassifikation in "'praktisch lösbare"' und "'praktisch unlösbare"' Probleme
         \item Vergleiche der Effizienz (Berechnungsstärke) verschiedener Algorithmen (deterministischer, nichtdeterministischer und zufallsgesteuerten)
     \end{itemize}
 \subsubsection{Zu betrachtende Operationen}
     \begin{itemize}
-        \item Zuweisungen
+        \item Zuweisungen (Bewegung von Datensätzen)
         \item Vergleiche
         \item Rechenoperationen
         \item Unterprogrammaufrufe
         \item Verzweigungen
     \end{itemize}
 
-
-------- HIER --------
-
 \subsubsection{Asymptotische Abschätzung}
-Die asymptotische Abschätzung ist eine Worst-Case Analyse und kann in folgende Notationen aufgeteilt werden:
+Die asymptotische Abschätzung ist eine Worst-Case Analyse und kann in folgende Notationen aufgeteilt werden:\\
 
-\subsubsection{$\mathcal{O}$-Notation (H"aufigste Absch"atzung)}
-Laufzeitabsch"atzung nach oben:
+\textbf{$\mathcal{O}$-Notation (Häufigste Abschätzung)}\\
+Laufzeitabschätzung nach oben:
 \begin{equation}
 	\mathcal{O}(g) = {f: X \rightarrow X \mid \exists c_1>0 \wedge \exists c_2>0 \wedge \exists n_0 \in X  \forall n \geq n_0 : f(n) \leq c_1\cdot g(n) + c_2}
 \end{equation}
-Finde eine Funktion g(n), deren Aufwandsfunktion $f(n) \leq c_1 \cdot g(n) + c_2$, dann ist der Aufwand O(g).
+Finde eine Funktion g(n), deren Aufwandsfunktion $f(n) \leq c_1 \cdot g(n) + c_2$, dann ist der Aufwand O(g).\\
+Beispiel: Gegeben sei die Aufwandfunktion $f(n)=3n^2 + 6n + 7$. Die Funktion f(n) ist ein Element der Menge $O(n^2)$, da z.B. $f(n) \leq 9n^2 + 7$ \ \ $\forall n \geq 0$.\\
 
-\subsubsection{$\Omega$-Notation}
-Laufzeitabsch"atzung nach unten: 
+\textbf{$\Omega$-Notation}\\
+Laufzeitabschätzung nach unten: 
 \begin{equation}
 \Omega(g) = {f: X \rightarrow X \mid \exists c>0 \wedge \exists n_0 \in X  \forall n \geq n_0 : f(n) \geq c\cdot g(n)}
 \end{equation}
-Finde eine Funktion g(n), deren Aufwandsfunktion $f(n) \geq c \cdot g(n)$, dann ist der Aufwand $\Omega(g)$.
+Finde eine Funktion g(n), sodass die Aufwandfunktion $f(n) \geq c \cdot g(n)$, dann ist der Aufwand $\Omega(g)$.\\
 
-\subsubsection{$\Theta$-Notation (Theta-Notation, f"ur de Theo: Helilandeplatz-Notation)}
+\textbf{$\Theta$-Notation (Theta-Notation}\\
 O- und $\Omega$ Notation vereint: 
 \begin{equation}
 \Theta(g)= O(g) \cap \Omega(g)
-\end{equation}
+\end{equation}\\
+
+\textbf{Bemerkungen zur asymptotischen Abschätzung}\\
+In der Praxis wird bei der asymptotischen Abschätzung fast ausschliesslich die asymptotische Abschätzung nach
+oben, d.h. O() verwendet. Die asymptotische Abschätzung ist ein gutes Mass für den schlechtesten Fall bei sehr
+grossen n. Konstante Faktoren werden nicht betrachtet, obwohl sie alles andere als unerheblich sein können.\\
+Es ist durchaus möglich, dass ein bestimmter Algorithmus ausschliesslich mit kleinen n arbeitet und damit nie in ein
+für grosse n relevantes starkes Wachstum gerät. Es ist deshalb wichtig, dass der Anwender von asymptotischer Abschätzung
+genau weiss, welche Schlüsse er daraus ziehen kann und vor allem auch welche nicht.\\
 
 \subsubsection{Wachstumsfunktionen}
+Die häufigsten und wichtigsten Wachstumsfunktionen sind:
 \begin{itemize}
-\item Konstantes Wachstum: 1\\
-			Rechenzeit des Programmes bleibt konstant, unabh"angig vom Problem. Idealfall.
-\item Logarithmisches Wachstum: $\log(n)$\\
-			Laufzeit wird mit steigendem n nur allm"ahlich langsamer, Basis ist nicht relevant.
-\item Lineares Wachstum: n\\
-			Laufzeit steigt mit n linear. 
-\item n-log-n Wachstum: $n\cdot \log(n)$\\
-			Laufzeit nicht wesentlich gr"osser als beim linearen Verhalten. Tritt auf, wenn Problem in Teilprobleme aufgeteilt wird, welche unabh"anging voneinander gel"ost werden. 
-\item Polynomiales Wachstum: $n^c$\\
-			Solche Algorithmen sind nur dann vertretbar, wenn nichts anderes "ubrig bleibt.  
-\item Exponentielles Wachstum: $b^n$\\
-			Sehr selten, da Rechenzeit mit wachsendem n f"ormlich explodiert. 
+\item \textbf{Konstantes Wachstum: 1}\\
+			Die Anweisungen eines Programms werden einmal oder höchstens mehrere Male durchlaufen, unabhängig von der Grösse des Problems. Die Laufzeit des Programms ist konstant. Dies ist der Idealfall des Laufzeitverhaltens.
+\item \textbf{Logarithmisches Wachstum: $\log(n)$}\\
+			Die Laufzeit des Algorithmus wird mit steigender Grösse n nur allmählich langsamer. Genauer: wenn n quadriert wird, wächst log n nur um einen konstanten Betrag. Beim Logarithmus ist die Basis nicht relevant, da sie als konstanter Faktor herausgezogen werden kann.
+\item \textbf{Lineares Wachstum: n}\\
+			Die Laufzeit des Algorithmus steigt mit steigender Grösse n linear an.
+\item \textbf{n-log-n Wachstum: $n\cdot \log(n)$}\\
+			Dieses Wachstum tritt häufig bei Algorithmen auf, die ein Problem lösen, indem sie es in kleinere Teilprobleme aufteilen, diese unabhängig voneinander lösen und dann die Lösungen kombinieren. Das n-log n-Wachstum ist nicht wesentlich grösser als lineares Wachstum. 
+\item \textbf{Polynomiales Wachstum: $n^c$}\\
+			Algorithmen mit polynomialem Wachstum (quadratisch, kubisch, ...) sind eigentlich nur dann vertretbar, wenn einem nichts anderes übrigbleibt. Es ist das Wachstum, das in der Praxis noch als äusserstes generell akzeptiert wird (Probleme der Komplexitätsklasse P). Typischerweise entsteht z.B. dann quadratisches Wachstum, wenn paarweise alle Kombinationen von Datenelementen verarbeitet werden. Dies geschieht häufig mit zwei ineinander verschachtelten Schleifen beispielsweise in Matrixoperationen.  
+\item \textbf{Exponentielles Wachstum: $b^n$}\\
+			Algorithmen mit exponentiellem Wachstum sind nur für sehr seltene Probleme in der Praxis verwendbar, da die Laufzeit mit steigendem n förmlich explodiert. Aktuell sind ein paar Tausend relevante Probleme der Komplexitätsklasse NP identifiziert, die auf heute vorhandenen Rechnern nur mit exponentieller Komplexität gelöst werden können, z.B. das Travelling Salesman Problem (TSP). 
 \end{itemize}
 
-\begin{center}
-{\includegraphics[width=0.5\textwidth]{images/Algorithmen/Wachstumsfunktionen.png}}
-\label{Fig: Verschiedene Wachstumsfunktionen}
-\end{center}
+\includegraphics[width=0.5\textwidth]{images/Algorithmen/Wachstumsfunktionen.png}
 
-\subsubsection{Komplexit"atsklassen}
-DTM: Deterministische Turingmaschine, f"ur jeden Zustand bei gegebenem Input ist der n"achste Zustand eindeutig definiert. Ist praktisch realisierbar.
+\subsubsection{Komplexitätsklassen}
+Probleme mit ähnlicher Komplexität werden in sogenannten Komplexitätsklassen zusammengefasst. Klassen werden als obere Schranke für den Bedarf einer bestimmten Ressource definiert, in Frage kommen dabei in der Praxis der Zeitbedarf (Zeitkomplexität) und der Speicherbedarf (Platzkomplexität). Auch hier handelt es sich um eine Worst-case-Betrachtung.\\
 
-NTM: Nicht deterministische Turingmaschine, f"ur einen Zustand bei gegebenem Input ist der n"achste Zustand \textbf{nicht} eindeutig definiert. Heute noch nicht realisierbar, dient jedoch als Algorithmusausf"uhrungsmodell.
+DTM (Deterministische Turingmaschine): Für jeden Zustand bei gegebenem Input ist der nächste Zustand eindeutig definiert. Ist praktisch realisierbar.\\
+
+NTM (Nicht deterministische Turingmaschine): Für einen Zustand bei gegebenem Input ist der nächste Zustand \textbf{nicht} eindeutig definiert. Heute noch nicht realisierbar, dient jedoch als Algorithmusausführungsmodell.\\
 
 Folgende Klassen sind definiert:
 \begin{itemize}
-\item NL:       Von NTM auf logarithmischen Platz l"osbar 
-\item P:        Von DTM in polynomialer Zeit l"osbar, $O(n^c)$
+\item NL:       Von NTM auf logarithmischen Platz lösbar 
+\item P:        Von DTM in polynomialer Zeit lösbar, $O(n^c)$
 \item NP:       Von NTM in polynomialer Zeit lösbar, $O(n^c)$
-\item PSPACE:   Von DTM auf polynomialem Platz l"osbar
-\item EXPTIME:  Von DTM in exponentieller Zeit l"osbar, $O(2^n)$
-\item EXPSPACE: Von DTM auf exponentiellem Platz l"osbar
+\item PSPACE:   Von DTM auf polynomialem Platz lösbar
+\item EXPTIME:  Von DTM in exponentieller Zeit lösbar, $O(2^n)$
+\item EXPSPACE: Von DTM auf exponentiellem Platz lösbar
 \end{itemize}
 
-Probleme der Klasse P lassen sich in vern"unftiger Zeit lösen. \\
-Viele Probleme der Klasse NP lassen sich vermutlich nicht effizient l"osen.\\
-Best"atigung oder Widerlegung dieses P-NP-Problems ist wohl das wichtigste offene Problem der Informatik.\\
+Probleme der Klasse P lassen sich in vernünftiger Zeit lösen. \\
+Viele Probleme der Klasse NP lassen sich vermutlich nicht effizient lösen.\\
+Bestätigung oder Widerlegung dieses P-NP-Problems ist wohl das wichtigste offene Problem der Informatik.\\
 Bekanntes NP-Problem ist das Travelling Salesman Problem.\\
 
 
 \subsection{Suchalgorithmen}
 \subsubsection{Listensuche}
-Finde Wert in einer Liste. 
-\begin{lstlisting}[style=C]
-int list[listLength];
-int k;	//Zu findender Wert 				
-int i; 	//Listenindex
-\end{lstlisting} 
-1. Art: Lineare Suche\\
-Wenn nicht bekannt ist, ob die Liste irgendwie sortiert ist. \\
-Komplexit"at: O(n)
-\begin{lstlisting}[style=C]
-for(i=0;i<listLength && k!=list[i];i++)
-{}
-found = i < listLength; 
-\end{lstlisting} 
+Finde Wert in einer Liste.\\
 
-2. Art: Lineare Suche mit Sentinel\\
-Beschleunigung des Codes durch Vereinfachung der Schleifenbedingung. Letztes Element wird durch gesuchtes Element ersetzt.\\
-Die Schleife wird etwas schneller durchlaufen, aber die Komplexit"at ist noch immer O(n).
-\begin{lstlisting}[style=C]
-list[listLength-1] = k; //Sentinel setzen
-for(i=0; k!= list[i]; i++)
-{}
-found = i < listLength-1; 
-\end{lstlisting} 
-
-3.Art: Bin"are Suche\\
+\textbf{Listendefinition}
+\lstinputlisting[language=C++]{code/Listendefinition.cpp}
+\ \newline
+\textbf{Vereinfachte Listendefinition}
+\lstinputlisting[language=C++]{code/VereinfachteListendefinition.cpp}
+\ \newline
+\textbf{Variante 1: Lineare Suche}\\
+Die einfachste Suchmethode ist, von vorne nach hinten Element um Element zu überprüfen bis das gesuchte Element gefunden oder das Listenende erreicht ist. Wenn nicht bekannt ist, ob die Liste irgendwie sortiert ist, ist das die einzige mögliche Suchmethode. \\
+Komplexität: O(n)
+\lstinputlisting[language=C++]{code/LineareSuche.cpp}
+\ \newline
+\textbf{Variante 2: Lineare Suche mit Sentinel}\\
+Die einzige Methode, den obigen Algorithmus zu beschleunigen, besteht in der Vereinfachung der
+Schleifenbedingung. Bei der linearen Suche mit Sentinel (Wächter) wird einfach am Ende der Liste ein Hilfselement eingefügt, das auf den Wert des gesuchten Elementes gesetzt wird. Der Algorithmus terminiert so auch ohne die Abfrage der Listenlänge, allerdings wird ein Platz in der Liste für den Sentinel geopfert.\\
+Die Schleife wird etwas schneller durchlaufen, aber die Komplexität ist noch immer O(n).
+\lstinputlisting[language=C++]{code/LineareSucheMitSentinel.cpp}
+\ \newline
+\textbf{Variante 3: Binäre Suche}\\
 Diese Suche funktioniert nur, wenn die Liste der Reihe nach sortiert ist.\\
-Man geht von der Mitte der Liste aus, ist der gegebene Wert gr"osser als die Mitte sucht man in der oberen H"alfte auf dieselbe Art weiter, ansonsten in der unteren H"alfte.\\
+Man geht von der Mitte der Liste aus, ist der gegebene Wert grösser als die Mitte sucht man in der oberen Hälfte auf dieselbe Art weiter, ansonsten in der unteren Hälfte.\\
 Liegt der Wert am Rande ist die Suche auf diese Art erfolglos.\\
-Komplexit"at: O(log(n))\\
-\begin{lstlisting}[style=C]
-left = 0; // Index des am weitesten links liegenden Kandidaten
-right = listLength-1; // Index des am weitesten rechts liegenden Kandidaten
-while (left <= right)
-{
-	pos = (left + right) / 2; // pos auf die mittlere Position setzen
-	if (list[pos] == k)
-		return pos;
-	if (list[pos] > k)
-		right = pos - 1;
-	else
-		left = pos + 1;
-}
-return -1; // nicht gefunden
-
-\end{lstlisting} 
-Siehe Beispiele im Skript 00-Algorithmen.pdf
+Komplexität: O(log(n))\\
+\lstinputlisting[language=C++]{code/BinaereSuche.cpp}
+Beispiel "'Suche 53"':\\
+\includegraphics[width=0.4\textwidth]{images/Algorithmen/BinaereSuche.png}
 
 \subsubsection{Mustersuche}
-Ziel der Mustersuche: Ein ganzes Stringmuster (pattern) finden. Wenn man nur ein einzelnes Zeichen sucht, funktioniert dies wie bei der Listensuche oben.\\
-1. Naiver Suchalgorithmus\\
-Pattern wird zeichenweise am Text vorbei geschoben. Dies geschieht so lange bis das Pattern gefunden worden ist oder das Ende des Textes erreicht worden ist. Algorithmus wird ineffizient, wenn bis zum Schluss nichts gefunden worden ist.\\
-Bei effizienteren Suchalgorithmen wird bei einer Nicht"ubereinstimmung nicht nur um ein Zeichen sondern um eine m"oglichst hohe Anzahl Zeichen geschoben. Die Intelligenz liegt hier beim Herausfinden dieser Anzahl.\\
+Bei der Mustersuche (string search) geht es darum, ein ganzes Stringmuster (Pattern) in einem vorgegebenen Text zu suchen. Wenn nur ein einzelnes Zeichen gesucht werden müsste, wäre dies identisch mit der Listensuche. Bei der Suche eines ganzen Patterns wird der Algorithmus aber bedeutend komplexer. Da die Mustersuche eine fundamentale Operation in jeder Textverarbeitung ist, besteht hier ein grosses Interesse, einen möglichst effizienten Algorithmus zu finden.\\
+
+\textbf{Variante Naiver Algorithmus}\\
+Der naive Algorithmus ist sehr einfach, es wird einfach Buchstabe um Buchstabe verglichen, bis eine Diskrepanz eintritt. Anschliessend wird das Pattern um eine Position weitergeschoben und wieder
+Buchstabe um Buchstabe verglichen. Wenn die Diskrepanz schon bei einem der ersten Buchstaben auftritt, ist die Performance des Algorithmus OK. Wenn jedoch viele Buchstaben übereinstimmen bis endlich eine Diskrepanz auftritt, dann ist die Performance sehr schlecht. Im schlechtesten Fall ist der Algorithmus O(n·m), wobei n die Länge des Textes und m die Länge des Patterns ist.
+\lstinputlisting[language=C++]{code/NaiverAlgorithmus.cpp}
+Bei effizienteren Suchalgorithmen (z.B. KMP-Algorithmus oder BM-Algorithmus) wird bei einer Nichtübereinstimmung nicht nur um ein Zeichen sondern um eine möglichst hohe Anzahl Zeichen geschoben. Die Intelligenz liegt hier beim Herausfinden dieser Anzahl.\\
 
 
+\subsection{Sortieralgorithmen}
 
-\subsubsection{Sortieralgorithmen}
-Je nach Form der vorliegenden Daten wird unterschieden zwischen: 
+\subsubsection{Interne vs. externe Sortierverfahren}
 \begin{itemize}
-\item Interne Sortierverfahren: Daten liegen im Hauptspeicher, auf die Daten besteht wahlfreier Zugriff (random access). Verfahren zum Sortieren von Feldern (Arrays).
-\item Externe Sortierverfahren: Daten sind in Files auf externem Speicher, auf die Daten kann nur sequentiell zugegriffen werden. Sortieren von Files. 
+    \item Bei den \textbf{internen Sortierverfahren} besteht auf sämtliche Daten ein wahlfreier Zugriff (random access). Die Daten liegen vollständig im Hauptspeicher vor. Die internen Sortierverfahren werden auch als Verfahren zum Sortieren von Feldern (Arrays ) bezeichnet.
+    \item Bei den \textbf{externen Sortierverfahren} kann nur sequentiell auf die Daten zugegriffen werden. Die Daten sind in Files auf langsameren externen Massenspeichern wie z.B. Magnetbändern oder Harddisks gespeichert. Die externen Sortierverfahren werden auch als Verfahren zum Sortieren von Files bezeichnet.
 \end{itemize}
 
-Forderung an interne Sortierverfahren:\\
+\subsubsection{Forderungen an interne Sortierverfahren}
 \begin{itemize}
-\item Speicher: Algorithmus muss direkt mit dem Hauptspeicher auskommen. Kein Umkopieren, nur feste Anzahl von Hilfsvariabeln. In-Place-Algorithmen arbeiten direkt auf den Eingabedaten, Out-of-Place verwenden separate Ausgabedaten.
-\item Effizienz: Um etwas "uber die Effizienz auszusagen werden vor allem die zwei f"ur das Sortieren wichtigen Operationen Comparison und Move betrachtet.
-\item Stabilit"at: Ein stabiles Sortierverfahren ist ein Sortieralgorithmus, der die Reihenfolge der Datensätze, deren Sortierschlüssel gleich sind, bewahrt. (Wenn beispielsweise eine Liste alphabetisch sortierter Personendateien nach dem Geburtsdatum neu sortiert wird, dann bleiben unter einem stabilen Sortierverfahren alle Personen mit gleichem Geburtsdatum alphabetisch sortiert.)
+    \item \textbf{Speicher:} Sämtliche Daten liegen im Hauptspeicher. Nebst den vorhandenen Daten ist nur eine feste Anzahl von (Hilfs-) Variablen erlaubt (In-place Algorithmen). 
+    \item \textbf{Effizienz:} Nur Vergleiche (Comparison) und Zuweisungen (Move) werden betrachtet.
+    (Bei den Zuweisungen werden nur die Zuweisungen der zu sortierenden Daten berücksichtigt. Zuweisungen von Indizes werden vernachlässigt, da sie in der Regel wesentlich schneller ablaufen, da sie sicher in Registern liegen. Auch die Vergleiche der Indizes werden vernachlässigt.)
+    \item \textbf{Stabilität:} Ein Sortierverfahren ist dann stabil, wenn es die relative Reihenfolge gleicher Schlüssel beibehält. (Beispielsweise soll eine alphabetisch geordnete Liste von Wettkämpfern, die nach den Wettkampfnoten sortiert wird, die alphabetische Reihenfolge der Wettkämpfer bei gleichen Noten beibehalten.)
 \end{itemize}
 
-Einfache Sortierverfahren:\\
-1. Direktes Aussuchen (Straight Election)\\
-Der unsortierte Teil wird nach dem kleinsten Element durchsucht, dieses wird dann mit dem ersten Element des unsortierten Teils vertauscht.\\
-\begin{lstlisting}[style=C]
-int i; // Laufvariable
-int j; // Laufvariable
-int k; // Index des kleinsten Elementes im nicht sortierten Teil
-for (i = 0; i < listLength-1; ++i)
-{
-	k = i;
-	for (j = i+1; j < listLength; ++j)
-	{
-		if (data[j] < data[k])
-			k = j;
-	}
-	swap(i, k);
-}
-\end{lstlisting} 
-Komplexit"at der Vergleiche: $O(n^2)$\\
-Komplexit"at der Zuweisungen: $O(n)$\\
+\subsubsection{Einfache Sortierverfahren}
+\textbf{Variante 1: Direktes Aussuchen (Straight selection)}\\
+Beim direkten Aussuchen wird der noch unsortierte Teil nach seinem kleinsten Element durchsucht. Dieses wird dann mit dem ersten Element im unsortierten Teil vertauscht.\\
+Komplexität der Vergleiche: $O(n^2)$\\
+Komplexität der Zuweisungen: $O(n)$\\
+\begin{multicols}{2}
+\lstinputlisting[language=C++]{code/DirektesAussuchen.cpp}
+\includegraphics[width=0.5\textwidth]{images/Algorithmen/DirektesAussuchen.png}
+\end{multicols}
+\ \newpage
+\textbf{Variante 2: Direktes Einfügen (Straight insertion)}\\
+Das erste Element des unsortierten Teiles wird im sortierten Teil direkt an der richtigen Stelle entsprechend seiner Grösse eingefügt. Alle grösseren bereits sortierten Elemente müssen verschoben werden.\\
+Komplexität der Vergleiche: $O(n^2)$\\
+Komplexität der Zuweisungen: $O(n^2)$\\
+\begin{multicols}{2}
+\lstinputlisting[language=C++]{code/DirektesEinfuegen.cpp}
+\includegraphics[width=0.5\textwidth]{images/Algorithmen/DirektesEinfuegen.png}
+\end{multicols}
+\ \newline
+\textbf{Variante 3: Bubblesort}\\
+Jeweils benachbarte Elemente werden vertauscht, wenn sie nicht wie gewünscht geordnet sind. Bei jedem Durchlauf steigt dabei das relativ grösste Element wie eine Blase (bubble) im Wasser auf.\\
+Komplexität der Vergleiche: $O(n^2)$\\
+Komplexität der Zuweisungen: $O(n^2)$\\
+\begin{multicols}{2}
+\lstinputlisting[language=C++]{code/Bubblesort.cpp}
+\includegraphics[width=0.5\textwidth]{images/Algorithmen/Bubblesort.png}
+\end{multicols}
+\ \newpage
 
-2. Direktes Einf"ugen (Straight Insertion)\\
-Das erste unsortierte Element wird im sortierten Teil an die richtige Stelle gesetzt, alle gr"osseren sortierten Elemente m"ussen verschoben werden.
-Ist effizient, wenn die Daten schon etwas sortiert sind. 
-\begin{lstlisting}[style=C]
-int i;
-int j;
-int buf; // Buffer
-for (i = 1; i < listLength; ++i)
-{
-	buf = data[i];
-	j = i;
-	while (j > 0 && buf < data[j-1])
-	{
-		data [j] = data [j-1];
-		j = j-1;
-	}
-	data[j] = buf;
-}
-\end{lstlisting} 
-Komplexit"at der Vergleiche: $O(n^2)$\\
-Komplexit"at der Zuweisungen: $O(n^2)$\\
+\subsubsection{Schnelle interne Sortierverfahren}
+\textbf{Variante 1: Quicksort}\\
+Schnell, weil das Austauschen von unsortierten Elementen über möglichst grosse Distanzen erfolgt.\\\\
+Formale Beschreibung:
+\begin{enumerate}
+\item Wähle einen beliebigen Pivotwert aus dem Array aus.
+\item Laufe von linker Arraygrenze so lange nach innen, bis ein \textbf{nicht kleineres}
+Element als der Pivotwert gefunden wird. 
+\item Laufe von rechter Arraygrenze so lange nach innen, bis ein \textbf{nicht grösseres} Element gefunden wird.
+\item Vertausche die beiden Elemente.
+\item Wiederhole Schritt 2-4 so lange, bis sich die beiden Indizes getroffen haben.
+\item Das nun entstandene Teilfeld links besteht nur aus Elementen, die kleiner oder gleich dem Pivotwert sind, das Teilfeld rechts besteht nur aus Elementen, die grösser oder gleich dem Pivotwert sind. 
+\item Sortiere diese beiden Teilfelder wiederum (rekursiv), bis nur noch Teilfelder mit einem einzigen Element übrig bleiben.
+\end{enumerate}
 
-3. Bubblesort\\
-Benachbarte Elemente werden vertauscht, wenn sie nicht wie gew"unscht geordnet sind. Das relativ gr"osste Element steigt wie eine Blase im Wasser auf. 
-\begin{lstlisting}[style=C]
-int i;
-int j;
-for (i = listLength-1; i > 0; --i)
-{
-	for (j = 1; j <= i; ++j)
-	{
-		if (data[j-1] > data[j])
-			swap(j-1, j);
-	}
-}
-\end{lstlisting} 
-Komplexit"at der Vergleiche: $O(n^2)$\\
-Komplexit"at der Zuweisungen: $O(n^2)$\\
+--- HIER ---
 
-Schnelle interne Sortierverfahren:\\
+Quicksort ist dann am besten, wenn beim Pivot immer der Median gefunden würde. Im schlimmsten Fall ist die Komplexität bei Quicksort $O(n^2)$. Das ist dann der Fall, wenn als Pivot immer ein Extremwert (Minimum oder Maximum) genommen würde. Dieser Fall ist für praktische Fälle nahezu unmöglich, d.h. der Worst-Case ist sehr unwahrscheinlich.\\
+\begin{multicols}{2}
+\lstinputlisting[language=C++]{code/DirektesEinfuegen.cpp}
+\includegraphics[width=0.5\textwidth]{images/Algorithmen/DirektesEinfuegen.png}
+\end{multicols}
+\ \newline
+
+
+
+
+
 1. Quicksort\\
-Je gr"osser die Distanz beim Austauschen von Elementen ist, umso effizienter ist der Algorithmus. Dies nutzt Quicksort aus.\\
+Je grösser die Distanz beim Austauschen von Elementen ist, umso effizienter ist der Algorithmus. Dies nutzt Quicksort aus.\\
 \textbf{Median}: Der Median einer Anzahl von Werten ist die Zahl, welche an der mittleren Stelle steht, wenn man die Werte nach Größe sortiert. Bsp: {4, 1, 37, 2, 1} Median = 2\\
 Formale Beschreibung: \\
 \begin{enumerate}
-\item W"ahle ein beliebiges Pivot-Element aus (Median oder mittleres Element)
-\item Laufe von linker Arraygrenze so lange nach innen, bis ein Element gefunden wird, welches \textbf{gr"osser gleich} das Pivot ist. 
+\item Wähle ein beliebiges Pivot-Element aus (Median oder mittleres Element)
+\item Laufe von linker Arraygrenze so lange nach innen, bis ein Element gefunden wird, welches \textbf{grösser gleich} das Pivot ist. 
 \item Laufe von rechter Arraygrenze so lange nach innen, bis ein Element gefunden wird, welches \textbf{kleiner gleich} das Pivot ist. 
 \item Vertausche die beiden Elemente
 \item Wiederhole Schritt 2-4 so lange, bis sich die beiden Indizes getroffen haben
-\item Das linke Teilfeld enth"alt nur noch Werte, die $\leq$ als das Pivot sind. Das rechte Teilfeld enth"alt nur noch Werte, die $\geq$ als das Pivot sind. 
-\item Sortiere diese Felder wiederum rekursiv, bis nur noch Teilfelder mit einem einzigen Element "ubrig sind.
+\item Das linke Teilfeld enthält nur noch Werte, die $\leq$ als das Pivot sind. Das rechte Teilfeld enthält nur noch Werte, die $\geq$ als das Pivot sind. 
+\item Sortiere diese Felder wiederum rekursiv, bis nur noch Teilfelder mit einem einzigen Element übrig sind.
 \end{enumerate}
 
 \begin{lstlisting}[style=C]
@@ -281,7 +267,7 @@ void quickSort(int leftBound, int rightBound)
 {
 	int left = leftBound; // Index der linken Grenze
 	int right = rightBound; // Index der rechten Grenze
-	int pivot = data[(left+right) / 2]; // Gew"ahltes Element in der Mitte
+	int pivot = data[(left+right) / 2]; // Gewähltes Element in der Mitte
 	do
 	{
 		while (data[left] < pivot)
@@ -311,7 +297,7 @@ Beispiel von Quicksort: \\
 \label{Fig: Quicksort}
 \end{center}
 
-Wahl des Pivots ist wichtig. Ein Ansatz ist die median-of-3 Strategie, bei welcher der Median aus dem ersten, letzten und mittleren Element eines Bereiches gebildet und als Pivot verwendet. Bei b"osartig zusammengestellten Listen (median-of-3-killers) kann dies jedoch zu Problemen f"uhren.\\
+Wahl des Pivots ist wichtig. Ein Ansatz ist die median-of-3 Strategie, bei welcher der Median aus dem ersten, letzten und mittleren Element eines Bereiches gebildet und als Pivot verwendet. Bei bösartig zusammengestellten Listen (median-of-3-killers) kann dies jedoch zu Problemen führen.\\
 
 \subsubsection{Effizienz verschiedener interner Suchalgorithmen}
 \begin{tabular}{|c|c|c|c|c|}
@@ -328,5 +314,5 @@ Quicksort & $n\cdot ld(n)$ & $2\cdot n \cdot ln(n)$ & $\frac{1}{2}\cdot (n+3)(n+
 \hline
 \end{tabular}
 
-\subsubsection{Systemfunktionen f"ur Suchen und Sortieren}
+\subsubsection{Systemfunktionen für Suchen und Sortieren}
 Siehe Skript 00-Algorithmen.pdf S.25
