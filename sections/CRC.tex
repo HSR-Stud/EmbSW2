@@ -1,4 +1,4 @@
-\section{CRC - x}
+\section{CRC}
 
 
 \subsection{Block Codes}
@@ -7,7 +7,7 @@
 	\item	Blockcodes erzeugen aus k Eingangssymbolen (z.B. k Datenbits) n Ausgangssymbole (z.B. n Codebits). Ein solcher Code wird (n,k)-Code genannt.	
 	\item Jeder Block aus k Symbolen wird unabhängig von anderen Blöcken codiert und erzielt für diesen Block ganz spezifische Erkennungs- und Korrekturfähigkeiten.
 	\item Ein Blockcode ist linear, wenn die Modulo-2 Addition zweier beliebiger gültiger Codeworte wieder ein neues gültiges Codewort ergibt.
-	\item Alle 2k möglichen Blocks der Länge k werden eindeutig auf 2k Codeworte der Länge n abgebildet. Die Auswahl der 2k Codeworte aus der Menge von 2n zur Verfügung stehenden Codeworten ist massgebend für die Fähigkeit, Fehler zu detektieren oder gar zu korrigieren.
+	\item Alle $2^k$ möglichen Blocks der Länge k werden eindeutig auf $2^k$ Codeworte der Länge n abgebildet. Die Auswahl der $2^k$ Codeworte aus der Menge von $2^n$ zur Verfügung stehenden Codeworten ist massgebend für die Fähigkeit, Fehler zu detektieren oder gar zu korrigieren.
 \end{itemize}
 
 
@@ -32,7 +32,7 @@ Bei zyklischen Codes werden zur mathematischen Behandlung Code-Sequenzen addiert
 \end{tabular} \\ \\
 
 \begin{itemize}
-	\item Polynom ist von max. Grad (n-1) mit Koeffizienten $c_i$\\
+	\item Polynom ist von max. Grad (r-1) mit Koeffizienten $c_i$\\
 		z.B. $c = (1, 0, 0, 1, 1, 0) \Rightarrow c(x) = 1 + x^3 + x^4$
 	\item Die Addition und Subtraktion modulo 2, d.h. ohne Carry, entspricht je einer XOR-Verknüpfung
 	\item $M(x) = Q(x) \cdot G(x) + R(x)$
@@ -45,7 +45,7 @@ Bei zyklischen Codes werden zur mathematischen Behandlung Code-Sequenzen addiert
 	\item Das Generator-Polynom $G(x)$ muss zwischen Sender und Empfänger abgemacht werden
 	\item Der Sender berechnet den Rest R(x), der Quotient Q(x) interessiert nicht
 	\item Der Sender sendet die Meldung $M(x)$, und hängt den Rest $R(x)$ an, d.h. der gesamte gesendete Block entspricht\\
-		$x^{n-1} \cdot M(x) + R(x)$ \qquad	n: Anzahl Bits in $G(x)$
+		$x^{n-1} \cdot M(x) + R(x)$ \qquad	r: Anzahl Bits in $G(x)$
 	\item Der Empfänger teilt die Meldung inkl. der Prüfsequenz durch $G(x)$, d.h.
 		$[x^{n-1} \cdot M(x) + R(x)] \div G(x)$
 	\item Die Meldung ist fehlerfrei angekommen, falls die empfangene Prüfsequenz gleich Null ist
@@ -53,7 +53,7 @@ Bei zyklischen Codes werden zur mathematischen Behandlung Code-Sequenzen addiert
 
 \subsubsection{Berechnung der Prüfsequenz R(x)}
 \begin{itemize}
-	\item $x^{n-1} \cdot M(x)$ bilden, d.h. der Meldung $M(x)$ müssen $(n-1)$ Nullen angehängt werden $:= T(x)$ 
+	\item $x^{n-1} \cdot M(x)$ bilden, d.h. der Meldung $M(x)$ müssen $(r-1)$ Nullen angehängt werden $:= T(x)$ 
 	\item Diese Bitfolge $T(x)$ durch das Generator-Polynom $G(x)$ teilen
 	\item Die angehängten Nullen in T(x) durch R(x) ersetzen und senden.
 	\item der Empfangsseite genau die Folge T(x) durch G(x) teilen, der Rest muss Null werden	
@@ -93,7 +93,7 @@ Bei zyklischen Codes werden zur mathematischen Behandlung Code-Sequenzen addiert
 
 \textbf{Breite des Polynoms}
 \begin{itemize}
-	\item Die CRC-Polynome haben üblicherweise eine Breite von $(n \cdot 8 + 1)$, z.B. 9		
+	\item Die CRC-Polynome haben üblicherweise eine Breite von $(x \cdot 8 + 1)$, z.B. 9		
 \end{itemize}
 
 \textbf{Die XOR-Operation}
@@ -102,34 +102,10 @@ Bei zyklischen Codes werden zur mathematischen Behandlung Code-Sequenzen addiert
 	das oberste Bit des Remainders eine 1 ist, d.h. das oberste Bit des Resultats ist
 	immer 0.
 \end{itemize}
-\newpage
+
 \subsection{Implementation}
 \subsubsection{Bit by Bit}
-\begin{lstlisting}[style=C]
-typedef uint8_t Crc;
-enum {crcWidth = 8 * sizeof(Crc),
-	crcTopBit = 1 << (crcWidth - 1)};
-	
-Crc crcSlow(const uint8_t message[], unsigned int nBytes)
-{
-	Crc remainder = 0;
-	Crc crcPoly = 0x07;
-	unsigned int byte;
-	unsigned int bit;
-	for (byte = 0; byte < nBytes; ++byte)
-	{
-		remainder ^= message[byte];
-		for (bit = 8; bit > 0; --bit)
-		{
-			if (remainder & crcTopBit)
-				remainder = (remainder << 1) ^ crcPoly;
-			else
-				remainder = (remainder << 1);
-		}
-	}
-	return remainder;
-}
-\end{lstlisting}
+\lstinputlisting[language=C++]{code/bitbybit.cpp}
 
 \textbf{Nachteile}
 \begin{itemize}
@@ -149,21 +125,4 @@ Crc crcSlow(const uint8_t message[], unsigned int nBytes)
 	\item Dadurch erzielt man eine Geschwindigkeitssteigerung um den Faktor 8	
 \end{itemize}
 
-\begin{lstlisting}[style=C]
-typedef uint8_t Crc;
-enum {crcWidth = 8 * sizeof(Crc),
-	crcTopBit = 1 << (crcWidth - 1)};
-	
-Crc crcFast(const uint8_t message[], unsigned int nBytes)
-{
-	Crc remainder = 0;
-	uint8_t data;
-	unsigned int byte;
-	for (byte = 0; byte < nBytes; ++byte)
-	{
-		data = message[byte] ^ remainder;
-		remainder = crcTable[data];
-	}
-	return remainder;
-}
-\end{lstlisting}
+\lstinputlisting[language=C++]{code/crcfast.cpp}

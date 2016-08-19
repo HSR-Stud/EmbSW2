@@ -88,7 +88,7 @@ O- und $\Omega$ Notation vereint:
 \textbf{Bemerkungen zur asymptotischen Abschätzung}\\
 In der Praxis wird bei der asymptotischen Abschätzung fast ausschliesslich die asymptotische Abschätzung nach
 oben, d.h. O() verwendet. Die asymptotische Abschätzung ist ein gutes Mass für den schlechtesten Fall bei sehr
-grossen n. Konstante Faktoren werden nicht betrachtet, obwohl sie alles andere als unerheblich sein können.\\
+grossen n. \textbf{Konstante Faktoren werden nicht betrachtet}, obwohl sie alles andere als unerheblich sein können.\\
 Es ist durchaus möglich, dass ein bestimmter Algorithmus ausschliesslich mit kleinen n arbeitet und damit nie in ein
 für grosse n relevantes starkes Wachstum gerät. Es ist deshalb wichtig, dass der Anwender von asymptotischer Abschätzung
 genau weiss, welche Schlüsse er daraus ziehen kann und vor allem auch welche nicht.\\
@@ -99,7 +99,7 @@ Die häufigsten und wichtigsten Wachstumsfunktionen sind:
 \item \textbf{Konstantes Wachstum: 1}\\
 			Die Anweisungen eines Programms werden einmal oder höchstens mehrere Male durchlaufen, unabhängig von der Grösse des Problems. Die Laufzeit des Programms ist konstant. Dies ist der Idealfall des Laufzeitverhaltens.
 \item \textbf{Logarithmisches Wachstum: $\log(n)$}\\
-			Die Laufzeit des Algorithmus wird mit steigender Grösse n nur allmählich langsamer. Genauer: wenn n quadriert wird, wächst log n nur um einen konstanten Betrag. Beim Logarithmus ist die Basis nicht relevant, da sie als konstanter Faktor herausgezogen werden kann.
+			Die Laufzeit des Algorithmus wird mit steigender Grösse n nur allmählich langsamer. Genauer: wenn n quadriert wird, wächst log n nur um einen konstanten Betrag. Beim Logarithmus ist die \textbf{Basis nicht relevant}, da sie als konstanter Faktor herausgezogen werden kann.
 \item \textbf{Lineares Wachstum: n}\\
 			Die Laufzeit des Algorithmus steigt mit steigender Grösse n linear an.
 \item \textbf{n-log-n Wachstum: $n\cdot \log(n)$}\\
@@ -109,31 +109,63 @@ Die häufigsten und wichtigsten Wachstumsfunktionen sind:
 \item \textbf{Exponentielles Wachstum: $b^n$}\\
 			Algorithmen mit exponentiellem Wachstum sind nur für sehr seltene Probleme in der Praxis verwendbar, da die Laufzeit mit steigendem n förmlich explodiert. Aktuell sind ein paar Tausend relevante Probleme der Komplexitätsklasse NP identifiziert, die auf heute vorhandenen Rechnern nur mit exponentieller Komplexität gelöst werden können, z.B. das Travelling Salesman Problem (TSP). 
 \end{itemize}
+\begin{minipage}{10cm}
+\includegraphics[width=10cm]{images/Algorithmen/Wachstumsfunktionen.png}
+\end{minipage}\qquad
+\begin{minipage}{10cm}
+\textbf{Log-Regeln}\\\\
+$log_{10} (a \cdot b) = log_{10}(a)+log_{10}(b)$\\
+$log_{10} (\frac{a}{b}) = log_{10}(a) - log_{10}(b)$\\ \\
+$log_{10}(a^b) = b \cdot log_{10}(a)$\\
+$log_{10}\sqrt[n]{(u)} = \frac{1}{n}\cdot log_{10}(u)$\\ \\
+$log_{b}(r) = \frac{log_{a}(r)}{log_{a}(b)}$
 
-\includegraphics[width=0.5\textwidth]{images/Algorithmen/Wachstumsfunktionen.png}
+\end{minipage}
 
 \subsubsection{Komplexitätsklassen}
 Probleme mit ähnlicher Komplexität werden in sogenannten Komplexitätsklassen zusammengefasst. Klassen werden als obere Schranke für den Bedarf einer bestimmten Ressource definiert, in Frage kommen dabei in der Praxis der Zeitbedarf (Zeitkomplexität) und der Speicherbedarf (Platzkomplexität). Auch hier handelt es sich um eine Worst-case-Betrachtung.\\
 
 DTM (Deterministische Turingmaschine): Für jeden Zustand bei gegebenem Input ist der nächste Zustand eindeutig definiert. Ist praktisch realisierbar.\\
 
-NTM (Nicht deterministische Turingmaschine): Für einen Zustand bei gegebenem Input ist der nächste Zustand \textbf{nicht} eindeutig definiert. Heute noch nicht realisierbar, dient jedoch als Algorithmusausführungsmodell.\\
+\textcolor{red}{N}TM (\textcolor{red}{N}icht deterministische Turingmaschine): Für einen Zustand bei gegebenem Input ist der nächste Zustand \textbf{nicht} eindeutig definiert. Heute noch nicht realisierbar, dient jedoch als Algorithmusausführungsmodell.\\
 
-Folgende Klassen sind definiert:
-\begin{itemize}
-\item NL:       Von NTM auf logarithmischen Platz lösbar 
-\item P:        Von DTM in polynomialer Zeit lösbar, $O(n^c)$
-\item NP:       Von NTM in polynomialer Zeit lösbar, $O(n^c)$
-\item PSPACE:   Von DTM auf polynomialem Platz lösbar
-\item EXPTIME:  Von DTM in exponentieller Zeit lösbar, $O(2^n)$
-\item EXPSPACE: Von DTM auf exponentiellem Platz lösbar
-\end{itemize}
+\begin{minipage}{12cm}
+Folgende Klassen sind definiert:\\
+\newcommand{\tabitem}{~~\llap{\textbullet}~~}
+\begin{tabular}{ll}
+\tabitem \textcolor{red}{N}L:                       & Von \textcolor{red}{N}TM auf logarithmischen Platz lösbar \\ 
+\tabitem \textcolor{blue}{P}:                       & Von DTM in \textcolor{blue}{p}olynomialer Zeit lösbar, $O(n^c)$\\
+\tabitem \textcolor{red}{N}\textcolor{blue}{P}:     & Von \textcolor{red}{N}TM in \textcolor{blue}{p}olynomialer Zeit lösbar, $O(n^c)$\\
+\tabitem \textcolor{blue}{P}SPACE:                  & Von DTM auf \textcolor{blue}{p}olynomialem Platz lösbar\\
+\tabitem \textcolor{green}{EXP}TIME:                & Von DTM in \textcolor{green}{exp}onentieller Zeit lösbar, $O(2^n)$\\
+\tabitem \textcolor{green}{EXP}SPACE:               & Von DTM auf \textcolor{green}{exp}onentiellem Platz lösbar
+\end{tabular}
+% \begin{itemize}
+% \item \textcolor{red}{N}L: \qquad       Von \textcolor{red}{N}TM auf logarithmischen Platz lösbar 
+% \item \textcolor{blue}{P}:                        Von DTM in \textcolor{blue}{p}olynomialer Zeit lösbar, $O(n^c)$
+% \item \textcolor{red}{N}\textcolor{blue}{P}:       Von NTM in \textcolor{blue}{p}olynomialer Zeit lösbar, $O(n^c)$
+% \item \textcolor{blue}{P}SPACE:   Von DTM auf \textcolor{blue}{p}olynomialem Platz lösbar
+% \item \textcolor{green}{EXP}TIME:  Von DTM in \textcolor{green}{exp}onentieller Zeit lösbar, $O(2^n)$
+% \item \textcolor{green}{EXP}SPACE: Von DTM auf \textcolor{green}{exp}onentiellem Platz lösbar
+% \end{itemize}
+\end{minipage}~
+% \hspace{15cm}
+\begin{minipage}{6cm}
+\includegraphics[width=5cm]{images/Algorithmen/KomplexKlassen.png}
+\end{minipage}\\ 
 
 Probleme der Klasse P lassen sich in vernünftiger Zeit lösen. \\
 Viele Probleme der Klasse NP lassen sich vermutlich nicht effizient lösen.\\
 Bestätigung oder Widerlegung dieses P-NP-Problems ist wohl das wichtigste offene Problem der Informatik.\\
-Bekanntes NP-Problem ist das Travelling Salesman Problem.\\
-
+Bekanntes NP-Problem ist das Travelling Salesman Problem (TSP).\\
+\\ 
+TSP Lösungsstrategien:
+\begin{compactitem}
+    \item \textbf{Brute force} alle Varianten durchprobieren
+    \item \textbf{Branch and bound} Menge aller Varianten in Teilmengen aufteilen (Branch), Mit geeigneten Schranken (Bound) suboptimale Lösungen erkennen und aussortieren 
+    \item \textbf{Dynamic Programming} Held-Karp Algorithmus
+    \item \textbf{Suboptimale Varianten} nicht die optimale Lösung wird angestrengt
+\end{compactitem}
 
 \subsection{Suchalgorithmen}
 \subsubsection{Listensuche}
@@ -257,8 +289,7 @@ Eine vernünftige Wahl des Pivots ist also wichtig. Ein Ansatz ist die median-of
     \item Ist in jedem Fall $O(n\cdot log(n))$
     \item Setzt bei den Schwächen von Quicksort an $\rightarrow$ startet mit Quicksort und wechselt automatisch auf Heapsort (ein weiterer Algorithmus), wenn die Rekursionstiefe einen definierten Wert überschreitet.
 \end{itemize}
-
-\subsubsection{Anzahl der Vergleiche bei Sortieralgorithmen}
+\subsubsection{Anzahl der Vergleiche (Compare) bei Sortieralgorithmen}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
 Algorithmus & $C_{min}$ & $C_{ave}$ & $C_{max}$ & $O_C(\cdot)$ \\
@@ -273,7 +304,7 @@ Quicksort & $n\cdot log_{2}(n)$ & $2\cdot n \cdot ln(n)$ & $\frac{1}{2}\cdot (n+
 \hline
 \end{tabular}
 
-\subsubsection{Anzahl der Zuweisungen bei Sortieralgorithmen}
+\subsubsection{Anzahl der Zuweisungen (Move) bei Sortieralgorithmen}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
 Algorithmus & $M_{min}$ & $M_{ave}$ & $M_{max}$ & $O_M(\cdot)$ \\

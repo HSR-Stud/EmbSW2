@@ -1,4 +1,4 @@
-\section{Simulation - x}
+\section{Simulation}
 
 \subsection{Motivation für Simulationen}
 \begin{itemize}
@@ -124,25 +124,26 @@ $R(\sigma) = \sigma \sqrt{-2 \ln(U)} \qquad U \neq 0$\\\\
 Gemäss Formel braucht es für die Berechnung der Rayleigh-Verteilung zwei normalverteilte Zahlen.
 \lstinputlisting[language=C++]{code/Rayleighmethode.cpp}
 
---- HIER ---
 \subsubsection{Weibull Verteilung}
-Die Dichtefunktion der Weibull-Verteilung kann mit 2 Parametern $\alpha$, $\beta$ wie folgt beschrieben werden:
-$W_{\alpha,\beta}(x) = \alpha \cdot \beta \cdot x^\beta \cdot e^{-\alpha \cdot x^\beta}$
-\multicols{2}
+Die Dichtefunktion der Weibull-Verteilung kann mit 2 Parametern $\alpha$, $\beta$ wie folgt beschrieben werden:\\
+$W_{\alpha,\beta}(x) = \alpha \cdot \beta \cdot x^\beta \cdot e^{-\alpha \cdot x^\beta}$ \\
+\begin{wrapfigure}[3]{r}{0.51\textwidth}
+    \vspace{-12pt}
+    \centering
+    \includegraphics[width=0.50\textwidth]{images/Simulation/Weibullverteilung.png}
+\end{wrapfigure}
+\ 
+\vspace{-5pt}
 \begin{itemize}
 	\item $\beta = 1$:  Exponentialverteilung
 	\item $\beta = 3.4$:  Normalverteilung
 	\item $\beta > 1$:  Alterndes System
-\end{itemize}
-\includegraphics[width=0.5\textwidth]{images/Simulation/Weibullverteilung.png}
-\end{multicols}
-
+\end{itemize} 
+\ \\ \ \\ \ \\ \ \\ \ \\ \ \\
 Eine Weibull-verteilte Zahl $W$ kann aus einer in $[0, 1.0[$ gleichverteilten Zahl $U$ mit folgender Formel berechnet werden:
-
 \begin{equation}
 	W(\alpha,\beta) = \beta \cdot (-\ln(1.0-U))^\frac{1}{\alpha}  \qquad U \neq 1.0
 \end{equation}
-
 \paragraph{Anwendung der Weibull-Verteilung}
 \begin{itemize}
 	\item Untersuchung von Lebensdauern in der Qualitätssicherung

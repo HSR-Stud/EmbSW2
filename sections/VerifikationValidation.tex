@@ -1,109 +1,145 @@
-\section{Verifikation und Validation - x}
-\subsection{Softwareentwicklung}
-Projektphasen:
+\section{Verifikation und Validation}
+\subsection{Unterschied zwischen Verifikation und Validation}
+Sicherstellen, dass das Softwaresystem die Benutzeranforderungen erfüllt.
+\begin{multicols}{2}
+    \subsubsection{Verifikation}
+    \begin{itemize}
+        \item Machen wir das Produkt richtig?
+        \item Die Software soll den Anforderungen entsprechen.
+    \end{itemize}
+    
+    \subsubsection{Validation}
+    \begin{itemize}
+        \item Machen wir das richtige Produkt?
+        \item Die Software soll machen, was der Benutzer wirklich benötigt.
+    \end{itemize}
+\end{multicols}
+
+\begin{multicols}{2}
+    \subsection{Qualitätskosten}
+    \includegraphics[width=0.48\textwidth]{images/VerifikationValidation/qualitaetskosten}
+    
+    \subsection{Lebenszyklus}
+    \includegraphics[width=0.42\textwidth]{images/VerifikationValidation/lebenszyklus}
+\end{multicols}
+
+\subsection{Tests}
+\begin{wrapfigure}[3]{r}{0.5\textwidth}
+    \vspace{-12pt}
+    \centering
+    \includegraphics[width=0.48\textwidth]{images/VerifikationValidation/vmodell}
+\end{wrapfigure}
+\ 
+\vspace{-10pt}
 \begin{itemize}
-\item Analyse
-	\begin{itemize}
-		\item T"atigkeit: Analyse des Problems, Erarbeiten der Spezifikation
-		\item Erzeugnis: Spezifikation der funktionalen und nicht funktionalen Anforderungen 
-	\end{itemize}
-\item Design 
+	\item Unittest
 		\begin{itemize}
-			\item T"atigkeit: Architektur der Software festlegen (Grobdesign), Design der Units (Detaildesign)
-			\item Erzeugnis Grobdesign: Beschreibung der Architektur, Festlegung der Schnittstellen der Units
-			\item Erzeugnis Detaildesign: Beschreibung der Algorithmen (Aktivit"atsdiagramme), Beschreibung der Units (Klassendiagramme) 
+			\item Teil der Implementationsphase
+			\item Whitebox-Test
+			\item Durch Programmierer
 		\end{itemize}
-\item Implementation 
-	\begin{itemize}
-		\item T"atigkeit: Codierung des Designs, Durchf"uhren der Unittests
-		\item Erzeugnis: Dokumentierter/Kommentierter Code, Testvorschriften und Protokolle der Unittests, Testprogramme  
-	\end{itemize}
-\item Test (dreistufig)
-	\begin{itemize}
-		\item Unittest
-			\begin{itemize}
-				\item Teil der Implementationsphase
-				\item Whitebox-Test
-				\item Durch Programmierer
-			\end{itemize}
-		\item Integrationstest
-				\begin{itemize}
-						\item Zusammenf"ugen mehrerer Units
-						\item Blackbox-Test
-						\item Schwerpunkt: Unit-Schnittstellen
-						\item Nicht durch Programmierer
-				\end{itemize}
-		\item Systemtest
-				\begin{itemize}
-						\item Testen des Gesamtsystems in Originalumgebung
-						\item Blackbox-Test
-						\item Schwerpunkt: Externes Verhalten des Systems
-						\item Nicht durch Programmierer
-				\end{itemize}
-		\item Erzeugnis: Spezifikation der funktionalen und nicht funktionalen Anforderungen 
-	\end{itemize}
-\item Abnahmetest
-	\begin{itemize}
-		\item Ziel der oberen Tests: Fehler finden
-		\item Ziel der Abnahmetest: Erf"ullung von festgelegten Kriterien f"ur geforderte Funktionen nachweisen 
-		\item Durch Auftraggeber
-	\end{itemize}
+	\item Integrationstest
+		\begin{itemize}
+			\item Zusammenfügen mehrerer Units
+			\item Blackbox-Test
+			\item Schwerpunkt: Unit-Schnittstellen
+			\item Nicht durch Programmierer
+		\end{itemize}
+	\item Systemtest
+		\begin{itemize}
+			\item Testen des Gesamtsystems in Originalumgebung
+			\item Blackbox-Test
+			\item Schwerpunkt: Externes Verhalten des Systems
+			\item Nicht durch Programmierer
+		\end{itemize}
+    \item Abnahmetest
+	    \begin{itemize}
+		    \item Ziel der oberen Tests: Fehler finden
+		    \item Ziel der Abnahmetest: Erfüllung von festgelegten Kriterien für geforderte Funktionen nachweisen 
+		    \item wird durch Auftraggeber durchgeführt
+	    \end{itemize}
 \end{itemize}
 
+ \subsubsection{Prüfverfahren}
+ \begin{itemize}
+     \item Review (viel zu selten eingesetzt)
+     \item Statische Tests (ohne Ausführung des Programms)
+     \item Dynamische Tests (durch Ausführung des Programms)
+     \item Simulation
+     \item Einsatz von Prototypen (kritische Teile werden vorab untersucht)
+ \end{itemize}
+ 
+ \subsubsection{Testabschlusskriterien: wann ist das System good enough}
+ \begin{itemize}
+    \item Wenn alle Testfälle der Testvorschrift erfolgreich durchgeführt worden
+sind
+        \begin{itemize}
+            \item Häufiges Kriterium in der Praxis
+            \item Dieses Kriterium ist sinnvoll, wenn eine systematische Auswahl von Testfällen
+eine ausreichende \\ Überdeckung ermöglicht
+        \end{itemize}
+    \item Wenn die Prüfkosten pro entdecktem Fehler eine im voraus festgelegte
+Grenze überschreiten
+        \begin{itemize}
+            \item Sinnvolles Kriterium für das Beenden des Systemtests
+            \item Setzt die Erfassung der Prüfkosten und der Anzahl gefundener Fehler voraus
+        \end{itemize}
+ \end{itemize}
+ 
+ \subsubsection{Infinite faults}
+ \begin{itemize}
+     \item Ein System hat unendlich viele Fehler (infinite faults) wenn trotz Testen
+und Debugging die Fehlerzahl um einen unakzeptabel hohen Wert oszilliert
+    \item Kosten für zusätzlich eliminierten Fehler = $\infty$
+    \item Massnahme: vernünftigerweise meist nur Projektabbruch
+ \end{itemize}
 
-\subsection{Verifikation und Validation}
-\textbf{Verifikation:}\\
-Machen wir das Produkt richtig? Software soll den Anforderungen entsprechen.\\
-\textbf{Validation:}\\
-Machen wir das richtige Produkt? Die Software soll machen, was der Benutzer wirklich ben"otigt.\\
-V\&V muss in jeder Phase angewendet werden.\\
-\textbf{Ziele:}\\
-Defekte entdecken und heraus finden, ob System brauchbar ist.\\
-\textbf{Unterschied V\&V und Debugging:}\\
-V\&V: Fehler finden\\ 
-Debugging: Fehler lokalisieren und korrigieren\\
-Fehlerterminologie:
+\subsection{Testen von Embedded Systems}
 \begin{itemize}
-\item Person macht Fehler: \textbf{mistake}
-\item Software hat Defekt: \textbf{defect,fault}
-\item Wir Defekt gefunden: \textbf{finding}
-\item Ausf"uhren von defekter Software f"uhrt zum: \textbf{error}
-\item Fehler kann zum Ausfall f"uhren: \textbf{failure}
-\item Fehlerursache finden und flicken: \textbf{debugging}
+    \item \textbf{Annahme:} Das Embedded System ist vernünftig strukturiert in hardware-abhängige und hardware-unabhängige Teile
+    \item \textbf{Hardware-unabhängige Teile:} Die Unittests dieser Teile können auf der Entwicklungsplattform (meist PC) wie übliche PC-Applikationen getestet werden.
+    \item \textbf{Hardware-abhängige Teile:} Wenn Units auf externe Hardwaresignale reagieren oder externe Hardwaresignale generieren müssen, so müssen diese durch geeignete Hardware generiert, bzw. konsumiert werden. In diesen Fällen bietet sich externe Testhardware für Driver und Stubs an
 \end{itemize}
-Pr"ufverfahren:
+
+\subsubsection{Reviews}
 \begin{itemize}
-\item Review
-\item Statische Tests (Ohne Ausf"uhrung des Programms)
-\item Dynamische Tests (Durch Ausf"uhrung des Programms)
-\item Simulation
-\item Prototypen (Kritische Teile vorab untersuchen)
+    \item Reviews sind die effizienteste Testmethode
+    \item Reviews sind öffentliche, verbale Begutachtungen eines erstellten Arbeitspakets.
+    \item Reviews sind eine zwischenmenschliche Angelegenheit. Der Erfolg hängt von der persönlichen Dynamik zwischen Autor und Gutachtern ab.
 \end{itemize}
 
-\textbf{Anweisung"uberdeckung (instruction coverage):}\\
-Jeder Knoten (=Anweisung) muss mind. einmal besucht werden. \\
-\textbf{Zweig"uberdeckung (branch coverage):}\\
-Jeder Zweig (=Verzweigung) muss mind. einmal besucht werden. \\
-\textbf{Pfad"uberdeckung (path coverage):}\\
-Alle Pfade, d.h. alle Zweigkombinationen m"ussen besucht werden. \\
-
-\subsection{Testdurchf"uhrung}
-Siehe Folien\\
-Infinite Faults:\\
-Wenn trotz Testen und Debugging die Fehlerzahl um einen unakzeptabel hohen Wert oszilliert.\\
-Kosten f"ur zus"atzlich eliminierten Fehler: $\infty$\\
-Massnahme: Projektabbruch
-
-\subsection{Testen von EmbSys}
-EmbSys in hardware-unabh"angige und hardware-abh"angige Teile strukturieren:\\
-HW-unabh"angig: Unittests auf Entwicklungsplattform (PC)
-HW-abh"angig: Externe Testhardware f"ur Driver und Stubs
-
-\subsection{Reviewtechnik}
-"Offentliche, verbale Begutachtungen eines erstellten Arbeitspakets. Zwischenmenschliche Angelegenheit, Erfolg h"angt von der Zusammenarbeit ab.
-Warum ist Review gut? 
+\paragraph{Begründung für Reviews}
 \begin{itemize}
-\item Fehlerursachen finden nicht nur Symptome
-\item Mit Reviews werden am meisten Fehler gefunden
-\item Alle lernen was
+    \item Fehler finden
+        \begin{itemize}
+            \item Fehlerursachen finden, nicht nur Symptome
+            \item Mit Reviews werden am meisten Fehler gefunden
+            \item Kaum reproduzierbare Fehler wie z.B. Synchronisationsfehler bei Multithreading können am besten mit einem Review entdeckt werden
+        \end{itemize}
+    \item Wissenstransfer
+        \begin{itemize}
+            \item Alle Beteiligten (Autor und Reviewer) lernen etwas
+        \end{itemize}
+    \item Wirtschaftlichkeit
+        \begin{itemize}
+            \item Reviews sind sehr wirtschaftlich
+        \end{itemize}
+\end{itemize}
+
+\paragraph{Rollen der Beteiligten}
+\begin{itemize}
+    \item Moderator
+        \begin{itemize}
+            \item organisiert und leitet
+        \end{itemize}
+    \item Gutachter (2-3)
+        \begin{itemize}
+            \item prüfen, nennen Befunde
+        \end{itemize}
+    \item Autor
+        \begin{itemize}
+            \item verhält sich passiv, hört zu
+            \item erläutert allenfalls (möglichst vermeiden)
+            \item protokolliert die Befunde (dadurch erspart man sich einen expliziten Schreiber)
+        \end{itemize}
 \end{itemize}

@@ -44,8 +44,19 @@
 \usepackage[english, ngerman]{babel} % Silbentrennung
 \usepackage[automark]{scrpage2} % Header und Footer
 \usepackage{tabularx}
+\usepackage{paralist} % Compactitem
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes,shadows,arrows}
 
 % Für Abbildungen mit mehreren kleinen Bilder
 % Doku: http://www.ctan.org/tex-archive/macros/latex/contrib/caption/
 \usepackage{caption}
 \usepackage{subcaption}
+
+
+% Large TODO note
+\newcommand{\todo}[1]{%
+    \marginpar{\textcolor{red}{ToDo}}%
+    \colorbox{red}{\parbox{\linewidth}{\sffamily\textcolor{white}{#1}}}%
+    \PackageWarning{ToDo:}{#1!}%
+}

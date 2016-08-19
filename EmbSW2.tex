@@ -6,9 +6,11 @@
 \input{header/listings}
 
 \setDefaultArrayStretch{1.8}
+\usepackage{wrapfig}
+
 
 \title{EmbSW2}
-\author{L. Leuenberger, M. Ehrler}
+\author{L. Leuenberger, M. Ehrler, D. Büsser, M. Lehmann, R. Mattle}
 \begin{document}
 \begin{titlepage}
    \thispagestyle{empty}
@@ -18,16 +20,19 @@
 \lstset{style=Csharp}
 
 
-
 \tableofcontents \newpage
 
-\input{sections/Listen}
-\input{sections/Algorithmen}
-\input{sections/Simulation}
-\input{sections/VerifikationValidation}
-\input{sections/CRC}
-\input{sections/POSIX}
-\input{sections/LinuxDevTools}
-\input{sections/AdvancedCPP}
+\include{sections/Listen}
+\include{sections/Algorithmen}
+\include{sections/Simulation}
+\include{sections/VerifikationValidation}
+\include{sections/CRC}
+\include{sections/POSIX}
+\include{sections/LinuxDevTools}
+\include{sections/AdvancedCPP}
+\newpage \ 
+\newpage \ 
+\newpage \ 
+\newpage \ 
 
 \end{document}
