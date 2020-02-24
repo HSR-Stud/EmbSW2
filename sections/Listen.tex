@@ -1,8 +1,8 @@
 \section{Listen}
 \subsection{Speicherung mehrerer Elemente desselben Typs}
 \begin{itemize}
-  \item Array: wenn die Anzahl Elemente statisch ist \\ $\rightarrow$  \lstinline{double statArray[20];} 
-  \item Dynamisch allozierter Array: wenn erst zur Laufzeit die Grösse festgelegt wird, dann aber fix bleibt \\ $\rightarrow$ 
+  \item Array: wenn die Anzahl Elemente statisch ist \\ $\rightarrow$  \lstinline{double statArray[20];}
+  \item Dynamisch allozierter Array: wenn erst zur Laufzeit die Grösse festgelegt wird, dann aber fix bleibt \\ $\rightarrow$
   \lstinline{double* dynArray = new double[varSize];}
   \item Liste: wenn die Anzahl Elemente erst zur Laufzeit bekannt ist und laufend ändert
 \end{itemize}
@@ -11,12 +11,12 @@
 \begin{itemize}
   \item Eine Liste ist eine sequentielle Anordnung von Listenelementen.
   \item Die Listenelemente, auch Knoten (Node) genannt, werden miteinander mittels Pointer verbunden.
-  \item Listenanfang: Muss immer gegeben sein, da von diesem ausgegangen wird. 
-  \item Listenende: Muss immer gekennzeichnet werden. Wird durch Nullpointer definiert
+  \item Listenanfang: Muss immer gegeben sein, da von diesem ausgegangen wird.
+  \item Listenende: Muss immer gekennzeichnet werden. Wird durch Nullpointer definiert.
   \item Besitzt die Grundoperationen: Element einfügen (insert), ELement löschen (delete), Element suchen (search)
 \end{itemize}
 
-\subsection{Einfach verkettete Liste - Single Linked List}
+\subsection{Einfach verkettete Liste - Singly-linked list}
 \begin{itemize}
   \item Eine einfach verkettete Liste verbindet die Listenelemente nur einfach, d.h. es gibt eine Pointerverbindung nur in eine Richtung.
   \item Rückwärts kann nicht navigiert werden, es geht nur von vorne nach hinten.
@@ -30,6 +30,7 @@
 \end{flushleft}
 \lstinputlisting[language=C++]{code/Node_EinfachVerketteteListe.cpp}
 
+\begin{multicols}{2}
 \subsubsection{Bezeichnung des Listenanfangs}
 \begin{flushleft}
   {\includegraphics[width=0.1\textwidth]{images/Listen/SLL_Anfang.jpg}}
@@ -38,14 +39,16 @@
 \lstinputlisting[language=C++]{code/Listenanfang_EinfachVerketteteListe.cpp}
 
 \subsubsection{Bezeichnung des Listenendes}
-\begin{itemize}
-  \item Das Listenende wird mit einem Nullpointer gekennzeichnet.
-\end{itemize}
 \begin{flushleft}
   {\includegraphics[width=0.15\textwidth]{images/Listen/SLL_Ende.jpg}}
   \label{Fig: Single Linked List}
 \end{flushleft}
+\begin{itemize}
+  \item Das Listenende wird mit einem Nullpointer gekennzeichnet.
+\end{itemize}
+\end{multicols}
 
+\begin{multicols}{2}
 \subsubsection{Listenelement einfügen}
 \begin{flushleft}
 {\includegraphics[width=0.5\textwidth]{images/Listen/SLL_Insert.png}}
@@ -59,12 +62,13 @@
 \label{Fig: Element bei SLL l"oschen}
 \end{flushleft}
 \lstinputlisting[language=C++]{code/ListenelementLoeschen_EinfachVerketteteListe.cpp}
+\end{multicols}
 
 \subsubsection{Listenelement suchen}
 \lstinputlisting[language=C++]{code/ListenelementSuchen_EinfachVerketteteListe.cpp}
 
 
-\subsection{Doppelt verkettete Liste - Double Linked List}
+\subsection{Doppelt verkettete Liste - Doubly-linked list}
 \begin{itemize}
   \item Eine doppelt verkettete Liste verbindet die Listenelemente in beiden Richtungen.
   \item Dadurch kann einfach in der Liste navigiert werden, speziell rückwärts beim Löschen oder Einfügen.
@@ -79,6 +83,7 @@
 \end{flushleft}
 \lstinputlisting[language=C++]{code/Node_DoppeltVerketteteListe.cpp}
 
+\begin{multicols}{2}
 \subsubsection{Bezeichnung des Listenanfangs}
 \begin{flushleft}
   {\includegraphics[width=0.1\textwidth]{images/Listen/SLL_Anfang.jpg}}
@@ -87,20 +92,25 @@
 \lstinputlisting[language=C++]{code/Listenanfang_EinfachVerketteteListe.cpp}
 
 \subsubsection{Bezeichnung des Listenendes}
-\begin{itemize}
-  \item Das Listenende wird mit einem Nullpointer gekennzeichnet.
-\end{itemize}
 \begin{flushleft}
   {\includegraphics[width=0.15\textwidth]{images/Listen/SLL_Ende.jpg}}
   \label{Fig: Single Linked List}
 \end{flushleft}
+\begin{itemize}
+  \item Das Listenende wird mit einem Nullpointer gekennzeichnet.
+\end{itemize}
+\end{multicols}
 
+\begin{multicols}{2}
 \subsubsection{Listenelement einfügen}
 \begin{flushleft}
-{\includegraphics[width=0.5\textwidth]{images/Listen/DLL_Insert.png}}
+{\includegraphics[width=0.45\textwidth]{images/Listen/DLL_Insert.png}}
 \label{Fig: Element bei DLL einf"ugen}
 \end{flushleft}
 \lstinputlisting[language=C++]{code/ListenelementEinfuegen_DoppeltVerketteteListe.cpp}
+
+\vfill\null
+\columnbreak
 
 \subsubsection{Listenelement löschen}
 \begin{flushleft}
@@ -108,6 +118,7 @@
 \label{Fig: Element bei DLL l"oschen}
 \end{flushleft}
 \lstinputlisting[language=C++]{code/ListenelementLoeschen_DoppeltVerketteteListe.cpp}
+\end{multicols}
 
 \subsubsection{Listenelement suchen}
 \lstinputlisting[language=C++]{code/ListenelementSuchen_DoppeltVerketteteListe.cpp}
