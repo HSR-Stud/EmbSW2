@@ -1,4 +1,4 @@
-int k; 	// Index des kleinsten Elementes 
+int k; 	// Index des kleinsten Elementes
         // im nicht sortierten Teil
 
 for (int i = 0; i < listLength-1; ++i)
@@ -7,7 +7,7 @@ for (int i = 0; i < listLength-1; ++i)
   for (int j = i+1; j < listLength; ++j)
   {
     if (data[j] < data[k])
-    k = j;
+      k = j;
   }
   swap(i, k);
 }
