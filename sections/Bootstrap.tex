@@ -1,0 +1,76 @@
+%!TEX root = ../EmbSW2.tex
+\section{Bootloader}
+\subsection{Motivation}
+\begin{itemize}
+  \item Das Programm eines Embedded Systems (die Firmware) liegt üblicherweise im nicht-flüchtigen Speicher (Flash EPROM) und muss nur selten geändert werden.
+  \item Wie kann die Firmware bei  Bedarf geändert werden?
+  \item Wie kann beim Start das gewünschte Programm ausgewählt werden?
+  \item Eine Lösung dafür ist der Bootloader.
+\end{itemize}
+
+\subsection{Programmdownload während der Entwicklung}
+\begin{itemize}
+  \item Während der Entwicklung ist das Embedded System häufig über eine JTAG-Verbindung mit der IDE verbunden (für Debugging und Download)
+  \item JTAG-Schnittstellen erfordern häufig (teure) Adapter, die für die Entwicklung akzeptabel, im Betrieb aber zu teuer sind.
+  \item Für den Programmdownload im Betrieb steht häufig nur eine serielle Schnittstelle zur Verfügung
+  \item Bei Embedded Systems mit Webinterface kann selbstverständlich dieses als Kommunikationsverbindung verwendet werden
+\end{itemize}
+
+\subsection{Der Startvorgang (Booting)}
+\begin{itemize}
+  \item Das Starten eines Systems wird auch mit Booting bezeichnet.
+  \item Das Programm, welches beim Starten als erstes ausgeführt wird, heisst Bootloader oder Bootstrap loader.
+  \item Der Bootloader ist für die ersten Initialisierungen verantwortlich und für das Starten des eigentlichen Programms (oft das Betriebssystem)
+  \item Der Name Bootstrap (die Schleife (engl. strap) am Stiefel (engl. boot)) soll die Hilfe symbolisieren, um das eigentliche Programm hochzuziehen
+\end{itemize}
+
+\subsection{Mehrstufige Bootloader (multistage bootloader)}
+\begin{itemize}
+  \item Der Bootloader muss immer auf einem bootfähigen nicht-flüchtigen Medium gespeichert sein.
+  \item Häufig wird der Bootloader in mehreren Stufen aufgebaut, z.B.
+  \begin{itemize}
+    \item erste Stufe initialisiert die Hardware und lädt ein bestimmtes Filesystem
+    \item die nächste Stufe ist als File in diesem Filesystem gespeichert und startet bspw. das Betriebssystem
+  \end{itemize}
+  \item Vorteile:
+  \begin{itemize}
+    \item die erste Stufe ist nur hardwarespezifisch, jedoch völlig unabhängig von Filesystem und Betriebssystem
+    \item dadurch können diese Teile beliebig ausgetauscht und geändert werden
+    \item wenn die erste Stufe ''nie'' ändert, kann auch vermieden werden, dass sich das System durch eine fehlerbehaftete neue Version selbst abschiesst, d.h. dass dann das System nicht mehr ansprechbar wird.
+  \end{itemize}
+\end{itemize}
+
+\subsection{Typische Memory Map}
+\begin{multicols}{2}
+\begin{itemize}
+  \item Der Bootloader liegt im nicht-flüchtigen Bereich und wird nie geändert
+  \item Das Programm ist meist im Flash EPROM und kann geändert werden.\\ Oder: das Programm wird von einer SD-Card ins RAM geladen
+  \item Der Datenblock ist immer im RAM
+  \item Weitere Speicherbereiche können für die Peripherie vorgesehen werden (Memory mapped I/O) oder bleiben ungenutzt
+\end{itemize}
+\vfill\null
+\columnbreak
+\begin{center}
+\includegraphics[width=0.3\linewidth]{images/Bootstrap/memoryMap}
+\end{center}
+\end{multicols}
+
+\subsection{Typischer Bootvorgang}
+\begin{enumerate}
+  \item Beim Aufstarten wird immer zuerst das Bootloader-Programm gestartet
+  \item In diesem Programm wird z.B. geprüft, ob über eine Kommunikationsverbindung ein neues Programm in den Programmbereich geschrieben werden soll
+  \item Wenn ein neues Programm geschrieben werden soll, dann wird dieses mit Hilfe eines definierten Protokolls übertragen und geschrieben
+  \item Wenn das Programm fertig übertragen wurde oder das bestehende ausgeführt werden soll, wird mit der Ausführung an dieser Stelle fortgefahren
+\end{enumerate}
+
+\subsection{Sicherung des Programmdownloads}
+\begin{itemize}
+  \item Um die sichere Übertragung zu gewährleisten, wird diese meist mittels CRC (Cyclic Redundany Check) gesichert
+  \item Zur Erinnerung: CRC ist Kanalcodierung, nicht jedoch ein kryptographisches Verfahren
+  \item Die folgenden Anforderungen werden fallweise ebenfalls verlangt:
+  \begin{itemize}
+    \item Integrität: verhindern, dass das Programm verändert wurde
+    \item Authentizität: garantieren, dass das Programm wirklich vom angegebenen Sender stammt
+    \item Verschlüsselung: das Programm wird verschlüsselt übertragen, damit nur berechtigte Personen den Inhalt lesen können
+  \end{itemize}
+\end{itemize}
