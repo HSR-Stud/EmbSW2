@@ -1,4 +1,309 @@
+%!TEX root = ../EmbSW2.tex
 \section{Advanced C++}
+
+\subsection{Embedded Systems}
+Embedded systems using C++ are diverse:
+\begin{itemize}
+	\item Real-time? Maybe.
+	\item Safety-critcal? Maybe.
+	\item Challenging memory limitations? Maybe.
+	\item Challenging CPU limitations? Maybe.
+	\item No heap? Maybe.
+	\item No OS? Maybe.
+	\item Multiple thread or tasks? Maybe.
+	\item ''Old'' or ''weak'' compilers, etc.? Maybe.
+	\item No hard drive? Often.
+	\item Difficult to field-upgrade? Typically.
+\end{itemize}
+
+\subsubsection{Developing for Embedded Systems}
+\begin{itemize}
+	\item In general, little is ''special'' about developing for embedded systems:
+	\begin{itemize}
+		\item Software must respect the constraints of the problem and platform.
+		\item C++ language features must be applied judiciously.
+	\end{itemize}
+	\item These are true for non-embedded applications, too.
+	\begin{itemize}
+		\item Good embedded software development is just good software development.
+	\end{itemize}
+\end{itemize}
+
+\subsubsection{Implementing C++}
+\begin{itemize}
+	\item Why do you care?
+	\begin{itemize}
+		\item You're just curious: how do they do that?
+		\item You're trying to figure out what's going on while debugging.
+		\item You're concerned: do they do that efficiently enough?
+		\begin{itemize}
+			\item Our focus.
+			\item Baseline: C size/speed
+		\end{itemize}
+	\end{itemize}
+	\item Have faith:
+	\begin{itemize}
+		\item C++ was designed to be competitive in performance with C.
+		\item Generally speaking, you don't pay for what you don't use.
+	\end{itemize}
+\end{itemize}
+
+\subsection{Performance (Zeit und Codegrösse)}
+\subsubsection{C++ vs. C}
+\begin{itemize}
+	\item No-Cost C++ features
+		\begin{itemize}
+			\item All the C stuff: structs, pointers, free functions, etc.
+			\item Classes
+			\item Namespaces
+			\item Static functions and data
+			\item Nonvirtual member functions
+			\item Function and operator overloading
+			\item Default parameters: Note that they are always passed. Poor design can thus be costly:
+				\begin{lstlisting}
+void doThat(const std::string& name = "Unnamed"); // Bad
+const std::string defaultName = "Unnamed";
+void doThat(const std::string& name = defaultName); // Better
+				\end{lstlisting}
+				Overloading can be a cheaper alternative. (Brauch aber mehr Code.)
+			\item  Constructors and destructors: They contain code for mandatory initialization and finalization. However, they may yield chains of calls up the hierarchy.
+			\item Single inheritance.
+		\end{itemize}
+	\item Low-Cost C++ features\\ You may pay for these features, even if you don't use them:
+		\begin{itemize}
+			\item Exceptions: a small speed and/or size penalty (code)\\
+			When evaluating the cost of exceptions, be sure to do a fair comparison. Error handling costs you something, no matter how it is implemented.\\
+			E.g., Saks reports object code increases of 15-40\% for error handling based on return values.
+		\end{itemize}
+	\item C++ features that can surprise inexperienced C++ programmers\\
+	These \textbf{can} cost you if you're not careful:
+		\begin{itemize}
+			\item Temporary objects, e.g., returned from a+b:
+			\begin{itemize}
+				\item Many techniques exist to reduce the number and/or cost of such temporaries.
+			\end{itemize}
+			\item Templates
+			\begin{itemize}
+				\item Gefahr von Code Bloat
+			\end{itemize}
+		\end{itemize}
+	\item Common Questions
+	\begin{itemize}
+		\item Why are simple ''hello world'' programs in C++ so big compared to C?
+		\begin{itemize}
+			\item iostream vs. stdio (bigger)
+			\item ''hello world'' is an atypical program:
+			\begin{itemize}
+				\item For small programs, C++ programmers can still use stdio
+				\item This improved a lot in the meantime (compilers and linkers are getting better)
+			\end{itemize}
+			\item Why do C developers moving to C++ often find their code is big and slow?
+			\begin{itemize}
+				\item C++ isn't C, and C programmers aren't C++ programmers
+				\item C++ from good C++ developers as good as C from good C developers
+			\end{itemize}
+		\end{itemize}
+	\end{itemize}
+	\item Efficiency beyond C: C++ can be more efficient than C
+	\begin{itemize}
+		\item C++ feature implementation often better than C approximations:
+		\begin{itemize}
+			\item E.g., virtual functions
+		\end{itemize}
+		\item Abstraction + encapsulation $\rightarrow$ flexibility to improve implementations:
+		\begin{itemize}
+			\item std::strings often outperform char*-based strings:
+			\begin{itemize}
+				\item May use reference counting
+				\item May employ ''the small string optimization''
+			\end{itemize}
+		\end{itemize}
+		\item STL-proven techniques have revolutionized library design:
+		\begin{itemize}
+			\item Shift work from runtime to compile-time:
+			\begin{itemize}
+				\item Template metaprogramming (TMP), e.g., ''traits''
+				\item Inlined operator(s)
+			\end{itemize}
+			\item Sample success story: C++'s sort() is faster than C's qsort()
+		\end{itemize}
+	\end{itemize}
+	\item Vorteil von C++
+    	\begin{itemize}
+	        \item Abstraktion
+	        \item Entkapselung
+	        \item Inline Operationen
+	        \item Shift work from runtime to compile-time
+    	\end{itemize}
+\end{itemize}
+
+\subsubsection{Variable size}
+\textbf{Hidden cost}\\
+Using variables \textbf{larger} than the processor is comfortable with means extra loads/stores, extra computation (software routines versus hardware), of far slower instructions. This often ends up as calls, which does not add to size, but does significantly affect performance.\\
+Using variables \textbf{smaller} than optimal may mean extra instructions to sign or unsign extend (on load and after computations). These may also prevent the use of optimal load and store instructions.\\
+\\
+\textbf{Cortex-M3}\\
+Long long is generally optimized due to special instructions (for example, ADDC and UMULL). Smaller globals and statics are okay, but locals are best as ints and unsigned ints (or longs). If globals/static are used a lot, copy to int locals for duration, and copy back. It is not unusual to have a 40\% increase in function size due to use of short locals.\\
+Beispiel:\vspace{-\baselineskip}
+\begin{multicols}{2}
+\lstinputlisting[language=C++]{code/variableSizeInt.cpp}
+\vfill\null
+\columnbreak
+\lstinputlisting[language=C++]{code/variableSizeShort.cpp}
+\end{multicols}
+
+\subsubsection{Variablentypen}
+\begin{itemize}
+	\item int und unsigned int sind immer die effizientesten Datentypen
+	\item Sie entsprechen der Registergrösse des jeweils verwendeten Prozessors
+	\item Die Verwendung von short oder char spart deshalb kaum Speicher, ist jedoch üblicherweise deutlich langsamer als int
+\end{itemize}
+
+\subsubsection{Gewährleistung von Portabilität}
+\begin{itemize}
+	\item Ab C99 werden im Headerfile <inttypes.>, bzw. <stdint.h> verschiedene Typen mit genauer Breite definiert. Es ist deshalb sinnvoll, entweder genau diese Typen zu verwenden oder allenfalls diese mittels typedef zu definieren.
+	\item Die Konventionen lauten wie folgt:\\
+	\lstinline{intN_t}, wobei N = 8, 16, 32 für signed int-Typen\\
+	Beispiele: \lstinline{in8_t, int16_t int32_t}\\
+	\\
+	\lstinline{uintN_t}, wobei N = 8, 16, 32 für unsigned int-Typen\\
+	Beispiele: \lstinline{uint8_t, uint16_t, uint32_t}\\
+	Ausschnitt aus $<$stdint.h$>$ von gcc:
+\begin{lstlisting}[language=C++]
+typedef signed char int8_t;
+typedef short int16_t;
+typedef long int32_t;
+typedef long long int64_t;
+
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned long uint32_t;
+typedef unsigned long long uint64_t;
+\end{lstlisting}
+\item Weitere Typdefinitionen beinhalten effiziente Typen mit einer Mindestgrösse und schnelle Typen mit einer Mindestgrösse
+\begin{lstlisting}
+int_leastN_t
+uint_leastN_t
+
+inf_fastN_t
+uint_fastN_t
+\end{lstlisting}
+\end{itemize}
+
+\subsubsection{i++ oder ++i ?}
+\begin{multicols}{2}
+\lstinline{i++;} entspricht:
+\begin{lstlisting}
+{
+  tmp = i;
+  i += 1;
+  "return" tmp;
+}
+\end{lstlisting}
+\vfill\null
+\lstinline{++i;} entspricht:
+\begin{lstlisting}
+{
+  i +=1 ;
+  "return" i;
+}
+\end{lstlisting}
+\end{multicols}
+Die Postfix-Operatoren bedingen im Prinzip ein tmp-Objekt. Gute Compiler werden das optimieren, schlechte jedoch nicht.
+
+\subsubsection{Taking address of local variables}
+\textbf{Hidden Cost}\\
+Local variables are only allocated to the stack if they have to be. Keeping them in registers (and sharing a register between different ones not used at the same time) gives big gains in performance (that is, not having to do loads and stores). Taking the address of a local woll force it to the stack regardless of optimization level.\\
+\\
+\textbf{Cortex-M3}\\
+All Cortex-M3 compilers support all-in-register locals when optimizations are turned on (size or speed).
+
+\subsection{Inlining}
+\begin{itemize}
+	\item Vorteile
+		\begin{itemize}
+			\item Overhead von Funktionsaufrufen ist weg
+			\item Schneller
+			\item Branches verschwinden $\rightarrow$ pipeline- und cachefreundlich
+			\item Für sehr kleine Funktionen kann sogar die Codegrösse kleiner werden
+		\end{itemize}
+	\item Nachteile
+		\begin{itemize}
+			\item Führt üblicherweise zu mehr Code
+			\item Schwerer zu debuggen (Optimierung muss ausgeschaltet sein)
+		\end{itemize}
+	\item Beschränkungen
+		\begin{itemize}
+			\item Compiler kann inlining ignorieren
+			\item Funktionen, auf die ein Pointer zeigt, werden nicht inlined
+			\item Virtuelle Funktionen werden kaum inlined (inline: compile-time, virtual: run-time)
+			\item ''Komplizierte'' Funktionen ebenfalls nicht (der jeweilige Compiler entscheidet, was ''kompliziert'' ist)
+			\item Rekursive Funktionen werden nie inlined
+			\item (Ältere) Linker können kaum Inlining,d.h. die inline-Funktionen sollten bereits dem Compiler vollständig bekannt sein. Dies kann erreicht werden, indem die Inline-Funktionen direkt im Header definiert werden.
+		\end{itemize}
+\end{itemize}
+
+\subsubsection{Normal Inlining}
+\begin{itemize}
+	\item Inline functions are defined in headers
+	\item .cpp files know the function definition by including the header
+	\begin{itemize}
+		\item compiler can inline this function
+	\end{itemize}
+\end{itemize}
+
+\subsubsection{Automatic Inlining}
+\begin{multicols}{2}
+Compilers may inline functions not declared inline, but this is uncommon.
+\begin{itemize}
+	\item To inline a function, compilers need its definition, but non-inline functions are not defined in header files.
+	\item They'd cause duplicate symbol errors during linking
+	\item Non-inline functions are thus declared in headers, not defined there.
+	\item The rules for function templates are a bit different...
+\end{itemize}
+\vfill\null
+\columnbreak
+\includegraphics[width=\linewidth]{images/AdvancedCPP/automaticInline}
+\end{multicols}
+\begin{multicols}{2}
+Compilers rarely inline functions only declared in headers.
+\begin{itemize}
+	\item They need to know the function body to inline it.
+	\item When they do know it, inlining is easy (and common).
+\end{itemize}
+\vfill\null
+\columnbreak
+\includegraphics[width=\linewidth]{images/AdvancedCPP/automaticInline2}
+\end{multicols}
+
+\subsubsection{Link-Time Inlining}
+\begin{itemize}
+	\item Linkers are not allowed to perform inlining:
+	\begin{itemize}
+		\item Many already do when \textbf{Whole Program Optimization (WPO)}, aka \textbf{Link-Time Optimization (LTO)}, is on, e.g. GNU, Microsoft, Intel, Sun
+	\end{itemize}
+	\item Merely eliminating calls/returns during linking isn't enough.
+	\begin{itemize}
+		\item Full benefit requires post-inlining flow analysis.
+		\begin{itemize}
+			\item Hence the need for WPO, aka LTO above.
+		\end{itemize}
+	\end{itemize}
+	\item Still, manual inline declarations remain a necessary evil.
+\end{itemize}
+\textbf{Bottom Line:}\\
+\begin{itemize}
+	\item Inlining is almost always a good bet for small, frequently called functions.
+	\begin{itemize}
+		\item Overall runtime speed is likely to increase.
+	\end{itemize}
+	\item Imprudent inlining can lead to code bloat.
+	\item Minimize inlining if binary upgradeability is important.
+\end{itemize}
+
+%TODO: SW8 hier weitermachen
+
+
 
 \subsection{Static vs. Dynamic Binding}
 \begin{itemize}
@@ -80,7 +385,7 @@ void f()
 {
   // kritischer Abschnitt
   {
-    Semaphore myS; 
+    Semaphore myS;
   } // hier wird Semaphore freigegeben, Destruktor wird aufgerufen
 }
 \end{lstlisting}
@@ -137,95 +442,9 @@ void HiddenCounter::reset() {pImpl->reset();}
 \end{lstlisting}
 
 
-\subsection{Performance}
-
-\subsubsection{Variablen}
-\begin{itemize}
-	\item Wenn möglich immer Standardtypen verwenden (int, unsigned int), da
-		diese den Registerbreiten entsprechen
-	\item Typen wie short und char sparen kaum Platz und sind meistens
-		langsamer, da sie speziell behandelt werden müssen.
-	\item Werden definierte Bitlängen benötigt (Portabilität), sollten die Typen aus
-		$<inttypes.h>$ bzw. $<stdint.h>$ (ab C99): 
-		intN\_t,  uintN\_t z.b. uint8\_t \\
-		Sie können auch selbst getypedeft werden.
-\end{itemize}
-
-Lokale Variablen sollte man so verwenden, dass sie in Registern gebraucht werden können.
-Z.b. verhindern Pointer auf lokale Variablen, dass diese in ein Register gelegt werden.
-
-\subsubsection{Lächerliches}
-++i soll angeblich schneller sein als i++, da aber i++ viel hübscher aussieht sollte man es eher verwenden ;)\\
-PostFix Operatoren benötigen einen Tmp Variable. Gute Compiler werden diese weg optimieren.
-
-\subsection{C++ vs. C}
-\begin{itemize}
-	\item No-Cost C++ features
-		\begin{itemize}
-			\item Klassen
-			\item Namespaces
-			\item Statische Funktionen und Daten
-			\item Nicht virtuelle Funktionen
-			\item Überladung
-			\item Default Parameter, es ist aber zu beachten, dass diese immer übergeben werden, bei grossen Objekten ist dies ineffizient:
-				\begin{lstlisting}
-void doThat(const std\dotsstring& name = "Unnamed"); // Bad
-const std\dotsstring defaultName = "Unnamed";
-void doThat(const std\dotsstring& name = defaultName); // Better
-				\end{lstlisting}
-			\item  Konstruktoren / Destruktoren, sofern korrekt verwendet
-			\item Einfache Vererbung
-		\end{itemize}
-	\item Low-Cost C++ features
-		\begin{itemize}
-			\item Exceptions, jedoch kann anderes Error-Handling, z.B. via return values auch teuer sein.
-		\end{itemize}
-	\item High-Cost C++ features, wenn falsch verwendet
-		\begin{itemize}
-			\item Temporäre Objekte, Objektkopieen (z.B. gibt a+b ein temporäres Objekt zurück), kann einfach vermieden werden
-			\item Templates können zu Code-Bloat führen (Bei richtiger Anwendung kann man aber die Performance steigern)
-		\end{itemize}
-	\item Vorteil von C++
-    	\begin{itemize}
-	        \item Abstraktion
-	        \item Entkapselung
-	        \item Inline Operationen
-	        \item Shift work from runtime to compile-time
-    	\end{itemize}
-\end{itemize}
 
 
-\subsection{Inlining}
-\begin{itemize}
-	\item Vorteile
-		\begin{itemize}
-			\item Kein Funktionsaufruf (kein Overhead)
-			\item Daher schneller
-		\end{itemize}
-	\item Nachteile
-		\begin{itemize}
-			\item Mehr Code
-			\item Schwerer zu debuggen
-		\end{itemize}
-	\item Beschränkungen
-		\begin{itemize}
-			\item Compiler kann inlining ignorieren
-			\item Inlining unmöglich für:
-				\begin{itemize}
-					\item Funktionen auf die ein Pointer zeigt
-					\item Virtuelle Funktionen
-					\item Rekursive Funktionen
-				\end{itemize}
-			\item Linker kann selten Inlinen, daher inlinefunktionen im Header definieren.
 
-		\end{itemize}
-\end{itemize}
-Implizit / Explizit Inline
-\begin{lstlisting}
-//example.h
-void mf1() { ... }  // implizit inline
-inline void mf2() { ... }  // explizit inline
-\end{lstlisting}
 
 \subsection{Polymorphismus}
 \begin{itemize}
@@ -245,7 +464,7 @@ inline void mf2() { ... }  // explizit inline
 	\item Compile-Time
 		\begin{itemize}
 			\item typedefs um Klasse zu wählen, Templates, \#ifdef's, const expressions
-			\item z.B. Rechnerarchitektur (32Bit, 16Bit) erst bekannt zur Compile Zeit 
+			\item z.B. Rechnerarchitektur (32Bit, 16Bit) erst bekannt zur Compile Zeit
 		\end{itemize}
 \end{itemize}
 \begin{lstlisting}
@@ -332,7 +551,7 @@ void SomeClass<int>::mf2(); // Explizite Instanzierung von SomeClass::mf2
                              // mit T=int; kompilierter code ebenfalls im .obj File
 \end{lstlisting}
 
-Die Ausführbare Datei (.exe) kann mit mehreren Kopien von einer Template Instanz enthalten. 
+Die Ausführbare Datei (.exe) kann mit mehreren Kopien von einer Template Instanz enthalten.
 \begin{compactitem}
     \item Wenn der Kompiler auch Funktionen instanziert, welche nicht benötigt werden
     \item Wenn man dynamisch Linked
@@ -371,13 +590,13 @@ class Buffer: public BufferBase<T> {    // dependent operations.
     \draw (0,1) rectangle (3,1.5) node[pos=.5] {BufferBase};
     \draw (0,0) rectangle (3,1.5) ;
 
-    
+
     \draw (0,3) rectangle (3,4) node[pos=.5] {Buffer};
     \draw (0,2.5) rectangle (3,4);
-    
+
     \draw [myarrow] (1.5,1.5) -- (1.5,2.5);
 
-    
+
  \end{tikzpicture}
 \end{minipage}
 
@@ -413,16 +632,16 @@ virtual std::string payload() const;
     \hspace{1cm}
     \draw (1.5,1.5) rectangle (4.5,2) node[pos=.5] {CANPacket};
     \draw (1.5,0) rectangle (4.5,2) ;
-    
+
     \draw (5.5,1.5) rectangle (8.5,2) node[pos=.5] {TCPPacket};
     \draw (5.5,0) rectangle (8.5,2) ;
-    
+
     \draw (3.5,5.5) rectangle (6.5,6) node[pos=.5] {\textit{Packet}\{abstract\}};
     \draw (3.5,4) rectangle (6.5,6);
-    
+
     \draw [myarrow] (3,2) -- (4.5,4);
     \draw [myarrow] (7,2) -- (5.5,4);
-    
+
  \end{tikzpicture}
 \end{minipage}
 
@@ -433,7 +652,7 @@ virtual std::string payload() const;
 Die vier Sorgen:\\
 \begin{tabular}{p{12cm}p{5cm}}
 
-\vspace{-2cm} 
+\vspace{-2cm}
 \begin{itemize}
 \item Schnelligkeit: Sind \textbf{new/delete/malloc/free} schnell genug?
 \item Fragmentierung: Entstehen im Heap unbrauchbar kleine Bereiche?
@@ -442,7 +661,7 @@ Die vier Sorgen:\\
 
 \end{itemize}
 &
- 
+
 \begin{minipage}{5cm}
 \begin{tikzpicture}
     \draw (0, 0) rectangle (5, 3) ;
@@ -507,35 +726,35 @@ Fragmentierungsproblem:
     Fragmentation       &   Nicht m"oglich                          & M"oglich, einfach zu erkennen\\
     Memory leaks        &   Nicht m"oglich                          & M"oglich, einfach zu erkennen\\
     Memory exhaustion   &   Nicht m"oglich                          & M"oglich\\
-    
-    
-    
+
+
+
 \end{tabular}
 
 \vspace{1cm}
 
 \begin{tabular}{l||p{7cm}|p{7cm}|}
                         &  Pool Allocation & Block Allocation\\
-    \hline \hline       
+    \hline \hline
                         & Pool Allokationen sind \textbf{alle gleich gross} (bzw. alle so gross, wie das gr"osste Element)
 
-                        &   Verschiedene Sets von Pools mit verschiedenen Gr"ossen 
+                        &   Verschiedene Sets von Pools mit verschiedenen Gr"ossen
                         \newline
                         \begin{tikzpicture}
                             \draw (0, 0) rectangle (1.5, 0.5) node[pos=.5] {Pool 1};
-                            \draw (1.5, 0) rectangle (5, 0.5) node[pos=.5] {Pool 2}; 
-                            \draw (0, 0) rectangle (5, -0.5) node[pos=.5] {Pool 3}; 
+                            \draw (1.5, 0) rectangle (5, 0.5) node[pos=.5] {Pool 2};
+                            \draw (0, 0) rectangle (5, -0.5) node[pos=.5] {Pool 3};
                         \end{tikzpicture}\\
     Speed               &   Sehr schnell, deterministisch       & Schnell, praktisch deterministisch  \\
     Fragmentation       &   Nicht m"oglich                      & Nicht m"oglich\\
     Memory leaks        &   M"oglich                            & M"oglich, einfach zu erkennen\\
     Memory exhaustion   &   M"oglich                            & M"oglich\\
-    
-    
-    
+
+
+
 \end{tabular}
 \\
-% Fully Static Allocation: 
+% Fully Static Allocation:
 % \begin{itemize}
 % \item Daten nicht auf dem Heap $\rightarrow$ Exakte bzw. max. Anzahl der Objekte ist determinierbar.
 % \item \textbf{Speed}: praktisch unendlich, deterministisch
@@ -544,39 +763,39 @@ Fragmentierungsproblem:
 % \item \textbf{Memory exhaustion}: Nicht m"oglich
 % \end{itemize}
 
-% LIFO Heap Allocation: 
+% LIFO Heap Allocation:
 % \begin{itemize}
 % \item Dynamische Allokation ausserhalb des runtime Stacks $\rightarrow$ Diese Allokationen sind immer LIFO (wie beim Stack)
-% \item \textbf{Speed}: Sehr schnell, deterministisch 
+% \item \textbf{Speed}: Sehr schnell, deterministisch
 % \item \textbf{Fragmentation}: M"oglich, einfach zu erkennen
 % \item \textbf{Memory leaks}: M"oglich, einfach zu erkennen
 % \item \textbf{Memory exhaustion}: M"oglich
 % \end{itemize}
 
-% Pool Allocation: 
+% Pool Allocation:
 % \begin{itemize}
-% \item Heap Allokationen sind \textbf{alle gleich gross} (bzw. alle so gross, wie das gr"osste Element) 
-% \item \textbf{Speed}: Sehr schnell, deterministisch 
+% \item Heap Allokationen sind \textbf{alle gleich gross} (bzw. alle so gross, wie das gr"osste Element)
+% \item \textbf{Speed}: Sehr schnell, deterministisch
 % \item \textbf{Fragmentation}: Nicht m"oglich
 % \item \textbf{Memory leaks}: M"oglich
 % \item \textbf{Memory exhaustion}: M"oglich
 % \end{itemize}
 
-% Block Allocation: 
+% Block Allocation:
 % \begin{itemize}
-% \item Verschiedene Sets von Pools mit verschiedenen Gr"ossen 
-% \item \textbf{Speed}: Schnell, praktisch deterministisch 
+% \item Verschiedene Sets von Pools mit verschiedenen Gr"ossen
+% \item \textbf{Speed}: Schnell, praktisch deterministisch
 % \item \textbf{Fragmentation}: Nicht m"oglich
 % \item \textbf{Memory leaks}: M"oglich
 % \item \textbf{Memory exhaustion}: M"oglich
 % \end{itemize}
 
-\textbf{Region Allocation:} N"utzlich wenn alle Heapobjekte simultan frei gegeben werden. 
+\textbf{Region Allocation:} N"utzlich wenn alle Heapobjekte simultan frei gegeben werden.
 \subsection{POD (Plain Old Data)}
 Folgende sind POD
 \begin{itemize}
  \item alle C Datentypen (int, float, uws.)
- \item c++11 Klassen, Unions, Structs wenn folgendes nicht enthalten 
+ \item c++11 Klassen, Unions, Structs wenn folgendes nicht enthalten
  \begin{itemize}
      \item Basisklassen
      \item Virtual Funktion
@@ -587,7 +806,7 @@ Folgende sind POD
 POD Typen in C++98/03 ist strikter, weil private und protected data members ausgeschlossen sind. Mit private und protected kann man das ROMable verhindern.
 
 \subsection{C++ and ROM}
-Folgendes ist ROMable: 
+Folgendes ist ROMable:
 \begin{compactitem}
 
 
@@ -600,7 +819,7 @@ Folgendes ist ROMable:
 		\item weder private noch protected
 		\item kein Typ
 	\end{compactitem}
-	$\rightarrow$ Besser mit const. Oder noch besser mit enum (negative Zahlen auch möglich) 
+	$\rightarrow$ Besser mit const. Oder noch besser mit enum (negative Zahlen auch möglich)
 \item Werden geROMt, wenn: Als const definiert, wenn sie keine mutierenden
 	Daten enthalten, Wenn sie mit bekannten Werten initialisiert werden
 	w"ahrend der Kompilation.
@@ -611,9 +830,9 @@ Konstanten\\
 \begin{tabular}{l|l}
 \hline
    \#define  & + Bei nicht Verwendug entsteht weder Code noch Daten\\
-             & - keine Typenprüfung, Makroprobleme\\ 
+             & - keine Typenprüfung, Makroprobleme\\
              & pro Kompilationseinheit wird eine Speicherplatz benötigt für die Konstante \\ \hline
-    const    & - Erzeugt auch Code und Daten wenn auch nicht gebraucht\\ 
+    const    & - Erzeugt auch Code und Daten wenn auch nicht gebraucht\\
              & Konstante wird nur einmal pro Projekt erzeugt\\\hline
     enum     & + Bei nicht Verwendug entsteht weder Code noch Daten\\
              & auch negative Zahlen\\\hline
@@ -657,7 +876,7 @@ Mit C++ ist es einfach diese \textit{memory-mapped IO devices} mithilfe von Obje
     Compiler Extension     &   Linker Commands \\
     \hline\hline
     - Nicht Portabel & + Besser Portabel als Compiler Extension (Platform spezifische Adressen sind im Linkerskript vorhanden) \\
-    + Kein Pointer \newline ($\rightarrow$ kein benötigter Speicher für den Pointer) & Mangled Names werden verwendet\\ 
+    + Kein Pointer \newline ($\rightarrow$ kein benötigter Speicher für den Pointer) & Mangled Names werden verwendet\\
     \hline
 \end{tabular}
 
@@ -667,7 +886,7 @@ Mit C++ ist es einfach diese \textit{memory-mapped IO devices} mithilfe von Obje
 	\item Individual bits may sometimes be read-only, other times write-only.
 	\item Clearing a bit may require assigning a 1 to it.
 	\item One status register may control more than one data register.
-		E.g., bits 0-3 are for one data register, bits 4-7 for another.	
+		E.g., bits 0-3 are for one data register, bits 4-7 for another.
 \end{itemize}
 
 \paragraph{Modeling a Control Register}~
@@ -724,9 +943,9 @@ if (cr.interruptsEnabled()) ... 	// if interrupts are enabled...
 ~ \\
 Mit \textit{placement new} wird kein Speicher alloziert, somit darf auch kein delete ausgeführt werden.
 \begin{lstlisting}
-    int * a = new int[10];          //Speicher Allozierung 
+    int * a = new int[10];          //Speicher Allozierung
     delete[] a;                     //Heap wird gelöscht wichtig delete[] für Array
-    
+
     int * b = new (0xFFFF0000) int; //Placement new an der Adressse 0xFFFF0000
     delete b;                       //!!ERROR, Keine Delete beim Placement new
 \end{lstlisting}
@@ -819,7 +1038,7 @@ virtual void reset();
 ...
 };
 \end{lstlisting}
-& 
+&
 \begin{lstlisting}
 OutputDevice1 od1a(0xFFFF0000, 0xFFFF0004);
 OutputDevice1 od1b(0xFFFF0010, 0xFFFF0014);
@@ -843,7 +1062,7 @@ for (std::size_t i = 0; i < numRegisters; ++i)
 \begin{tabular}{|p{9.2cm}|p{9.2cm}|}
 \begin{lstlisting}
 // class modeling hardware directly
-class OutputDevice3 
+class OutputDevice3
 { // prevents some kinds of client errors
   ...
   private:
@@ -852,9 +1071,9 @@ class OutputDevice3
     volatile uint32_t data;
 };
 \end{lstlisting}
-& 
+&
 \begin{lstlisting}
-OutputDevice3 d; 
+OutputDevice3 d;
 // error! implicit destructor invocation.
 // (We want to prevent MMIO objects from
 // being placed on the stack.)
