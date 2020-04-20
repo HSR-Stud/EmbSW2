@@ -298,31 +298,1181 @@ Compilers rarely inline functions only declared in headers.
 	\item Minimize inlining if binary upgradeability is important.
 \end{itemize}
 
-%TODO: SW8 hier weitermachen
+\subsection[pImpl]{pImpl - \textcolor{red}{P}ointer to \textcolor{red}{Impl}ementation}
+\label{sec:pimpl}
 
+\subsubsection{Problem}
+C++-Klassendeklarationen sind durch die Header-Files immer öffentlich, auch private-Teile sind sichtbar
+\begin{itemize}
+  \item unnötige Abhängigkeiten
+  \item zusätzliche \#includes für Membervariablen (wegen Aggregationen) in Header
+  \item Änderungen am Header (auch in privaten Teilen) bedingen Neu-Compilation aller .cpp-Dateien, die den Header einbinden
+  \item kann Compile-Zeit in grossen Projekten drastisch erhöhen!
+\end{itemize}
+Wie kann man die Implementierung einer Klasse so verstecken, dass man sie ändern kann, ohne alle Module, welche die Klasse nutzen, bei einer Änderung neu übersetzen zu müssen?\\
+Nützlich zum Beispiel für eine shared library / DLL.
 
+\subsubsection{Lösung}
+\begin{itemize}
+\item ''Versteckte'' Implementierung im .cpp File wird in einem separatem File versteckt
+\item Im Header nur noch die öffentliche Schnittstelle mit einem privaten Pointer auf die ''versteckte'' Implementierung
+\begin{itemize}
+  \item am besten: ein \lstinline[language=C++]{shared_ptr<Impl>}
+\end{itemize}
+\item Im Konstruktor der Klasse wird ein Impl-Objekt erzeugt
+\item In der Implementierung der Schnittstelle delegiert man alle Memberfunktionen an die Impl-Klasse
+\end{itemize}
 
-\subsection{Static vs. Dynamic Binding}
+\textbf{Beispiel:}
+\begin{multicols}{2}
+\begin{lstlisting}[language=C++]
+#ifndef HIDDENCOUNTER_H_ // public file
+#define HIDDENCOUNTER_H_
+#include <memory>
+class HiddenCounter
+{
+public:
+	HiddenCounter(int i=0);
+	void inc();
+	int getCount() const;
+  void dec();
+	void reset();
+private:
+	std::shared_ptr<class CounterImpl> pImpl;
+};
+#endif // HIDDENCOUNTER_H_
+\end{lstlisting}
+\vfill\null
+\columnbreak
+\begin{lstlisting}[language=C++]
+#include "HiddenCounter.h" // private file
+class CounterImpl
+{
+public:
+	CounterImpl(int i): counter(i) {}
+	void inc() {++counter;}
+	int getCount() const {return counter;}
+  void dec() {--counter;}
+	void reset() {counter=0;}
+private:
+	int counter;
+};
+
+HiddenCounter::HiddenCounter(int i)
+  :pImpl(new CounterImpl(i)) {}
+void HiddenCounter::inc() {pImpl->inc();}
+int HiddenCounter::count() const
+  {return pImpl->count();}
+void HiddenCounter::dec() {pImpl->dec();}
+void HiddenCounter::reset() {pImpl->reset();}
+\end{lstlisting}
+\end{multicols}
+
+\paragraph{pImpl Idiom in Embedded Systems?}
+\begin{itemize}
+  \item Die Implementation wird auf dem Heap angelegt $\rightarrow$ unproblematisch weil dieses Objekt beim Programmstart angelegt und erst am Schluss wieder freigegeben wird
+  \item Der new-Operator könnte bei Bedarf auch überschrieben werden.
+\end{itemize}
+
+\subsection{Implementing Virtual Functions}
+\subsubsection{Dynamic Binding (Polymorphismus)}
+\begin{itemize}
+  \item Ist der mächtigste OO-Mechanismus (oft präziser als \textit{run-time polymorphism} bezeichnet)
+  \item Elementfunktionen, die dynamisch gebunden werden, muss bei der Deklaration (zwingend!) das Schlüsselwort virtual vorangestellt werden.\\
+  In der abgeleiteten Klasse muss die Funktion mit override gekennzeichnet werden (ab C++11).
+\end{itemize}
+
+\subsubsection{Virtuelle Elementfunktionen}
+\begin{itemize}
+  \item Elementfunktionen müssen virtuell deklariert werden, wenn sie in einer Unterklasse bei gleicher Signatur und bei gleichem Rückgabetyp überschrieben werden
+  \item Beim Aufruf einer virtuellen Elementfunktion gilt:
+  \begin{itemize}
+    \item Aufruf direkt über das Objekt: es gilt die Implementation der Klasse, zu dem das Objekt gehört
+    \item Aufruf über Zeiger oder Referenz: es gilt die Implementation der Klasse des Objektes, auf das der Zeiger zeigt bzw. auf das die Referenz sich bezieht
+  \end{itemize}
+  \item Eine in einer Basisklasse als virtual gekennzeichnete Memberfunktion definiert eine Schnittstelle für alle abgeleiteten Klassen
+\end{itemize}
+\textbf{Regeln:}
+\begin{itemize}
+  \item \textbf{Nicht virtuelle} Memberfunktionen einer Basisklasse sollen/dürfen in Subklassen \textbf{nicht überschrieben} werden
+  \item Ist vorauszusehen, dass Memberfunktionen in Subklassen überschrieben werden (sollen), so sollten die entsprechenden Memberfunktionen bereits in der Basisklasse als virtual deklariert sein
+  \item Wenn in einer Klasse virtuelle Memberfunktionen vorkommen, muss auch der Destruktor als virtual deklariert werden (sonst nicht!)
+  \item Konstruktoren sind nie virtuell
+\end{itemize}
+
+\subsubsection{Statischer vs. dynamischer Datentyp}
+\begin{lstlisting}[language=C++]
+class Article;
+class Book : public Article {};
+Article* pa;
+pa = new Book;
+\end{lstlisting}
+\begin{itemize}
+  \item Der \textbf{statische Datentyp} bezeichnet den Datentyp bei der Deklaration\\
+  Im Beispiel: \lstinline{pa} ist ein Pointer auf \lstinline{Article}
+  \item Der \textbf{dynamische Datentyp} bezeichnet den effektiven Datentyp zur Laufzeit\\
+  Im Beispiel: \lstinline{pa} ist ein Pointer auf \lstinline{Book}
+\end{itemize}
 \begin{itemize}
 	\item Static binding (early binding, statische Bindung)
 		\begin{itemize}
 			\item Bereits zur Compilezeit wird festgelegt, welcher (Elementfunktions-) Code
 				ausgeführt wird (Normalfall)
-			\item ''Normale`` Klassen, templates
+			\item Bei statischen Aufrugen erfolgt die Auswahl der richtigen Funktion bereits bei der Übersetzung (d.h. ohne Oberhead).
 		\end{itemize}
 	\item Dynamic binding (late binding, dynamische Bindung)
 		\begin{itemize}
 			\item Erst zur Laufzeit wird in Abhängigkeit des Objekts festgelegt, welcher
 				(Elementfunktions-) Code ausgeführt wird
-			\item Run-Time Polymorphismus, virtual
-			\item Laufzeit mehraufwand, weniger effizient
+      \item Bei dynamischen Aufrufen (über Pointer oder Referenzen) erfolgt die Auswahl der richtigen Funktion zur Laufzeit aufgrund des tatsächlichen (dynamischen) Tpys des Objekts. Dies ist mit etwas Overhead verbunden.
 		\end{itemize}
 \end{itemize}
 
-\subsubsection{Virtuelle Memberfunktionen (Siehe Zf\_OOProg)}
-Soll die Funktion überschrieben werden können, muss \emph{virtual} verwendet werden.
-Wird virtual nicht verwendet, wird die Funktion nur ''versteckt``.
-\lstinputlisting{code/virttest.cpp}
+\subsubsection{Statische Aufruf von virtuellen Elementfunktionen}
+\begin{multicols}{2}
+\begin{lstlisting}[language=C++]
+Duck donald;
+SuperHero luckyLuke;
+
+// direkter (statischer) Aufruf
+// über die entsprechenden Objekte
+donald.print();    // Duck::print()
+luckyLuke.print(); // SuperHero::print()
+\end{lstlisting}
+\vfill\null
+\columnbreak
+\includegraphics[width=0.5\linewidth]{images/AdvancedCPP/classDiagram}
+\end{multicols}
+
+\subsubsection{Dynamischer Aufruf von virtuellen Elementfunktionen}
+\begin{multicols}{2}
+\begin{lstlisting}[language=C++]
+void printCC1(const ComicCharacter& c)
+{
+  c.print();  // dynamische Auflösung
+}
+
+void printCC2(const ComicCharacter* pc)
+{
+  pc->print();  // dynamische Auflösung
+}
+
+Duck donald;
+SuperHero luckyLuke;
+printCC1(donald);     // Duck::print()
+printCC2(&luckyLuke); // SuperHero::print()
+\end{lstlisting}
+\vfill\null
+\columnbreak
+\includegraphics[width=0.5\linewidth]{images/AdvancedCPP/classDiagram}
+\end{multicols}
+
+\subsubsection{Polymorphe Klassen (Virtuelle Klassen) / Zusammenfassung}
+\begin{itemize}
+  \item Eine Klasse, welche mind. eine virtuelle Funktion deklariert, heisst virtuell (polymorph)
+  \item Virtuelle Klassen bewirken einen Mehraufwand für den Compiler und sind darum langsamer in der Ausführung
+  \item Funktionen sollten nur dann als virtuell deklariert werden, wenn sie in einer abgeleiteten Klasse überschrieben werden (sollen)
+  \item Konstruktoren sind nie virtuell
+  \item Destruktoren virtueller Klassen müssen immer als virtuell deklariert werden, sonst wird nur der Destruktor der Basisklasse aufgerufen
+  \item Nicht virtuelle Methoden dürfen nicht überschrieben werden
+\end{itemize}
+
+\subsection{Implementing Virtual Functions - Effective C++ in an Embedded Environment}
+\begin{itemize}
+  \item Compilers are allowed to implement virtual functions in any way they like:
+  \begin{itemize}
+    \item There is no mandatory ''standard'' implementation
+  \end{itemize}
+  \item The description that follows is \textit{mostly} true for most implementations:
+  \begin{itemize}
+    \item I've skimmed over a few details
+    \item None of these details affect the fact that virtual functions are typically implemented \textit{very} efficiently
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Base Class}
+\begin{lstlisting}[language=C++]
+class B {
+  public:
+    B();
+    virtual  ~B();
+    virtual void f1();
+    virtual int f2(char c) const;
+    virtual void f3(int x) = 0;   // pure virtual
+    void f4() const;
+    // ...
+};
+\end{lstlisting}
+Compilers typically number the virtual functions in the order in which they're declared. In this example:
+\begin{itemize}
+  \item The destructor is number 0
+  \item \lstinline{f1} is number 1, \lstinline{f2} is number 2, \lstinline{f3} is number 3
+  \item Nonvirtual functions (such as \lstinline{f4}) get no number
+\end{itemize}
+
+\begin{itemize}
+  \item A \textit{vtbl} (virtual table) will be generated by the compiler for the class. It will look something like this:
+  \includegraphics[width=0.5\linewidth]{images/AdvancedCPP/vtbl}
+  \item The vtbl is an array of pointers to functions
+  \item It points to virtual function implementations:
+  \begin{itemize}
+    \item The i-th element points to the virtual function numbered i
+    \item For pure virtual functions, what the entry is is undefined (often a function that issues an error and quits)
+  \end{itemize}
+  \item Nonvirtual functions (including constructors) are omitted:
+  \begin{itemize}
+    \item Nonvirtual functions are implemented like functions in C
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Derived Class}
+\begin{lstlisting}[language=C++]
+class D1: public B {
+  public:
+    D1();                                  // nonvirtual
+    void f3(int x) override;               // overrides base virtual
+    virtual void f5(const std::string& s); // new virtual
+    virtual ~D1();                         // overrides base virtual
+    // ...
+};
+\end{lstlisting}
+
+\begin{minipage}{0.7\linewidth}
+It yields a vtbl like this:\\
+
+Note how corresponding function implementations have corresponding indices in the vtbl.
+\end{minipage}%\hfill
+\begin{minipage}{0.3\linewidth}
+\includegraphics[width=\linewidth]{images/AdvancedCPP/vtbl2}
+\end{minipage}
+\vspace{\baselineskip}
+
+\subsubsection{Second derived class}
+\begin{lstlisting}[language=C++]
+class D2: public B {
+  public:
+    D2;
+    void f3(int x) override;
+    // ...
+};
+\end{lstlisting}
+\begin{minipage}{0.7\linewidth}
+D2's destructor is automatically generated by the compiler.
+\end{minipage}%\hfill
+\begin{minipage}{0.3\linewidth}
+\includegraphics[width=\linewidth]{images/AdvancedCPP/vtbl3}
+\end{minipage}
+\vspace{\baselineskip}
+
+\subsubsection{Repäsentation polymorpher Objekte im Speicher}
+\begin{itemize}
+  \item In der vtbl vermerkt das System der Reihe nach die Adressen der für eine Klasse gültigen \textbf{virtuellen} Elementfunktionen
+  \item Das System legt für jede \textbf{Klasse} (diese hat mind. eine virtuelle Methode) eine vtbl an
+  \item Jedes \textbf{Objekt} einer polymorphen Klasse enthält einen \textit{Virtual Table Pointer} (vptr), welcher auf die vtbl der entsprechenden Klasse zeigt
+\end{itemize}
+\begin{multicols}{2}
+\begin{lstlisting}[language=C++]
+class A
+{
+  public:
+    virtual void foo1();
+    virtual void foo2();
+    void foo3();
+};
+
+class B : public A
+{
+  public:
+    void foo1() override;
+    virtual void foo4();
+};
+\end{lstlisting}
+\vfill\null
+\columnbreak
+\includegraphics[width=0.6\linewidth]{images/AdvancedCPP/vtblBsp}
+\end{multicols}
+\begin{center}
+  \includegraphics[width=0.5\linewidth]{images/AdvancedCPP/vtbl4}
+\end{center}
+vptrs are set by code compilers insert into constructors and destructors
+\begin{itemize}
+  \item In a hierarchy, each class's constructor sets the vptr to point to that class's vtbl
+  \item Ditto for the destructors in a hierarchy
+\end{itemize}
+Copmilers are permitted to optimize away unnecessary vptr assignments\\
+\begin{minipage}{0.7\linewidth}
+\begin{itemize}
+  \item E.g., vptr setup for a D object could look like this:\\
+    \lstinline{D obj;}\\
+    Set vptr to B's vtbl; // may be optimized away\\
+    Set vptr to M's vtbl; // may be optimized away\\
+    Set vptr to D's vtbl;\\
+    ...\\
+    Set vptr to M's vtbl; // may be optimized away\\
+    Set vptr to B's vtbl; // may be optimized away
+\end{itemize}
+\end{minipage}%
+\begin{minipage}{0.05\linewidth}
+  \includegraphics[width=\linewidth]{images/AdvancedCPP/BMD}
+\end{minipage}\\
+
+Consider this C++ source code:
+\begin{lstlisting}[language=C++]
+void makeACall(B* pB)
+{
+  pB->f1();
+}
+\end{lstlisting}
+The call to f1 yields code equivalent to this:
+\begin{lstlisting}[language=C++]
+(*pB->vptr[1])(pB); // call the function pointed to by vtbl entry 1 in the vtbl
+                    // pointed to by pB->vptr; pB is passed as the ''this'' pointer
+\end{lstlisting}
+One implication:
+\begin{itemize}
+  \item When a virtual function changes, every caller must recompile!
+  \begin{itemize}
+    \item e.g., if the function's order in the class changes i.e., its compiler-assigned number
+    \item e.g., if the function's signature changes
+  \end{itemize}
+\end{itemize}
+
+\begin{minipage}{0.75\linewidth}
+Size penalties:
+\begin{itemize}
+  \item vptr makes each object larger
+  \begin{itemize}
+    \item Alignment restrictions could force padding
+    \begin{itemize}
+      \item Reordering data members often eliminates problem
+    \end{itemize}
+  \end{itemize}
+  \item Per-class vtbl increases each application's data space
+\end{itemize}
+\end{minipage}%
+\hfill
+\begin{minipage}{0.2\linewidth}
+\begin{center}
+  \includegraphics[width=0.5\linewidth]{images/AdvancedCPP/sizePenalties}
+\end{center}
+\end{minipage}%
+\vspace{0.5\baselineskip}
+Speed penalties:
+\begin{itemize}
+  \item Call through vtbl slower than direct call, but usually only by a few instructions
+  \item Inlining usually impossible:
+  \begin{itemize}
+    \item This is often inherent in a virtual call
+  \end{itemize}
+\end{itemize}
+\textbf{But compared to C alternatives:}
+\begin{itemize}
+  \item Faster and smaller than if/then/else or switch-based techniques
+  \item Guaranteed to be right
+\end{itemize}
+
+\subsubsection{Object addresses under Multiple Inheritance (MI)}
+\begin{minipage}{0.75\linewidth}
+Under Single Inheritance (SI), we can generally think of object layouts and addresses like this:
+\begin{lstlisting}[language=C++]
+class B {...};
+class D: public B {...};
+\end{lstlisting}
+\begin{itemize}
+  \item An exception (with some compilers) is when D has virtual functions, but B doesn't.
+\end{itemize}
+\end{minipage}%
+\hfill
+\begin{minipage}{0.2\linewidth}
+\begin{center}
+  \includegraphics[width=\linewidth]{images/AdvancedCPP/SI}
+\end{center}
+\end{minipage}
+\vspace{0.5\baselineskip}
+\begin{minipage}{0.75\linewidth}
+Under MI, it looks more like this:
+\begin{lstlisting}[language=C++]
+class B1 {...};
+class B2 {...};
+class D: public B1, public B2 {...};
+\end{lstlisting}
+\begin{itemize}
+  \item D objects have multiple addresses:
+  \begin{itemize}
+    \item One for B1* and D* pointers.
+    \item Another for B2* pointer.
+  \end{itemize}
+\end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{0.2\linewidth}
+\begin{center}
+  \includegraphics[width=\linewidth]{images/AdvancedCPP/MI}
+\end{center}
+\end{minipage}
+\vspace{0.5\baselineskip}
+There is a good reason for this:
+\begin{lstlisting}[language=C++]
+void f(B1* pb1); // expects pb1 to point to the top of a B1
+void g(B2* pb2); // expects pb2 to point to the top of a B2
+\end{lstlisting}
+Some calls thus require offset adjustments:
+\begin{lstlisting}[language=C++]
+D* pd = new D; // no adjustment needed
+f(pd);         // no adjustment needed
+g(pd);         // requires D* -> B2* adjustment
+B2* pb2 = pd;  // requires D* -> B2* adjustment
+\end{lstlisting}
+Proper adjustments require proper type information:
+\begin{lstlisting}[language=C++]
+if (pb2 == pd) ... // test succeeds (pd converted to B2*)
+if ((void*)pb2 == (void*)pd) ... // test fails
+\end{lstlisting}
+
+\subsubsection{Wieso ist virtual notwendig?}
+\begin{itemize}
+  \item In Java sind alle (nicht static, nicht final) Methoden dynamisch gebunden, in C++ nur die Elementfunktionen, die virtal deklariert sind.
+  \begin{itemize}
+    \item Die dynamische Bindung erfordert einen Overhead für Laufzeitunterstützung und Interpretation, dieser wird in Java akzeptiert.
+    \item C++ versucht, möglichst effizient zu sein. Der Programmierer soll sehen, wenn etwas Effizienz kostet.
+  \end{itemize}
+  \item Objekte mit virtual Memberfunktionen benötigen mehr Overhead als solche ohne
+  \item Aufruf von virtual Memberfunktionen erfolgt indirekt durch Nachschlagen in vtbl, die zur konkreten Klasse gehört
+\end{itemize}
+
+\subsection{Avoiding Code Bloat}
+\subsubsection{Code Bloat in C++}
+C++ has a few features you pay for (in code size and/or runtime speed), even if you don't use them:
+\begin{itemize}
+  \item Support for exceptions.
+  \item Support for generalized customizable iostreams, i.e. streams of other than char or wchar_t.
+\end{itemize}
+These things may reasonably be considered bloat.\\
+Possible workarounds:
+\begin{itemize}
+  \item Disable exceptions during compilation.
+  \begin{itemize}
+    \item Practical only if you know that no code (including libraries, plug-ins, etc.) throws.
+  \end{itemize}
+  \item Use stdio instead of iostreams.
+\end{itemize}\\
+However, most bloat accusations are unfair, traceable to either:
+\begin{itemize}
+  \item Comparing functionality in C++ with lesser functionality in C
+  \begin{itemize}
+    \item E.g., C++ virtual functions do more than C functions.
+  \end{itemize}
+  \item Improper use of the language
+  \begin{itemize}
+    \item E.g., putting inessential code in constructors/destructors.
+  \end{itemize}
+\end{itemize}
+The feaure most associated with bloat is templates.
+\begin{itemize}
+  \item Most problems with ''template code bloat'' arise from:
+  \begin{itemize}
+    \item Misunderstandings of template rules.
+    \item Improper use of templates.
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Templates, Header Files, and Inlining}
+\begin{lstlisting}[language=C++]
+template<typename T>  // header file for a class template
+class SomeClass {
+  public:
+    SomeClass() {...} // implicitly declared inline
+    void mf1() {...}  // implicitly declared inline
+    void mf2();       // not implicitly declared inline
+    // ...
+};
+
+template<typename T>
+void SomeClass<T>::mf2() {...}
+// template funcs are typically defined in header files, but this does not automatically declare them inline
+\end{lstlisting}
+Critical: Don't declare template functions inline simply because they are defined in headers.\\
+\textbf{Unnecessary inlining will lead to bloat.}\\
+
+Templates need not be defined in headers:
+\begin{lstlisting}[language=C++]
+template<typename T>
+class SomeClass {
+  public:
+    SomeClass() {...} // still implicitly inline
+    void mf1() {...}  // still implicitly inline
+    void mf2() {...}  // declaration only; no definition
+    // ...            // provided in this file
+};
+\end{lstlisting}
+Code using this header will compile fine.
+\begin{itemize}
+  \item But if \lstinline[language=C++]{SomeClass::mf2()} is called, it won't link.
+  \item Templates are typically defined in header files to avoid such problems.
+\end{itemize}
+
+\begin{itemize}
+  \item The convention of putting all template code in headers has an advantage:
+  \begin{itemize}
+    \item Single point of change for client-visible code, e.g., function declarations.
+    \item No need to change both header and implementation files.
+  \end{itemize}
+  \item And some disadvantages:
+  \begin{itemize}
+    \item Increased compilation times.
+    \item Increased compilation dependencies for clients.
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Instantiating Templates}
+\textbf{Templates that aren't used aren't instantiated.}
+\begin{itemize}
+  \item They thus generate no code and no data.
+  \item But the need to read template headers usually slows compilation. So what?
+  \item Templates can thus generate less code than non-templates!
+\end{itemize}
+\begin{multicols}{2}
+\begin{lstlisting}[language=C++]
+class C {
+  public:
+    void f1();
+    // ...
+    void fn();
+};
+\end{lstlisting}
+Even if C is never used, object files typically contain f1,...,fn. Few linkers will remove all code and data related to uncalled functions.
+\vfill\null
+\columnbreak
+\begin{lstlisting}[language=C++]
+template<typename T>
+class C {
+  public:
+    void f1();
+    // ...
+    void fn();
+};
+\end{lstlisting}
+Object files should contain only those functions that are called.
+\end{multicols}
+
+\paragraph{Dead code}
+Safety-critical systems often require the elimination of dead code, so the fact that templates can avoid generating it in the first place is attractive to people developing such systems.\\
+\textbf{Templates can help avoid linking dead code into executables.}
+
+Instantiated templates may generate both code and data:
+\begin{lstlisting}[language=C++]
+SomeClass<int> sc;  // SomeClass<int> instantiated.
+                    // Some code generated, memory for static class data set aside.
+\end{lstlisting}
+\textbf{Instantiating a class shouldn't instantiate all its member functions:}
+\begin{itemize}
+  \item Only member functions that are used should be instantiated.
+  \begin{itemize}
+    \item You shouldn't pay for what you don't use.
+  \end{itemize}
+  \item A few compilers (typically older ones) get this wrong.
+  \begin{itemize}
+    \item They instantiate all member functions of a class if any is used.
+    \item We'll discuss how to avoid this in a moment.
+  \end{itemize}
+\end{itemize}
+
+\textbf{Most templates are implicitly instantiated:}
+\begin{itemize}
+  \item Compiler notes used functions, instantiates them automatically.
+  \item To create the functions, it needs access to their definitions.
+  \begin{itemize}
+    \item This is why template code is typically in header files.
+  \end{itemize}
+  \item Without a definition, compiler generates reference to external symbol.
+  \begin{itemize}
+    \item Hence SomeClass::mf2() callable without a definition, but a link-time error will result.
+  \end{itemize}
+\end{itemize}
+\textbf{Templates can also be explicitly instantiated:}
+\begin{itemize}
+  \item You can  force a class or function template to be instantiated.
+  \begin{itemize}
+    \item For class templates, all member functions are instantiated.
+    \item Individual member functions can also be instantiated.
+  \end{itemize}
+\end{itemize}
+
+\paragraph{Explicit instantiation}\\
+In a .h file:
+\begin{lstlisting}[language=C++]
+template<typename T>  // as before
+class SomeClass {
+  public:
+    SomeClass() {...}
+    void mf1() {...}
+    void mf2();
+    // ...
+};
+\end{lstlisting}
+In a .cpp file:
+\begin{lstlisting}[language=C++]
+// ...                      // Definitions of SomeClass's non-inline functions go here
+template                    // explicitly instantiate all SomeClass member funcs for T=double
+class SomeClass<double>;    // compiled code will go in this .cpp's .obj file
+
+template                    // explicitly instantiate SomeClass::mf2 for T=int
+void SomeClass<int>::mf2(); // compiled code will go in this .cpp's .obj file
+\end{lstlisting}
+
+Explicit instantiation can be a lot of work:
+\begin{itemize}
+  \item You must manually list each template and set of instantiation parameters to be instantiated.
+\end{itemize}
+But it can be useful:
+\begin{itemize}
+  \item To create libraries of instantiations.
+  \item To put instantiations into particular code sections.
+  \item To avoid code bloat arising from bad compilers/linkers.
+\end{itemize}
+
+Your executable might end up with multiple copies of an instantiation:
+\begin{itemize}
+  \item If your compiler (incorrectly) instantiates all class template member functions when only some are used.
+  \item If you use dynamic linking.
+  \item If your linker is bad:\\
+  \includegraphics[width=0.6\linewidth]{images/AdvancedCPP/badLinker}
+\end{itemize}
+
+\subsubsection{Avoiding Code Duplication}
+\begin{lstlisting}[language=C++]
+class IntClass {
+  public:
+    void usageInfo(std::ostream& s);  // summarize usage info to s
+    // ...
+};
+class DoubleClass {
+  public:
+    void usageInfo(std::ostream& s);  // summarize usage info to s
+    // ...
+};
+\end{lstlisting}
+Both \lstinline[language=C++]{usageInfo} functions will do essentially the same thing.
+\begin{itemize}
+  \item This is code duplication.
+  \item It leads to code bloat.
+\end{itemize}
+Note that no templates are involved here.\\
+
+A common way to eliminate such duplication is to move the duplicated code to a base class:
+\begin{lstlisting}[lanugage=C++]
+class Base {
+  public:
+    void usageInfo(std::ostream& s);  // summarize usage info to s
+    // ...
+  protected:
+    // ... // data storing usage info
+};
+
+class IntClass: public Base {
+  // ... // no declaration of usageInfo
+};
+
+class DoubleClass: public Base {
+  // ... // no declaration of usageInfo
+};
+\end{lstlisting}
+
+Exactly the same reasoning applies when writing templates:
+\begin{lstlisting}[language=C++]
+template<typename T>                // a template leading to bloat
+class SomeClass {
+  // ...
+  void usageInfo(std::ostream& s);  // leads to code duplication if usageInfo makes no use of T
+};
+\end{lstlisting}
+The solution is the same:
+\begin{lstlisting}[language=C++]
+class Base {
+  public:
+    void usageInfo(std::ostream& s);  // summarize usage info to s
+    // ...
+};
+
+template<typename T>                  // a template avoiding bloat
+class SomeClass: public Base {
+  // ... // no declaration of usageInfo
+};
+\end{lstlisting}
+
+\subsubsection{Code Hoisting}
+Moving type-invariant code into a base class is sometimes called code hoisting. It can help avoid code bloat due to multiple pointer types:
+\begin{lstlisting}[language=C++]
+template<typename T>          // general template
+class Stack {...};
+
+class GenericPtrStack {...};  // non-template using void*s
+
+template<typename T>          // partial specialization for pointers
+class Stack<T*>:              // uses void*-based base class for all real work
+private GenericPtrStack {
+  // ...                      // all inline casting functions
+};                            // they generate no code
+\end{lstlisting}
+All Stack instantiations for pointer types thus share their code.
+\begin{itemize}
+  \item We'll see this example in detail later.
+\end{itemize}
+
+Code hoisting works well with inlining to avoid duplication arising from non-type template parameters:\\
+\textbf{Bad:}
+\begin{lstlisting}[language=C++]
+template<typename T, std::size_t bufSz> // Suspect design: each BUFSZ value will yield a new
+class Buffer {                          // set of member functions
+  T buffer[bufSz];
+  public:
+    //...
+};
+\end{lstlisting}
+\textbf{Better:}
+\begin{lstlisting}[language=C++]
+template<typename T>                    // Better design:
+class BufferBase {                      // BufferBase is independent of bufSz
+  // ...
+};
+template<typename T, std::size_t bufSz> // Buffer does only BUFSZ-dependent operations.
+class Buffer: public BufferBase<T> {
+  // ...                                // Ideally, all are inline, so
+};                                      // Buffer classes cost nothing
+\end{lstlisting}
+
+\subsubsection{Avoiding Code Duplication}
+Avoiding code bloat with templates fundamentally calls for disciplined 'commonality and variability analysis':
+\begin{itemize}
+  \item The parts of a template that don't depend on the template parameters (the 'common' parts) should be moved out of the template.
+  \item The remaining parts (the 'variable' parts) should stay in the template.
+\end{itemize}
+This kind of analysis is critical to avoiding code duplication in any guise:
+\begin{itemize}
+  \item Features common to multiple classes should be moved out of the classes.
+  \begin{itemize}
+    \item Maybe to a base class.
+    \item Maybe to a class template.
+  \end{itemize}
+  \item Features common to multiple functions should be moved out of the functions:
+  \begin{itemize}
+    \item Maybe to a new function.
+    \item Maybe to a function template.
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Code bloat summary}
+\textbf{Most bloat can be eliminated by careful design.}
+\begin{itemize}
+  \item Consider disabling support for exceptions.
+  \item Consider stdio instead of iostreams.
+  \item Avoid excessive inlining, especially with templates.
+  \item Judiciously use explicit instantiation to avoid code duplication.
+  \item Hoist parameter-independent code out of templates.
+\end{itemize}
+
+\subsubsection{Dealing with Function Templates}
+We've discussed only class templates, but bloat elimination techniques for function templates are similar:
+\begin{lstlisting}[language=C++]
+template<typename T>            // a template leading to bloat
+void doSomething(const T& obj)
+{
+  // ...                        // code making use of T or obj
+  // ...                        // code independent of T or obj
+  // ...                        // code making use of T or obj
+}
+\end{lstlisting}
+A ''hoisting'' alternative:
+\begin{lstlisting}[language=C++]
+void doSomethingHelper();       // "hoisted" code in non-template function; not inline
+template<typename T>            // revised template avoiding bloat
+void doSomething(const T& obj)
+{
+  // ...                        // code making use of T or obj
+  doSomethingHelper();
+  // ...                        // code making use of T or obj
+}
+\end{lstlisting}
+
+\subsubsection{Data Bloat}
+Not all bloat us due to code. Unnecessary classes can yield data bloat, too:
+\begin{itemize}
+  \item Some classes have a vtbl, so unnecessary classes $\rightarrow$ unnecessary vtbls.
+  \begin{itemize}
+    \item Such unnecessary classes could come from templates.
+  \end{itemize}
+  \item Functions must behave properly when exceptions are thrown, so unnecessary non-inline functions $\rightarrow$ unnecessary EH (Exception Handling) tables
+  \begin{itemize}
+    \item Such unnecessary functions could come from templates.
+    \item This applies only to the Table Approach to EH.
+  \end{itemize}
+\end{itemize}
+An important exception to these issues are class templates that:
+\begin{itemize}
+  \item Contain only inline functions.
+  \begin{itemize}
+    \item Hence no extra EH tables.
+  \end{itemize}
+  \item Contain no virtual functions.
+  \begin{itemize}
+    \item Hence no extra vtbls.
+  \end{itemize}
+\end{itemize}
+
+\subsection{Interface-Based Programming}
+
+\begin{itemize}
+  \item Coding against an interface that allows multiple implementations.
+  \begin{itemize}
+    \item Function interface.
+    \item Class interface.
+  \end{itemize}
+  \item Client code unaware which implementation it uses.
+  \begin{itemize}
+    \item It depends only on the interface.
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Polymorphism}
+\textbf{The use of multiple implementations through a single interface.}\\
+Key question: when is it known which implementation should be used?
+\begin{itemize}
+  \item \textbf{Runtime:} each call may use a different implementation.
+  \begin{itemize}
+    \item Use inheritance + virtual functions.
+  \end{itemize}
+  \item \textbf{Link-time:} each link may yield a different set of implementations.
+  \begin{itemize}
+    \item Use separately compiled function bodies.
+    \item Applies to both static and dynamic linking.
+    \item pImpl idiom
+  \end{itemize}
+  \item \textbf{Compile-time:} each compilation may yield a different set of implementations.
+  \begin{itemize}
+    \item Use computed typedefs.
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Runtime Polymorphism}
+\begin{itemize}
+  \item The ''normal'' meaning of interface-based programming.
+  \begin{itemize}
+    \item In much OO literature, the only meaning.
+    \item Unnecessariliy restrictive for C++.
+  \end{itemize}
+  \item The most flexible
+  \begin{itemize}
+    \item Can take advantage of information known only at runtime.
+  \end{itemize}
+  \item The most expensive.
+  \begin{itemize}
+    \item Based on vptrs, vtbls, non-inline function calls.
+  \end{itemize}
+\end{itemize}
+\textbf{Example:}
+\begin{minipage}{11cm}
+\begin{lstlisting}
+class Packet { // base class (''interface'')
+public:
+// ...
+virtual bool isWellFormed() const = 0 //=0 =>abstract;
+virtual std::string payload() const = 0;
+// ...
+};
+class TCPPacket: public Packet { // derived class (''implementation'')
+// ...
+bool isWellFormed() const override;  // override is C++14
+std::string payload() const override;
+// ...
+};
+class CANPacket: public Packet { // derived class (''implementation'')
+...
+bool isWellFormed() const override;
+std::string payload() const override;
+...
+};
+\end{lstlisting}
+\end{minipage}~
+\begin{minipage}{9cm}
+\tikzstyle{myarrow}=[->, >=open triangle 90]
+\begin{tikzpicture}
+    \hspace{1cm}
+    \draw (1.5,1.5) rectangle (4.5,2) node[pos=.5] {CANPacket};
+    \draw (1.5,0) rectangle (4.5,2) ;
+
+    \draw (5.5,1.5) rectangle (8.5,2) node[pos=.5] {TCPPacket};
+    \draw (5.5,0) rectangle (8.5,2) ;
+
+    \draw (3.5,5.5) rectangle (6.5,6) node[pos=.5] {\textit{Packet}\{abstract\}};
+    \draw (3.5,4) rectangle (6.5,6);
+
+    \draw [myarrow] (3,2) -- (4.5,4);
+    \draw [myarrow] (7,2) -- (5.5,4);
+
+ \end{tikzpicture}
+\end{minipage}
+\begin{lstlisting}[language=C++]
+std::unique_ptr<Packet> nextPacket( /* params */ );  // factory function; returns next packet
+// ...
+std::unique_ptr<Packet> p;
+while (p = nextPacket( /* params */), p.get() != nullptr)  // side effect, comma operator
+{
+  if (p->isWellFormed())        // use Packet interface
+  {
+    // ...
+  }
+  // ...
+}
+\end{lstlisting}
+\textbf{Runtime polymorphism is reasonable here.}
+\begin{itemize}
+  \item Types of packets vary at runtime.
+\end{itemize}
+
+\subsubsection{Link-Time Polymorphism}
+\begin{itemize}
+  \item Useful when information already known during linking, but not yet during compilation.
+  \item No need for virtual functions.
+  \item Typically disallows inlining.
+  \begin{itemize}
+    \item Most inlining is done during compilation.
+  \end{itemize}
+\end{itemize}
+\textbf{Example:}
+Software can be deployed on two kinds of boxes:
+\begin{itemize}
+  \item Expensive, high-performance box.
+  \begin{itemize}
+    \item Uses expensive, fast components.
+  \end{itemize}
+  \item Cheaper, lower-performance box.
+  \begin{itemize}
+    \item Uses cheaper, lower-performance components.
+  \end{itemize}
+  \item Essentially the same software runs on both boxes.
+  \item Component driver implementations differ.
+  \begin{itemize}
+    \item A common interface can be defined.
+  \end{itemize}
+\end{itemize}
+Approach:
+\begin{itemize}
+  \item One class definition for both drivers.
+  \item Different component-dependent implementations.
+  \item Implementations selected during linking.
+  \begin{itemize}
+    \item This is ''C'' polymorphism.
+  \end{itemize}
+\end{itemize}
+\begin{lstlisting}[language=C++]
+// device.h
+namespace Drivers
+{
+class Impl;         // forward declaration
+class DeviceDriver  // all nonvirtual non-inline functions
+{
+  public:
+    DeviceDriver();
+    ~DeviceDriver();
+    void reset();
+    // ...
+  private:
+    Impl* pImpl;     // ptr to data for driver
+};
+}
+\end{lstlisting}
+All client code includes this header and codes against this class.
+\begin{itemize}
+  \item Note lack of virtual funcions.
+\end{itemize}
+\begin{lstlisting}[language=C++]
+// EFDevice.cpp (generates EDFevice.o, EFDevice.obj, or EFDevice.dll, etc.)
+namespace Drivers
+{
+struct Impl { ... };            // data needed by EFDevice
+DeviceDriver::DeviceDriver()    // ctor code for EFDevice
+{ ... }
+DeviceDriver::~DeviceDriver()   // dtor code for EFDevice
+{ ... }
+void DeviceDriver::reset()      // reset code for EFDevice
+{ ... }
+// ...
+}
+\end{lstlisting}
+EFDevice = ''Expensive Fast Device''\\
+All functions in this file have access to the Impl struct defined here.
+
+\begin{lstlisting}[language=C++]
+// CSDevice.cpp (generates CSDevice.o, CSDevice.obj, CSDevice.dll, etc.)
+namespace Drivers
+{
+struct Impl { ... };            // data needed by CSDevice
+DeviceDriver::DeviceDriver()    // ctor code for CSDevice
+{ ... }
+DeviceDriver::~DeviceDriver()   // dtor code for CSDevice
+{ ... }
+void DeviceDriver::reset()      // reset code for CSDevice
+{ ... }
+// ...
+}
+\end{lstlisting}
+CSDevice = ''Cheap Slow Device''\\
+All functions in this file have access to the Impl struct defined here.
+\begin{itemize}
+  \item Impl in this file typically different from that in EFDevice.cpp.
+  \item Function bodies in this file also typically different.
+\end{itemize}
+\\
+Link with:
+\begin{itemize}
+  \item EFDevice.o if building for expensive, high-performance box.
+  \begin{itemize}
+    \item Or link dynamically with e.g. EFDevice.dll.
+  \end{itemize}
+  \item CSDevice.o if building for cheaper, lower-performance box.
+  \begin{itemize}
+    \item Or link dynamically with e.g. CSDevice.dll.
+  \end{itemize}
+\end{itemize}
+\textbf{Link-time polymorphism is reasonable here:}
+\begin{itemize}
+  \item Deployment platform unknown at compilation, known during linking.
+  \begin{itemize}
+    \item No need for flexibility or expense of runtim polymorphism.
+    \begin{itemize}
+      \item No vtbls.
+      \item No indirection through vtbls.
+      \item No inheritance needed.
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Compile-Time Polymorphism}
+\begin{itemize}
+  \item Useful when
+  \begin{itemize}
+    \item Implementation determinable during compilation.
+    \item Want to write mostly implementation-independent code.
+  \end{itemize}
+  \item No need for virtual functions.
+  \item Allows inlining.
+  \item Based on ''implicit interfaces''.
+  \begin{itemize}
+    \item Other forms of polymorphism based on ''explicit interfaces''.
+  \end{itemize}
+\end{itemize}
+
+\paragraph{Device Example Reconsidered}\\
+Goal:
+\begin{itemize}
+  \item Device class to use determined by platform's #bits/pointer, e.g. 16 vs. 32 bits.
+  \begin{itemize}
+    \item This is known during compilation.
+  \end{itemize}
+\end{itemize}
+Approach:
+\begin{itemize}
+  \item Create two or more classes with ''compatible'' interfaces.
+  \begin{itemize}
+    \item i.e., support the same implicit interface.
+    \item e.g., must offer a reset function callable with 0 arguments.
+  \end{itemize}
+  \item Use compile-time information to determine which class to use.
+  \item Define a \lstinline{typedef} for this class.
+  \item Program in terms of the \lstinline{typedef}.
+\end{itemize}
+\textbf{Example:}
+\begin{lstlisting}[language=C++]
+// Revised device.h
+#include "NASDevice.h"    // NAS = "Normal Address Space" (32 bits);
+                          // defines class NASDevice
+#include "BASDevice.h"    // BAS = "Big Address Space" (>32 bits);
+                          // defines class BASDevice
+#include "SASDevice.h"    // SAS = "Small Addess Space" (<32 bits)
+                          // defines class SASDevice
+// ...                    // remainder of device.h
+\end{lstlisting}
+By design, each class has a compatible interface.
+\begin{itemize}
+  \item Members with identical names, compatible types, etc.
+\end{itemize}
+
+Driver classes may use any language features:
+\begin{itemize}
+  \item \textbf{Especially inlining.}
+\end{itemize}
+\begin{lstlisting}[language=C++]
+class NASDevice {
+  public:
+    // ...
+    void reset() { ... }  // inline function
+    // ...
+};
+class BASDevice {
+  public:
+    // ...
+    void reset() { ... }  // inline function
+    // ...
+};
+class SASDevice {
+  // ...
+  void reset();           // non-inline function
+  // ...
+};
+\end{lstlisting}
+
+Clients refer to the correct driver type this way:
+\begin{lstlisting}[language=C++]
+Device::tpye d;    // d's type is either NASDevice, BASDevice, or SASDevice,
+d.reset();         // depending on # of bits/pointer
+\end{lstlisting}
+\begin{itemize}
+  \item Device ''computes'' the proper class for type to refer to.
+\end{itemize}
+\begin{lstlisting}[language=C++]
+// Revised device.h
+
+template<int ptrBitsVs32> struct DeviceChoice;
+template<> struct DeviceChoice<-1> {            // when bits/ptr < 32
+  typedef SASDevice type;
+};
+template<> struct DeviceChoice<0> {             // when bits/ptr == 32
+  typedef NASDevice type;
+};
+template<> struct DeviceChoice<1> {             // when bits/ptr > 32
+  typedef BASDevice type;
+};
+struct Device {
+  enum { bitsPerVoidPtr = CHAR_BIT * sizeof(void*) };
+  enum { ptrBitsVs32 = bitsPerVoidPtr > 32  ? 1 :
+                       bitsPerVoidPtr == 32 ? 0 :
+                                             -1  };
+  typedef DeviceChoice<ptrBitsVs32>::type type;
+};
+\end{lstlisting}
+
+\textbf{Compile-time polymorphism is reasonable here:}
+\begin{itemize}
+  \item Device type can be determined during compilation.
+  \begin{itemize}
+    \item No need for flexibility of expense of runtime polymorphism.
+    \item No need to configure linker behavior or give up inlining.
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Summary: Interface-Based Programming}
+\begin{itemize}
+  \item One interface, multiple implementations.
+  \item Polymorphism used to select the implementation.
+  \begin{itemize}
+    \item Runtime polymorphism uses virtual functions.
+    \item Link-time polymorphism uses linker configuration.
+    \item Compile-time polymorphism uses computed typedefs.
+  \end{itemize}
+\end{itemize}
+
+%TODO: weitermachen
+
 
 
 \subsection[RAII]{RAII - RESOURCE ACQUISITION IS INITIALISATION}
@@ -388,259 +1538,18 @@ void f()
 \end{lstlisting}
 
 
-\subsection[pImpl]{pImpl - \textcolor{red}{P}ointer to \textcolor{red}{Impl}ementation}
-\label{sec:pimpl}
-
-\paragraph{Problem} Wie kann man die Implementierung einer Klasse so verstecken, dass man sie
-ändern kann, ohne alle Module, welche die Klasse nutzen, bei einer Änderung
-neu übersetzen zu müssen?
-Nützlich zum Beispiel für eine shared library / DLL.
-
-\paragraph{Lösung}
-\begin{itemize}
-\item Implementierung im .cpp File wird in einem separatem File versteckt
-\item Im Header nur noch die öffentliche Schnittstelle mit einem Pointer auf die Implementierung
-\item Die Implementation wird auf dem Heap angelegt $\rightarrow$ unproblematisch weil diese Objekt beim Programmstart angelegt und erst am Schluss wieder freigegeben wird
-\end{itemize}
-
-\begin{lstlisting}
-#ifndef HIDDENCOUNTER_H_ // public file
-#define HIDDENCOUNTER_H_
-#include <boost/shared_ptr.hpp>
-class HiddenCounter
-{
-public:
-	HiddenCounter(int i=0);
-	void inc();
-	int count() const;
-	void reset();
-private:
-	boost::shared_ptr<class CounterImpl> pImpl;
-};
-#endif // HIDDENCOUNTER_H_
-
-#include "HiddenCounter.h" // private file
-class CounterImpl
-{
-public:
-	CounterImpl(int i): counter(i) {}
-	void inc() { ++counter; }
-	int count() const { return counter;}
-	void reset() { counter=0; }
-private:
-	int counter;
-};
-HiddenCounter::HiddenCounter(int i)
-:pImpl(new CounterImpl(i)) {}
-void HiddenCounter::inc() {pImpl->inc();}
-int HiddenCounter::count() const
-	{ return pImpl->count(); }
-void HiddenCounter::reset() {pImpl->reset();}
-\end{lstlisting}
 
 
 
 
 
 
-\subsection{Polymorphismus}
-\begin{itemize}
-	\item Runtime
-		\begin{itemize}
-			\item Vererbung, virtuelle Funktionen
-			\item Am flexibelsten, kann Informationen verwenden die erst zur Laufzeit bekannt sind
-			\item Teurer Laufzeitaufwand, vptrs, vtpls, alles non-inline
-		\end{itemize}
-	\item Link-Time
-		\begin{itemize}
-			\item Separat kompilierte Funktionen mit gleicher Definition (gleicher Header) (z.B.
-				Hardware abhängiger Code)
-			\item Statisches oder dynamisches linken, siehe auch \nameref{sec:pimpl}
-			\item Je nach Software Anwendung, können z.B. noch Treiber dazugelinkt werden
-		\end{itemize}
-	\item Compile-Time
-		\begin{itemize}
-			\item typedefs um Klasse zu wählen, Templates, \#ifdef's, const expressions
-			\item z.B. Rechnerarchitektur (32Bit, 16Bit) erst bekannt zur Compile Zeit
-		\end{itemize}
-\end{itemize}
-\begin{lstlisting}
-template<int ptrBitsVs32> struct DeviceChoice;
-template<> struct DeviceChoice<-1> { // When bits/ptr < 32
-typedef SASDevice type;
-};
-...
-struct Device {
-    enum { bitsPerVoidPtr = CHAR_BIT * sizeof(void*) };
-    enum { ptrBitsVs32 = bitsPerVoidPtr > 32 ? 1 :  // Condition ? Condition true : Condition false;
-           bitsPerVoidPtr == 32 ? 0 : -1        //Nur Kurzform von if/else funktioniert in enum
-};
-typedef DeviceChoice<ptrBitsVs32>::type type;
-};
-\end{lstlisting}
-
-\subsection{Avoiding Code-Bloat / Templates}
-\subsubsection{Allgemein}
-Um so wenig wie Möglich Code-Bloat zu verursachen sollte folgende beachtet werden.
-\begin{compactitem}
-    \item Exception nur wenn zwingend nötig ist gebrauchen
-    \item stdio anstatt iostreams verwenden
-    \item Excessive inline verhindern, speziell mit Templates beachten
-    \item Explizit überlegt instanzieren (Gemeinsamkeiten in die Basisklasse auslagern)
-    \item Code hoisting bei unabhängigen Template Parametern
-\end{compactitem}
-
-\subsubsection{Templates}
-Bei Template Klassen werden nur die benötigten Funktionen instanziert. Das hat zur Folge das kein Code und keine Daten verbraucht werden. Bei Sicherheitskritischen Systemen wird zudem verlangt das kein Dead-Code vorhanden ist, was mit Templates verhindert werden kann. Templates sind normalerweise im Header definiert, sie werden aber nicht automatisch als inline instanziert. Explizites Inlinen sollte bei Templates vermieden werden, weil dies zu Code-Bloat führt\\
-
-Die Template instanzierung im Header bringt folgende Vorteile
-\begin{compactitem}
-    \item Es muss nur das Header File angepasst werden
-    \item der Client kann Änderungen vornehmen
-    \item Template kann implizit instanziert werden
-    \item Verhinderung von ugly-Include
-\end{compactitem}
-
-Nachteile:
-\begin{compactitem}
-    \item Kompilierzeit erhöht
-    \item Weil die Templates im Header sind wird auch die Kompilierzeit des Clients erhöht
-\end{compactitem}
 
 
-\begin{lstlisting}
-// .h File
-template<typename T>
-class SomeClass {
-  public:
-    SomeClass() { ... } // implizit inline
-    void mf1() { ... }  // implizit inline
-    void mf2();         // nicht implizit inline
-    ...
-};
-template<typename T>
-void SomeClass<T>::mf2() { ... } // im Header definiert, aber nicht inline
-\end{lstlisting}
 
 
-\paragraph{Templates explizit instanzieren}~
-\\
-Die Templates kann man auch explizit Instanzieren. Bei expliziter Instanzierung muss man aber manuell jedes Template machen.\\
-
-Dies ist nützlich um:
-\begin{compactitem}
-	\item Eine Bibliothek von Instanzen zu erstellen
-	\item Um Code-Bloat von schlechten Compilern / Linkern zu vermeiden, welche immer alle Funktionen einer Template-Klasse instanzieren.
-	\item Um Templates in bestimmten Code Section zu instanzieren
-\end{compactitem}~\\
-
-Zusätzliches .cpp File um die mf2() Funktion explizit zu instanzieren.
-\begin{lstlisting}
-// .cpp File
-... // Definitionen der nicht-inline Funktionen von SomeClass
-
-template
-class SomeClass<double>; // Explizite Instanzierung von allen SomeClass
-                         // Funktionen mit T=double; der kompilierte
-                         // Code kommt ins .obj File von diesem cpp
-template
-void SomeClass<int>::mf2(); // Explizite Instanzierung von SomeClass::mf2
-                             // mit T=int; kompilierter code ebenfalls im .obj File
-\end{lstlisting}
-
-Die Ausführbare Datei (.exe) kann mit mehreren Kopien von einer Template Instanz enthalten.
-\begin{compactitem}
-    \item Wenn der Kompiler auch Funktionen instanziert, welche nicht benötigt werden
-    \item Wenn man dynamisch Linked
-    \item Wenn einen schlechten Linker verwendet
-\end{compactitem}
-
-\paragraph{Code Duplizierung Vermeiden / Code Hoisting} (siehe Praktikum 11)
-\\
-Typunabhängiger Code erzeugt zusätlichen Code-Bloat
-\begin{lstlisting}
-template<typename T, std::size_t BUFSZ> // Suspect design: each
-class Buffer {                          // BUFSZ value will yield a
-T buffer[BUFSZ];                        // new set of member functions
-public:
-...
-};
-\end{lstlisting}
-
-\begin{minipage}{15cm}
-Verbesserte Variante (typunabhängiger Code in der Basisklasse)
-\begin{lstlisting}
-template<typename T>
-class BufferBase { // Better design: BufferBase
-...                // is independent of BUFSZ
-};
-template<typename T, std::size_t BUFSZ> // Buffer does only BUFSZ-
-class Buffer: public BufferBase<T> {    // dependent operations.
-...                                     // Ideally, all are inline, so
-};                                      // Buffer classes cost nothing
-\end{lstlisting}
-\end{minipage}~
-\begin{minipage}{3cm}
-\tikzstyle{myarrow}=[->, >=open triangle 90]
-\begin{tikzpicture}
-    \hspace{0.5cm}
-    \draw (0,1) rectangle (3,1.5) node[pos=.5] {BufferBase};
-    \draw (0,0) rectangle (3,1.5) ;
 
 
-    \draw (0,3) rectangle (3,4) node[pos=.5] {Buffer};
-    \draw (0,2.5) rectangle (3,4);
-
-    \draw [myarrow] (1.5,1.5) -- (1.5,2.5);
-
-
- \end{tikzpicture}
-\end{minipage}
-
-\subsection{Interface Programming}
-
-
-\begin{minipage}{11cm}
-\begin{lstlisting}
-class Packet { // base class (interface)
-public:
-...
-virtual bool isWellFormed() const = 0 //=0 =>abstrakt;
-virtual std::string payload() const = 0;
-...
-};
-class TCPPacket: public Packet { // derived class (implementation)
-...
-virtual bool isWellFormed() const;
-virtual std::string payload() const;
-...
-};
-class CANPacket: public Packet { // derived class (implementation)
-...
-virtual bool isWellFormed() const;
-virtual std::string payload() const;
-...
-};
-\end{lstlisting}
-\end{minipage}~
-\begin{minipage}{9cm}
-\tikzstyle{myarrow}=[->, >=open triangle 90]
-\begin{tikzpicture}
-    \hspace{1cm}
-    \draw (1.5,1.5) rectangle (4.5,2) node[pos=.5] {CANPacket};
-    \draw (1.5,0) rectangle (4.5,2) ;
-
-    \draw (5.5,1.5) rectangle (8.5,2) node[pos=.5] {TCPPacket};
-    \draw (5.5,0) rectangle (8.5,2) ;
-
-    \draw (3.5,5.5) rectangle (6.5,6) node[pos=.5] {\textit{Packet}\{abstract\}};
-    \draw (3.5,4) rectangle (6.5,6);
-
-    \draw [myarrow] (3,2) -- (4.5,4);
-    \draw [myarrow] (7,2) -- (5.5,4);
-
- \end{tikzpicture}
-\end{minipage}
 
 
 
