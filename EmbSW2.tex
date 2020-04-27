@@ -8,6 +8,14 @@
 \setDefaultArrayStretch{1.8}
 \usepackage{wrapfig}
 
+\makeatletter
+
+% Newline after a paragraph
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+	{-3.25ex\@plus -1ex \@minus -.2ex}%
+	{1.5ex \@plus .2ex}%
+	{\normalfont\normalsize\bfseries}}
+\makeatother
 
 \title{EmbSW2}
 \author{L. Leuenberger, M. Ehrler, D. Büsser, M. Lehmann, R. Mattle}

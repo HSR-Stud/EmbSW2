@@ -745,7 +745,7 @@ if ((void*)pb2 == (void*)pd) ... // test fails
 C++ has a few features you pay for (in code size and/or runtime speed), even if you don't use them:
 \begin{itemize}
   \item Support for exceptions.
-  \item Support for generalized customizable iostreams, i.e. streams of other than char or wchar_t.
+  \item Support for generalized customizable iostreams, i.e. streams of other than char or wchar\_t.
 \end{itemize}
 These things may reasonably be considered bloat.\\
 Possible workarounds:
@@ -755,7 +755,8 @@ Possible workarounds:
     \item Practical only if you know that no code (including libraries, plug-ins, etc.) throws.
   \end{itemize}
   \item Use stdio instead of iostreams.
-\end{itemize}\\
+\end{itemize}
+
 However, most bloat accusations are unfair, traceable to either:
 \begin{itemize}
   \item Comparing functionality in C++ with lesser functionality in C
@@ -898,7 +899,7 @@ SomeClass<int> sc;  // SomeClass<int> instantiated.
   \end{itemize}
 \end{itemize}
 
-\paragraph{Explicit instantiation}\\
+\paragraph{Explicit instantiation}
 In a .h file:
 \begin{lstlisting}[language=C++]
 template<typename T>  // as before
@@ -960,7 +961,7 @@ Both \lstinline[language=C++]{usageInfo} functions will do essentially the same 
 Note that no templates are involved here.\\
 
 A common way to eliminate such duplication is to move the duplicated code to a base class:
-\begin{lstlisting}[lanugage=C++]
+\begin{lstlisting}[language=C++]
 class Base {
   public:
     void usageInfo(std::ostream& s);  // summarize usage info to s
@@ -1322,7 +1323,7 @@ All functions in this file have access to the Impl struct defined here.
   \item Impl in this file typically different from that in EFDevice.cpp.
   \item Function bodies in this file also typically different.
 \end{itemize}
-\\
+
 Link with:
 \begin{itemize}
   \item EFDevice.o if building for expensive, high-performance box.
@@ -1362,10 +1363,10 @@ Link with:
   \end{itemize}
 \end{itemize}
 
-\paragraph{Device Example Reconsidered}\\
+\paragraph{Device Example Reconsidered}
 Goal:
 \begin{itemize}
-  \item Device class to use determined by platform's #bits/pointer, e.g. 16 vs. 32 bits.
+  \item Device class to use determined by platform's \#bits/pointer, e.g. 16 vs. 32 bits.
   \begin{itemize}
     \item This is known during compilation.
   \end{itemize}
@@ -1471,170 +1472,408 @@ struct Device {
   \end{itemize}
 \end{itemize}
 
+\subsection{Dynamic Memory Managment (DMM)}
+\begin{itemize}
+  \item Dynamic memory managment is present in many embedded systems.
+  \begin{itemize}
+    \item Even if malloc/free/new/delete never called.
+  \end{itemize}
+  \item Key indicator:
+  \begin{itemize}
+    \item Variable-sized objects going in fixed-size pieces of memory.
+    \item E.g., event/error logs, rolling histories, email messages, etc.
+  \end{itemize}
+\end{itemize}
+
+\begin{minipage}{0.6\linewidth}
+Four common worries
+\begin{itemize}
+  \item \textbf{Speed}
+  \begin{itemize}
+    \item Are new/delete/malloc/free fast enough?
+    \item How much variance, i.e. how deterministic?
+  \end{itemize}
+  \item \textbf{Fragmentation}
+  \begin{itemize}
+    \item Will heap devolve into unusably small chunks?
+    \begin{itemize}
+      \item This is external fragementation
+    \end{itemize}
+  \end{itemize}
+  \item \textbf{Memory leaks}
+  \begin{itemize}
+    \item Will some allocations go unallocated?
+  \end{itemize}
+  \item \textbf{Memory exhaustion}
+  \begin{itemize}
+    \item What if an allocation request can't be satisfied?
+  \end{itemize}
+\end{itemize}
+Each concern can be addressed.
+\end{minipage}
+\begin{minipage}{0.4\linewidth}
+  \begin{tikzpicture}
+      \draw (0, 0) rectangle (5, 3) ;
+      \draw (0, -0.7) rectangle (2, -0.2) node[pos=.5] {Free};
+      \filldraw[fill=green!20!white, draw=green!40!black] (3, -0.7) rectangle (5, -0.2) node[pos=.5] {Used};
+      \filldraw[fill=green!20!white, draw=green!40!black] (0,0) rectangle (1,0.5);
+      \filldraw[fill=green!20!white, draw=green!40!black] (2,0) rectangle (5,0.5);
+      \filldraw[fill=green!20!white, draw=green!40!black] (0,0.5) rectangle (2,1);
+      \filldraw[fill=green!20!white, draw=green!40!black] (2.5,0.5) rectangle (5,1);
+      \filldraw[fill=green!20!white, draw=green!40!black] (0.5,1) rectangle (3,1.5);
+      \filldraw[fill=green!20!white, draw=green!40!black] (4.5,1) rectangle (5,1.5);
+      \filldraw[fill=green!20!white, draw=green!40!black] (0,1.5) rectangle (5,2);
+      \filldraw[fill=green!20!white, draw=green!40!black] (0,2) rectangle (0.3,2.5);
+      \filldraw[fill=green!20!white, draw=green!40!black] (0.5,2) rectangle (1,2.5);
+      \filldraw[fill=green!20!white, draw=green!40!black] (1.5,2) rectangle (2,2.5);
+      \filldraw[fill=green!20!white, draw=green!40!black] (2.5,2) rectangle (3,2.5);
+      \filldraw[fill=green!20!white, draw=green!40!black] (4,2) rectangle (5,2.5);
+      \filldraw[fill=green!20!white, draw=green!40!black] (0.3,2.5) rectangle (4.7,3);
+  \end{tikzpicture}
+\end{minipage}
+
+\subsubsection{Grundsätzliches}
+\begin{itemize}
+  \item Es gibt unterschiedliche Strategien, wie DMM umgesetzt werden kann
+  \begin{itemize}
+    \item new/delete/malloc/free ist nicht die einzige Variante
+  \end{itemize}
+  \item Die ''übliche'' Umsetzung mit new/delete beinhaltet die Gefahr der Fragmentierung und dadurch eines nicht deterministischen Verhaltens
+  \item Fragmentierung entsteht jedoch nur durch fortlaufendes new/delete
+  \item Wenn new nur beim Aufstarten (welches meist nicht zeitkritisch ist) durchgeführt wird, delete erst beim Herunterfahren, dann besteht kein Fragmentierungsproblem
+  \item unterschiedliche Konfigurationen können damit sehr elegant gelöst werden
+\end{itemize}
+
+\subsubsection{Allocation Strategies}
+Each less general than malloc/free/new/delete.
+\begin{itemize}
+  \item Typically more suited to embedded use.
+\end{itemize}
+We'll examine:
+\begin{itemize}
+  \item Fully static allocation.
+  \item LIFO allocation.
+  \item Pool allocation.
+  \item Block allocation.
+  \item Region allocation
+  \begin{itemize}
+    \item An optimization that may be combined with other strategies.
+  \end{itemize}
+\end{itemize}
+
+\paragraph{Fully Static Allocation}
+No heap. Objects are either:
+\begin{itemize}
+  \item On the stack: Local to a function.
+  \item Of static storage duration:
+  \begin{itemize}
+    \item At global scope.
+    \item At namespace scope.
+    \item static at file, function, or class scope.
+  \end{itemize}
+\end{itemize}
+Useful when:
+\begin{itemize}
+  \item Exact or minimum number of objects in system statically determinable.
+\end{itemize}
+
+''Allocation'' occurs at build time. Hence:\\
+\begin{tabular}{|l|p{7cm}|}
+  \hline
+  Speed: & essentially infinite; deterministic.\\
+  External Fragmentation: & impossible.\\
+  Memory leaks: & impossible.\\
+  Memory exhaustion: & impossible.\\
+  But: & Initialization of static objects in different translation units (TUs) indeterminate.\\
+  \hline
+\end{tabular}
+
+\paragraph{''Heap Allocation''}
+Two common meanings:
+\begin{itemize}
+  \item Dynamic allocation outside the runtime stack.
+  \item \textit{Irregular} dynamic allocation outside the runtime stack.
+  \begin{itemize}
+    \item Unpredictable numbers of objects.
+    \item Unpredictable object sizes.
+    \item Unpredictable object lifetimes.
+  \end{itemize}
+\end{itemize}
+We'll use the first meaning.
+\begin{itemize}
+  \item The second one is just the most general (i.e., hardest) case of the first.
+\end{itemize}
+User-controlled non-heap memory for multiple variable-sized objects entails heap management:
+\begin{lstlisting}[language=C++]
+uint8_t buffer[someSize]; // this is basically a heap; create/destroy multiple
+// ...                    // different-sized objects in buffer
+\end{lstlisting}
+
+\paragraph{The C++ Memory Management Framework}\\
+User-defined memory management typically built upon:
+\begin{itemize}
+  \item User-defined versions of malloc/free
+  \item User-defined versions of operator new/new[], operator delete/delete[]
+  \item new handlers:
+  \begin{itemize}
+    \item Functions called when operator new/new[] can't satisfy a request.
+  \end{itemize}
+\end{itemize}
+Here we focus on allocation strategies suitable for embedded systems.\\
+
+\textbf{Example: LIFO Heap Allocation}\\
+\includegraphics[width=0.7\linewidth]{images/AdvancedCPP/lifo}
+
+\begin{lstlisting}[language=C++]
+class LIFOAllocator {
+public:
+  LIFOAllocator(uint8_t* heapAddr, std::size_t heapSize)
+    : heapBase(heapAddr), heapEnd(heapAddr+heapSize), heapTop(heapAddr)
+  {}
+  void* allocate(std::size_t sz) throw (std::bad_alloc);  // not shown
+  void deallocate(void* ptr, std::size_t sz) throw ();    // ditto
+private:
+  uint8_t* const heapBase;
+  uint8_t* const heapEnd;
+  uint8_t* heapTop;
+};
+\end{lstlisting}
+\begin{itemize}
+  \item allocat/deallocate behave like class-specific new/delete.
+  \item Pointer data member $\rightarrow$ copying functions should be declared.
+  \item If LIFOAllocator templatized, ctor params could be template params.
+  \begin{itemize}
+    \item The Memory-mapped-IO section has an example.
+  \end{itemize}
+\end{itemize}
+
+Classes can easily build custom new/delete using LIFOAllocator:
+\begin{lstlisting}[language=C++]
+uint8_t heapSpace[heapSpaceSize];           // memory for heap
+LIFOAllocator customAllocator(heapSpace,    // typically at global scope
+                              heapSpaceSize);
+
+void* Widget::operator new(std::size_t bytes) throw (std::bad_alloc)
+{
+  return customAllocator.allocate(bytes);
+}
+
+void Widget::operator delete(void* ptr, std::size_t size) throw ()
+{
+  customAllocator.deallocate(ptr, size);
+}
+\end{lstlisting}
+
+\begin{tabular}{|l|p{7cm}|}
+  \hline
+  Speed: & extremely fast; deterministic. (Assuming you don't run out of memory)\\
+  External Fragmentation: & possible, but easy to detect.\\
+  Memory leaks: & possible, easy to detect.\\
+  Memory exhaustion: & possible.\\
+  \hline
+\end{tabular}
+
+\paragraph{Pool Allocation}
+Heap allocations are all the same size.
+\begin{itemize}
+  \item Typically because all heap objects are one size.
+  \begin{itemize}
+    \item Well-suited for class-specific allocators.
+  \end{itemize}
+  \item Can also work when all heap objects are nearly the same size.
+  \begin{itemize}
+    \item Then all allocations are the size of the largest objects.
+  \end{itemize}
+\end{itemize}
+
+Basic approach:
+\begin{itemize}
+  \item Treat heap memory as an array.
+  \begin{itemize}
+    \item Each element is the size of an allocation unit, therefore no need to store the size of each allocation.
+  \end{itemize}
+  \item Unallocated elements are kept on a \textit{free} list.
+  \item Allocation/deallocation is a simple list operation:
+  \begin{itemize}
+    \item Removing/adding to the front of the free list.
+  \end{itemize}
+\end{itemize}
+
+\begin{lstlisting}[language=C++]
+template<std::size_t elementSize>
+class PoolAllocator {
+public:
+  PoolAllocator(uint8_t* heapAddr, std::size_t heapSize);
+  void* allocate(std::size_t sz) throw (std::bad_alloc);
+  void deallocate(void* ptr, std::size_t sz) throw ();
+private:
+  union Node {                 // pool element
+    uint8_t data[elementSize]; // when in use
+    Node* next;                // on free list
+  };
+  Node* freeList;
+};
+\end{lstlisting}
+\begin{itemize}
+  \item Pointer data member $\rightarrow$ copying functions should be declared
+  \item If PoolAllocator untemplatized, template param could be ctor param.
+  \item Ideally,, we'd ensure that elementSize $>$ 0, better: $\geq$ sizeof(Node*).
+\end{itemize}
+
+\textbf{PoolAllocator::PoolAllocator():}
+\begin{lstlisting}[language=C++]
+template<std::size_t elementSize>
+PoolAllocator<elementSize>::PoolAllocator(uint8_t* heapAddr,
+                                          std::size_t heapSize)
+  : freeList(reinterpret_cast<Node*>(heapAddr))
+{
+  const std::size_t nElems = heapSize / sizeof(Node);
+  for (std::size_t i = 0; i < nElems-1; ++i)    // link array elements
+    freeList[i].next = &freeList[i+1];
+  freeList[nElems-1].next = nullptr;            // nullptr from and after C++11
+}
+\end{lstlisting}
+\includegraphics[width=0.7\linewidth]{images/AdvancedCPP/poolAllocatorConstructor}
+
+\textbf{PoolAllocator::allocate():}
+\begin{lstlisting}[language=C++]
+template<std::size_t elementSize>
+void* PoolAllocator<elementSize>::allocate(std::size_t bytes) throw (std::bad_alloc)
+{
+  if (bytes != elementSize)
+    return ::operator new(bytes);
+  if (freeList != mullptr)
+  {
+    void* pMem = freeList;        // alignment?
+    freeList = freeList->next;
+    return pMem;
+  }
+  else
+    throw std::bad_alloc();
+}
+\end{lstlisting}
+\begin{minipage}{0.6\linewidth}
+Variation: allow bytes $\leq$ elementSize, i.e., that the request fits.
+\begin{itemize}
+  \item More flexible, but can lead to internal fragmentation.
+\end{itemize}
+\end{minipage}
+\begin{minipage}{0.4\linewidth}
+  \includegraphics[width=\linewidth]{images/AdvancedCPP/internalFragmentation.png}
+\end{minipage}
+
+\textbf{PoolAllocator::deallocate():}
+\begin{lstlisting}[language=C++]
+template<std::size_t elementSize>
+void PoolAllocator<elementSize>::deallocate(void* ptr,
+                                            std::size_t size) throw ()
+{
+  if (ptr == nullptr)
+    return;
+  if (size != elementSize)
+  {
+    ::operator delete(ptr);
+    return;
+  }
+  Node* p = static_cast<Node*>(ptr);
+  p->next = freeList;
+  freeList = p;
+}
+\end{lstlisting}
+
+\begin{tabular}{|l|p{7cm}|}
+  \hline
+  Speed: & extremely fast; deterministic. (Assuming you don't run out of memory and no wrong-sized requests)\\
+  External Fragmentation: & impossible.\\
+  Memory leaks: & possible.\\
+  Memory exhaustion: & possible.\\
+  \hline
+\end{tabular}
+
+\paragraph{Block Allocation}
+Essentially a set of pools with different element (block) sizes:
+\includegraphics[width=0.5\linewidth]{iamges/AdvancedCPP/blockAllocation}
+n-byte requests handled by first pool with size $\geq$ n and non-full free list.\\
+Useful when:
+\begin{itemize}
+  \item Allocations needed for a relatively small number of object sizes.
+  \begin{itemize}
+    \item Otherwise internal fragmentation $\rightarrow$ wasted memory.
+  \end{itemize}
+\end{itemize}
+Many RTOSes offer native support for block allocation.
+
+\begin{tabular}{|l|p{7cm}|}
+  \hline
+  Speed: & fast; nearly deterministic (and boundable). (Assuming you don't run out of memory and no requests larger than handled by the largest-chunk pool). Speed isn't totally deterministic, because you may need to examine multiple pools to find one with sufficient free memory.\\
+  External Fragmentation: & impossible.\\
+  Memory leaks: & possible.\\
+  Memory exhaustion: & possible.\\
+  \hline
+\end{tabular}
+
+\paragraph{General Variable-Sized Allocation}
+What new/delete/malloc/free already do.
+\begin{itemize}
+  \item Desirable only if vendor-supplied routines unacceptable.
+\end{itemize}
+Possible motivations:
+\begin{itemize}
+  \item Detect overruns/underruns.
+  \item Gather heap usage data.
+  \begin{itemize}
+    \item Size and lifetime distributions, temporal usage patterns, etc.
+  \end{itemize}
+  \item Support data structre clustering.
+  \item Avoid thread-safety penalty.
+  \begin{itemize}
+    \item ST applications.
+    \item Thread-local allocators in MT applications.
+  \end{itemize}
+\end{itemize}
+
+\paragraph{Region Allocation}
+An optimization for when memory for all of a heap's objects can be released at once.
+\begin{itemize}
+  \item Clients call a region member function at the appropriate time.
+  \begin{itemize}
+    \item Faster than deallocating each object's memory individually.
+  \end{itemize}
+  \item Common with LIFO allocators, but compatible with pools, blocks, etc.
+  \item operator delete for individual objects a no-op, hence very fast.
+  \begin{itemize}
+    \item Can still use delete operator to invoke destructors:\\
+    \begin{lstlisting}[language=C++]
+    delete p;  // invoke *p's dtor, then operator delete on p;
+               // if *p in a region, operator delete is a no-op
+    \end{lstlisting}
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Summary}
+\begin{itemize}
+  \item Many embedded systems include dynamic memory management.
+  \item Key issues are speed, fragmentation, leaks, and memory exhaustion.
+  \item LIFO is fast and w/o fragmentation, but object lifetimes must be LIFO.
+  \item Pools are fast and w/o fragmentation, but object sizes are limited.
+  \item Block allocation is essentially multiple pool allocators.
+  \item Regions excel when all heap objects can be released simultaneously.
+\end{itemize}
 %TODO: weitermachen
 
 
 
-\subsection[RAII]{RAII - RESOURCE ACQUISITION IS INITIALISATION}
-
-\paragraph{Motivation}
-Resourcen (Datei, Speicher, Semaphoren) müssen vor Gebrauch angefordert und danach wieder freigegeben werden.
-Dazwischen könnte aber z.B. eine Exception auftreten, was das Freigeben verhindert.
-
-\paragraph{Lösung}
-Damit die Resource trotzdem freigegeben wird, kann sie als Klassen-Objekt instanziert werden. Das Objekt wird automatisch gelöscht wenn es seine Gültigkeit (out-of-scope) verliert.
-\begin{compactitem}
-	\item Konstruktor fordert die Resource an
-	\item Destruktor gibt sie wieder frei
-\end{compactitem}
-
-
-\paragraph{Heap-Objekte}
-Für Heap-Objekte stellt die Boost-Library Templates für diesen Zweck zur Verfügung.\\
-Problem:
-\begin{lstlisting}
-void f()
-{
-	Person* p = new Person("irgendwer");
-	// mach etwas mit p
-	// was ist, wenn vorher eine Exception geworfen wird?
-	delete p;
-}
-\end{lstlisting}
-
-Lösung:
-\begin{lstlisting}
-void f()
-{
-	boost::shared_ptr<Person> p(new Person("irgendwer"));
-	// mach etwas mit p
-	// Beim Verlassen des Blocks räumt Destruktor von shared_ptr
-	// automatisch auf und löscht die Person
-}
-\end{lstlisting}
-
-
-\paragraph{Semaphoren} Für Semaphoren könnte die folgende Implementierung verwendet werden
-
-
-\begin{lstlisting}
-class Semaphore
-{
-public:
-	Semaphore(int s=0): id(s) {getSem(s);}
-	~Semaphore() {releaseSem(id);}
-private:
-	int id;
-};
-\end{lstlisting}
-\begin{lstlisting}
-void f()
-{
-  // kritischer Abschnitt
-  {
-    Semaphore myS;
-  } // hier wird Semaphore freigegeben, Destruktor wird aufgerufen
-}
-\end{lstlisting}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\subsection{Dynamic Memory Managment (DMM)}
-Die vier Sorgen:\\
-\begin{tabular}{p{12cm}p{5cm}}
-
-\vspace{-2cm}
-\begin{itemize}
-\item Schnelligkeit: Sind \textbf{new/delete/malloc/free} schnell genug?
-\item Fragmentierung: Entstehen im Heap unbrauchbar kleine Bereiche?
-\item Speicherlecks: Werden einige Bereiche nicht frei gegeben?
-\item Speicherersch"opfung: Wird eine Allokation nicht gemacht?
-
-\end{itemize}
-&
-
-\begin{minipage}{5cm}
-\begin{tikzpicture}
-    \draw (0, 0) rectangle (5, 3) ;
-    \draw (0, -0.7) rectangle (2, -0.2) node[pos=.5] {frei};
-    \filldraw[fill=green!20!white, draw=green!40!black] (3, -0.7) rectangle (5, -0.2) node[pos=.5] {besetzt};
-    \filldraw[fill=green!20!white, draw=green!40!black] (0,0) rectangle (1,0.5);
-    \filldraw[fill=green!20!white, draw=green!40!black] (2,0) rectangle (5,0.5);
-    \filldraw[fill=green!20!white, draw=green!40!black] (0,0.5) rectangle (2,1);
-    \filldraw[fill=green!20!white, draw=green!40!black] (2.5,0.5) rectangle (5,1);
-    \filldraw[fill=green!20!white, draw=green!40!black] (0.5,1) rectangle (3,1.5);
-    \filldraw[fill=green!20!white, draw=green!40!black] (4.5,1) rectangle (5,1.5);
-    \filldraw[fill=green!20!white, draw=green!40!black] (0,1.5) rectangle (5,2);
-    \filldraw[fill=green!20!white, draw=green!40!black] (0,2) rectangle (0.3,2.5);
-    \filldraw[fill=green!20!white, draw=green!40!black] (0.5,2) rectangle (1,2.5);
-    \filldraw[fill=green!20!white, draw=green!40!black] (1.5,2) rectangle (2,2.5);
-    \filldraw[fill=green!20!white, draw=green!40!black] (2.5,2) rectangle (3,2.5);
-    \filldraw[fill=green!20!white, draw=green!40!black] (4,2) rectangle (5,2.5);
-    \filldraw[fill=green!20!white, draw=green!40!black] (0.3,2.5) rectangle (4.7,3);
-\end{tikzpicture}
- \end{minipage}\\
-
-
-% Fragmentierungsproblem:\\
-% \multicolumn{2}{l}{
-%     \begin{minipage}
-%     \begin{itemize}
-%         \item tritt auf wenn während der Laufzeit new/delete gemacht wird
-%         \item kann verhindert werden wenn nur beim Heruntefahren delete gemacht wird
-%         \item die Speicherbeschreibung wird langsam, weil beim erneuten allozieren, zuerst ein Speicherbereich gesucht werden muss, welcher gross genug ist
-%         \item es können unbrauchbare kleine Speicherbereiche entstehen
-%     \end{itemize}
-%     \end{minipage}
-%}
-
-\end{tabular}
-
-Fragmentierungsproblem:
-\begin{itemize}
-    \item tritt auf wenn während der Laufzeit new/delete gemacht wird
-    \item kann verhindert werden wenn nur beim Heruntefahren delete gemacht wird
-    \item die Speicherbeschreibung wird langsam, weil beim erneuten allozieren, zuerst ein Speicherbereich gesucht werden muss, welcher gross genug ist
-    \item es können unbrauchbare kleine Speicherbereiche entstehen
-\end{itemize}
-
-
-
-
-
-% \begin{compactitem}
-% \item Fully Static Allocation
-% \item LIFO Allocation
-% \item Pool Allocation
-% \item Block Allocation
-% \item Region Allocation
-% \end{compactitem}
-\paragraph{Allocation Strategies: }~\\
+\paragraph{Allocation Strategies: }
 \begin{tabular}{l||p{7cm}|p{7cm}|}
                         &  Fully Static Allocation & LIFO Heap Allocation\\
     \hline \hline
                         &   Daten nicht auf dem Heap $\rightarrow$ Exakte bzw. max. Anzahl der Objekte ist determinierbar. & Dynamische Allokation ausserhalb des runtime Stacks $\rightarrow$ Diese Allokationen sind immer LIFO (wie beim Stack)\\
-    Speed               &   praktisch unendlich, deterministisch    & Sehr schnell, deterministisch \\
-    Fragmentation       &   Nicht m"oglich                          & M"oglich, einfach zu erkennen\\
-    Memory leaks        &   Nicht m"oglich                          & M"oglich, einfach zu erkennen\\
-    Memory exhaustion   &   Nicht m"oglich                          & M"oglich\\
-
-
-
+    Speed               &   essentially infinite; deterministic.    & Sehr schnell, deterministisch \\
+    Fragmentation       & impossible. & M"oglich, einfach zu erkennen\\
+    Memory leaks        & impossible. & M"oglich, einfach zu erkennen\\
+    Memory exhaustion   & impossible. & M"oglich\\
+\hline \hline
+But: & Initialization order of static objects in different translation units (TUs) indeterminate. & \\
 \end{tabular}
 
 \vspace{1cm}
@@ -1990,3 +2229,65 @@ new (reinterpret_cast<void*>(0xFFFF0000)) OutputDevice3; // fine
 delete pd; // error! another implicit destructor invocation
 \end{lstlisting}
 \end{tabular}
+
+\subsection[RAII]{RAII - RESOURCE ACQUISITION IS INITIALISATION}
+
+\paragraph{Motivation}
+Resourcen (Datei, Speicher, Semaphoren) müssen vor Gebrauch angefordert und danach wieder freigegeben werden.
+Dazwischen könnte aber z.B. eine Exception auftreten, was das Freigeben verhindert.
+
+\paragraph{Lösung}
+Damit die Resource trotzdem freigegeben wird, kann sie als Klassen-Objekt instanziert werden. Das Objekt wird automatisch gelöscht wenn es seine Gültigkeit (out-of-scope) verliert.
+\begin{compactitem}
+	\item Konstruktor fordert die Resource an
+	\item Destruktor gibt sie wieder frei
+\end{compactitem}
+
+
+\paragraph{Heap-Objekte}
+Für Heap-Objekte stellt die Boost-Library Templates für diesen Zweck zur Verfügung.\\
+Problem:
+\begin{lstlisting}
+void f()
+{
+	Person* p = new Person("irgendwer");
+	// mach etwas mit p
+	// was ist, wenn vorher eine Exception geworfen wird?
+	delete p;
+}
+\end{lstlisting}
+
+Lösung:
+\begin{lstlisting}
+void f()
+{
+	boost::shared_ptr<Person> p(new Person("irgendwer"));
+	// mach etwas mit p
+	// Beim Verlassen des Blocks räumt Destruktor von shared_ptr
+	// automatisch auf und löscht die Person
+}
+\end{lstlisting}
+
+
+\paragraph{Semaphoren} Für Semaphoren könnte die folgende Implementierung verwendet werden
+
+
+\begin{lstlisting}
+class Semaphore
+{
+public:
+	Semaphore(int s=0): id(s) {getSem(s);}
+	~Semaphore() {releaseSem(id);}
+private:
+	int id;
+};
+\end{lstlisting}
+\begin{lstlisting}
+void f()
+{
+  // kritischer Abschnitt
+  {
+    Semaphore myS;
+  } // hier wird Semaphore freigegeben, Destruktor wird aufgerufen
+}
+\end{lstlisting}
