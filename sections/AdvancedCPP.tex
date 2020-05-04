@@ -1609,7 +1609,7 @@ uint8_t buffer[someSize]; // this is basically a heap; create/destroy multiple
 // ...                    // different-sized objects in buffer
 \end{lstlisting}
 
-\paragraph{The C++ Memory Management Framework}\\
+\paragraph{The C++ Memory Management Framework}
 User-defined memory management typically built upon:
 \begin{itemize}
   \item User-defined versions of malloc/free
@@ -1778,6 +1778,7 @@ void PoolAllocator<elementSize>::deallocate(void* ptr,
   Node* p = static_cast<Node*>(ptr);
   p->next = freeList;
   freeList = p;
+  ptr = nullptr;  // increases safety
 }
 \end{lstlisting}
 
@@ -1792,7 +1793,7 @@ void PoolAllocator<elementSize>::deallocate(void* ptr,
 
 \paragraph{Block Allocation}
 Essentially a set of pools with different element (block) sizes:
-\includegraphics[width=0.5\linewidth]{iamges/AdvancedCPP/blockAllocation}
+\includegraphics[width=0.5\linewidth]{images/AdvancedCPP/blockAllocation}
 n-byte requests handled by first pool with size $\geq$ n and non-full free list.\\
 Useful when:
 \begin{itemize}
@@ -1859,8 +1860,732 @@ An optimization for when memory for all of a heap's objects can be released at o
   \item Block allocation is essentially multiple pool allocators.
   \item Regions excel when all heap objects can be released simultaneously.
 \end{itemize}
+
+
+\subsection{C++ and ROMability}
+Anything can be burned into ROM and loaded into RAM prior to program execution.
+The more interesting question is:
+\begin{itemize}
+  \item What may remain in ROM as the program runs?
+\end{itemize}
+The C++ standard is silent on ROMing:
+\begin{itemize}
+  \item It allows essentially anything, guarantess nothing.
+  \item What's ROMable is thus up to your compiler and linker.
+\end{itemize}
+In what follows, we disucss what is \textit{technically possible}.
+\begin{itemize}
+  \item Your compiler/linker probably imposes some restrictions.
+\end{itemize}
+
+\subsubsection{C++ and ROM}
+To understand the restrictions, we need to know what a ''POD type'' is.
+\begin{itemize}
+  \item All C data types are POD (Plain Old Data) types.
+  \item C++11 classes, structs, and unions are generally POD types if they lack:
+  \begin{itemize}
+    \item Base classes
+    \item Virtual functions
+    \item Non-static data members of reference type
+    \item User-defined constructors, destructor, or assignment operators
+    \item Non-static data members of non-POD types
+  \end{itemize}
+\end{itemize}
+Essentially, a C++11 class or struct is a POD type if it's ''laid out like C and its semantics are preserved if it's memcpyed.''
+\begin{itemize}
+  \item But note that non-virtual member functions are allowed.
+  \item Static data and static member functions are allowed, too.
+\end{itemize}
+
+Common restrictions on ROMing data:
+\begin{itemize}
+  \item Many compilers/linkers will ROM only statically initialized POD types.
+  \begin{itemize}
+    \item As we'll see, it is technically possible for some dynamically initialized non-PODs to be ROMed.
+  \end{itemize}
+  \item Some compilers/linkers woll ROM structs, but not classes.
+  \begin{itemize}
+    \item There is no technical reason for this distinction.
+  \end{itemize}
+  \item By the way: ROM is slower than RAM (but RAM is more expensive)
+\end{itemize}
+
+Program instructions can always be ROMed.
+Data in C++ program can be ROMed if it meets two criteria:
+\begin{itemize}
+  \item Its value is known before runtime.
+  \begin{itemize}
+    \item i.e., either the compiler or the linker knows it or can compute it.
+  \end{itemize}
+  \item It can't be modified at runtime.
+\end{itemize}
+
+Examples:
+\begin{lstlisting}[language=C++]
+static const int table[] = {1, 2, 3};    // table is ROMable
+
+const char* pc1 = "Hello World";         // "Hello World" is ROMable
+                                         // (but pc1 is not)
+
+const char* const pc2 = "World";         // "World" is ROMable (and may be
+                                         // shared with "Hello World"
+                                         // pc2 is also ROMable
+\end{lstlisting}
+
+\paragraph{TI: Const types}
+Hidden Cost
+\begin{itemize}
+  \item Global const variables in C may be allocated to SRAM and have their init value in flash.
+  \item In all cases, the value would normally be loaded from memory (unless the compiler can see its initial value).
+  \item Static const scalar variables are like \lstinline{#define} macro constants and will not be stored in memory if not needed (address not taken, value small enough to be an immediate).
+\end{itemize}
+
+Cortex-M3
+\begin{itemize}
+  \item Different compilers and optimization levels will affect how global const is treated.
+  \item Static const is more reliable for all compilers.
+  \item Enum constants are also a good choice (and can be used with normal ints).
+\end{itemize}
+
+\subsubsection{C++ und ROM: int-Konstanten}
+\begin{itemize}
+  \item Explizit vorhandene int-Konstanten im Sourcecode sollten wegoptimiert werden. Im Normalfall ergibt eine int-Konstante eine Immediate-Adressierung (MOVE \#123, R1)
+  \item 3 Möglichkeiten für die Definition
+  \begin{itemize}
+    \item const int
+    \begin{compactitem}
+      \item gute Möglichkeit
+      \item wenn Adresse genommen wird, kann die Konstante nicht wegoptimiert werden
+      \item u.U. mehrere Kopien im Code
+    \end{compactitem}
+    \item enum
+    \begin{compactitem}
+      \item allerbeste Möglichkeit
+      \item sollte ausschliesslich verwendet werden
+      \item (negative Werte sind auch möglich)
+    \end{compactitem}
+    \item \#define
+    \begin{compactitem}
+      \item keine Vorteile ggü. anderen Methoden
+      \item kein Scope
+      \item können nicht private oder protected sein
+    \end{compactitem}
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{C++ und ROM: double-Konstanten}
+\begin{itemize}
+  \item double-Konstanten können kaum wegoptimiert werden (Immediate-Adressierung geht normalerweise nicht)
+  \item Ausnahme: bei 64 Bit-Systemen kann es gehen oder bei guter FPU
+  \item 2 Möglichkeiten für die Definition
+  \begin{itemize}
+    \item const double
+    \begin{compactitem}
+      \item gute Möglichkeit
+    \end{compactitem}
+    \item \#define
+    \begin{compactitem}
+      \item Makroproblematik
+      \item private, protected nicht möglich
+      \item häufig mehrere Kopien dieser Konstanten im Code
+    \end{compactitem}
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{C++ and ROM: Objects}
+\begin{itemize}
+  \item Objects may be ROMed if the following are true:
+  \begin{itemize}
+    \item They are declared const at their point of definition.
+    \item They contain no mutable data members.
+    \item They are initialized with values known during compilation.
+    \begin{itemize}
+      \item Such ''knowledge'' might come from dataflow analysis, etc.
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+\begin{lstlisting}[language=C++]
+struct Point
+{
+  int x;
+  int y;
+};
+
+const Point origin = {0, 0};  // origin is ROMable
+\end{lstlisting}
+
+\subsubsection{C++ and ROM: Compiler Generated Data}
+Some compiler generated data structures can usually be ROMed:
+\begin{itemize}
+  \item Virtual function tables
+  \item RTTI (RunTime Type Information) tables and type\_info objects
+  \item Tables supporting exception handling
+\end{itemize}
+ROMing these objects may be impossible if they are dynamically linked from shared libraries.
+
+\subsubsection{Summary: C++ and ROM}
+\begin{itemize}
+  \item Most compilers/linkers are willing to ROM statically initialized POD types.
+  \begin{itemize}
+    \item Aggressive build chains may go beyond this.
+  \end{itemize}
+  \item ROMable PODs can be encapsulated by making them protected or private in a non-POD type.
+  \item Compiler-generated data structures are typically ROMable.
+\end{itemize}
+
+
+\subsection{Modeling Memory Mapped IO (MMIO)}
+Many subsystems map IO devices to fixed parts of a program's address space.
+\begin{itemize}
+  \item Input registers are often separate from output registers.
+  \item Control/status registers are often separate from data registers.
+  \begin{itemize}
+    \item Different status register bits convey information such as readiness or whether device interrupts are enabled.
+  \end{itemize}
+\end{itemize}
+C++ makes it easy to make memory-mapped IO devices look like objects with natural interfaces.
+\begin{itemize}
+  \item \textbf{At zero cost.}
+  \begin{itemize}
+    \item Provided you have a decent compiler :-)
+  \end{itemize}
+\end{itemize}
+
+Memory-mapped devices may require special handling, e.g.,
+\begin{itemize}
+  \item Atomic reads/writes may require explicit synchronization.
+  \item Individual bits may sometimes be read-only, other times write-only.
+  \item Clearing a bit may require assigning a 1 to it (positive vs. negative logic).
+  \item One control register may control more than one data register.
+  \begin{itemize}
+    \item E.g., bits 0-3 are for one data register, bits 4-7 for another.
+  \end{itemize}
+\end{itemize}
+What follows is a \textit{framework} for modeling memory-mapped IO, not a prescription.
+\begin{itemize}
+  \item The framework tells you where to put whatever special handling your devices require.
+  \item It's an elegant and efficient way to define a HAL.
+\end{itemize}
+
+\subsubsection{Grundsätzliches zu MMIO}
+(siehe HAL in EmbSW1)
+\begin{itemize}
+  \item Embedded Systems werden sehr intensiv mittels Registern programmier, d.h. durch Setzen oder Löschen einzelner Bits
+  \item Register können mittels Bitfeldern modelliert werden.
+  \begin{itemize}
+    \item Nicht portabel
+    \item Können sehr ineffizient sein (manchmal aber auch sehr effizient)
+    \item Erlauben nur sehr eingeschränkte Abstraktion
+    \item Sollten generell vermieden werden
+  \end{itemize}
+  \item Register müssen auf eine bestimmte Adresse gemappt werden können
+  \item MMIO Register \textbf{müssen} mit \textbf{volatile} gekennzeichnet werden
+\end{itemize}
+
+\subsubsection{Modeling a Control Register}
+Suppose we have a fout-byte control register such that:
+\begin{itemize}
+  \item Bit 0 indicates readiness: 1 $\rightarrow$ ready, 0 $\rightarrow$ not ready.
+  \item Bit 2 indicates whether interrupts are enabled: 1 $\rightarrow$ enabled, 0 $\rightarrow$ not.
+\end{itemize}
+\begin{lstlisting}[language=C++]
+enum {bit0 = 0x1, bit1 = 0x2, ... , bit31 = 0x80000000};
+class ControlReg {
+public:
+	bool ready() const {return (regValue & bit0) == bit0;}
+	bool interruptsEnabled() const {return (regValue & bit2) == bit2;}
+	void enableInterrupts() {regValue |= bit2;}
+	void disableInterrupts() {regValue &= ~bit2;}
+private:
+	volatile uint32_t regValue;		// register data may change outside program control
+};
+\end{lstlisting}
+
+Notes:
+\begin{itemize}
+  \item All functions are inline, so their existence should incur no cost.
+  \item enableInterrupts() and disableInterrupts() use read/modify/write instructions, so they may be subject to race conditions in multithreaded systems.
+  \item We assume that the register is both readable and writable.
+  \begin{itemize}
+    \item If it's write-only, you'll need to cache the most recently written value.
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Placement new}
+\begin{itemize}
+  \item Die Aufgabe des Operators new ist nicht primär, Speicher zu allozieren, sondern eine Adresse zurückzugeben auf einen bestimmten Speicherbereich.
+  \item Üblicherweise wird new zusammen mit dem Allozieren von Speicher verwendet.
+  \item \textbf{Placement new} ist eine Variante des new-Operators, die ein Objekt an eine bestimmte Stelle im Speicher legt. Eine Speicherallozierung ist damit nicht verbunden.
+  \item Ein durch placement new platziertes Objekt muss und darf nicht mit delete gelöscht werden!
+\end{itemize}
+
+\paragraph{Place a Register at Address Using Placement mew}
+\begin{lstlisting}[language=C++]
+// create a ControlReg object at address 0xFFFF0000 and make pcr point to it
+ControlReg* const pcr = new (reinterpret_cast<void*>(0xFFFF0000)) ControlReg;
+
+// avoid pointer syntax
+ControlReg& cr = *new (reinterpret_cast<void*>(0xFFFF0000)) ControlReg;
+
+while (!cr.ready())               // wait until the ready bit is on
+{}
+cr.enableInterrupts();            // enable device interrupts
+if (cr.interruptsEnabled()) ...   // if interrupts are enabled
+\end{lstlisting}
+
+\paragraph{Placement new vs. Raw Casts}
+Our use of placement new calls the default ControlReg constructor.
+\begin{itemize}
+  \item It's implicit, inline, and empty.
+  \begin{itemize}
+    \item It should optimize away (i.e., to zero instructions).
+    \item \textbf{If it doesn't and you care} (or if your compiler doesn't support placement new), consider a reinterpret\_cast instead of placement new:
+  \end{itemize}
+\end{itemize}
+\begin{lstlisting}[language=C++]
+// pointer version
+ControlReg* const pcr = reinterpret_cast<ControlReg*>(0xFFFF0000);
+
+// reference version
+ControlReg& cr = *reinterpret_cast<ControlReg*>(0xFFFF0000);
+\end{lstlisting}
+\textbf{Placement new is typically preferable to a raw reinterpret\_cast}:
+\begin{itemize}
+  \item It works if the device object's constructor has work to do.
+  \item A raw cast will behave improperly in that case.
+\end{itemize}
+But there are times when reinterpret\_cast can be superior:
+\begin{itemize}
+  \item If placement new isn't optimized to zweo instructions (and you care).
+  \item If you want to ROM the address of an IO register \textit{and}
+  \begin{itemize}
+    \item Your compiler will ROM the result of a reinterpret\_cast \textit{and}
+    \item It won't ROM the result of a use of placement new.
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Placing Objects via Compiler Extensions}
+With some compilers/linkers, there is another alternative:
+\begin{itemize}
+  \item Use a compiler extension to place an object at a specific address.
+\end{itemize}
+Examples:
+\begin{itemize}
+  \item Altium Tasking compilers offer this kind of syntax:\\
+  \lstinline[language=C++]{ControlReg cr __at(0xFFFF0000);}
+  \item The Wind River Diab compiler offers this:\\
+  \begin{lstlisting}[language=C++]
+  #pragma section MMIO address=0xFFFF0000
+  #pragma use_section MMIO cr
+  ControlReg cr;
+  \end{lstlisting}
+\end{itemize}
+Such extensions may impose restrictions:
+\begin{itemize}
+  \item E.g., such manually-placed objects may have to be POD types.
+  \item It's not portable.
+\end{itemize}
+Payoffs:
+\begin{itemize}
+  \item No need to access MMIO objects indirectly through a pointer.
+  \item No need to allocate space for a pointer to each MMIO object.
+\end{itemize}
+
+\subsubsection{Placing Objects via Linker Commands}
+Linkers may support specification of where objects are to be placed:
+\begin{itemize}
+  \item C++ source code is ''normal''.
+  \begin{itemize}
+    \item No object placement information is present.\\
+    \lstinline[language=C++]{ControlReg cr;}
+  \end{itemize}
+  \item Linker scripts map C++ objects to memory locations, often by:
+  \begin{itemize}
+    \item Mapping objects to sections.
+    \begin{itemize}
+      \item The linker sees only \textit{mangled} names.
+    \end{itemize}
+    \item Mapping sections to address ranges.
+  \end{itemize}
+\end{itemize}
+Result is more portable C++ code.
+\begin{itemize}
+  \item Platform-specific addresses mentioned only in linker scripts.
+\end{itemize}
+
+\subsubsection{Modeling an Output Device, Take 1}
+An uint32\_t-sized output device register can be modeled as a ControlReg object bundled with the uint32\_t-sized data it controls:
+\begin{lstlisting}[language=C++]
+class OutputDevice1
+{
+public:
+  OutputDevice1(uint32_t controlAddr,
+                uint32_t dataAddr);
+  ControlReg& control() {return *pcr;}      // get ControlReg
+  void write(uint32_t value) {*pd = value;} // write data to device
+private:
+  ControlReg* const pcr;                    // ptr to ControlReg; note const
+  volatile uint32_t* const pd;              // ptr to data; note const and volatile
+};
+\end{lstlisting}
+
+The constructor makes pcr and pd point to the correct addresses:
+\begin{lstlisting}[language=C++]
+OutputDevice1::OutputDevice1(uint32_t controlAddr,
+                             uint32_t dataAddr)
+  : pcr(new (reinterpret_cast<void*>(controlAddr)) ControlReg),
+    pd(new (reinterpret_cast<void*>(dataAddr)) uint32_t)
+{}
+\end{lstlisting}
+
+Clients use the class like this:
+\begin{lstlisting}[language=C++]
+OutputDevice1 od(0xFFFF0000,     // ctrl reg addr
+                 oxFFFF0004);    // data reg addr
+uint32_t x;
+// ...
+while (!od.control().ready())   // wait until the ready bit is on
+{}
+od.write(x);                    // write x to od
+// ...
+\end{lstlisting}
+
+\subsubsection{Modeling an Output Device, Take 2}
+MMIO addresses are compile-time constants, so it shouldn't be necessary to store them as data members like pcr and pd.\\
+A template with non-type parameters makes it easy not to:
+\begin{lstlisting}[language=C++]
+template<uint32_t controlAddr, uint32_t dataAddr>
+class OutputDevice2
+{
+public:
+                                                // ctor now gone
+  static ControlReg& control()
+  {return *reinterpret_cast<ControlReg*>(controlAddr);}
+  static void write(uint32_t value)
+  {*reinterpret_cast<volatile uint32_t*>(dataAddr) = value;}
+                                                // data members now gone
+};
+\end{lstlisting}
+OutputDevice2 uses static member functions to avoid passing \textit{this} pointers.
+
+This example assumes the ControlReg constructor/destructor do nothing.
+\begin{itemize}
+  \item Otherwise OutputDevice2 will need a constructor/destructor that call them (e.g., via placement new).
+\end{itemize}
+\begin{lstlisting}[language=C++]
+template<uint32_t controlAddr, uint32_t dataAddr>
+class OutputDevice2
+{
+public:
+  OutputDevice2()
+  {new (reinterpret_cast<ControlReg*>(controlAddr)) ControlReg;}
+  // ...
+};
+\end{lstlisting}
+\textbf{Such initialization/cleanup must occur only once!}
+\begin{itemize}
+  \item Problematic if multiple OutputDevice2 objects exist for a single hardware device.
+  \begin{itemize}
+    \item Use Singleton to prevent multiple instantiations?
+    \item Use static alreadyInitialized/alreadyCleanedup flags?
+  \end{itemize}
+\end{itemize}
+
+
+Client code looks almost the same as before:
+\begin{lstlisting}[language=C++]
+OutputDevice2<0xFFFF0000, 0xFFFF0004> od;
+uint32_t x;
+// ...
+while (!od.control().ready())  // wait until the ready bit is on
+{}
+od.write(x);                   // write x to od
+// ...
+\end{lstlisting}
+Advantages of this approach:
+\begin{itemize}
+  \item OutputDevice2 objects are smaller than OutputDevice1 objects.
+  \item OutputDevice2 code may also be smaller/faster than OutputDevice1 code.
+  \begin{itemize}
+    \item No need to go indirect via a this pointer.
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Modeling an Output Device, Take 3}
+\textit{If}, as in this case, the \textbf{control and data registers are in contiguous memory}, you can use a third design:
+\begin{itemize}
+  \item Create objects \textit{directly} on the MMIO locations:
+\end{itemize}
+\begin{lstlisting}[language=C++]
+class OutputDevice3
+{
+public:
+  ControlReg& control() {return cr;}
+  void write(uint32_t value) {data = value;}
+private:
+  OutputDevice3(const OutputDevice3&);  // prevent copying
+  ControlReg cr;
+  volatile uint32_t data;
+};
+\end{lstlisting}
+\begin{itemize}
+  \item Have clients use placement new (or bare reinterpret\_cast) themselves:
+\end{itemize}
+\begin{lstlisting}[language=C++]
+// create OutputDevice3 object at address 0xFFFF0000
+OutputDevice3& od = *new (reinterpret_cast<void*>(0xFFFF0000)) OutputDevice3;
+\end{lstlisting}
+
+\subsubsection{Modeling Hardware Directly}
+There are thus two kinds of classes for modeling memory-mapped IO.\\
+One kind models hardware \textit{directly}.
+\begin{itemize}
+  \item Objects of such classes are created by clients at specific addresses.
+  \begin{itemize}
+    \item Via placement new or reinterpret\_cast.
+  \end{itemize}
+  \item They contain only non-static data that maps to MMIO registers:
+\end{itemize}
+\begin{lstlisting}[language=C++]
+class OutputDevice3
+{                       // class designed to be instantiated at MMIO addresses
+public:
+  // ...
+private:
+  OutputDevice3(const OutputDevice3&);
+  ControlReg cr;        // data members map directly to MMIO device registers
+  volatile uint32_t data;
+};
+\end{lstlisting}
+\begin{itemize}
+  \item Static data is okay.
+  \item They never contain virtual functions (virtual functions leads to a vptr \textit{somewhere} within each object).
+\end{itemize}
+
+\subsubsection{Modeling Hardware Indirectly}
+The other kind models hardware \textit{indirectly}.
+\begin{itemize}
+  \item Objects of such classes are \textbf{not} created at specific addresses.
+  \begin{itemize}
+    \item Clients pass MMIO addresses as template of constructor arguments.
+  \end{itemize}
+  \item They may contain ''extra'' data members.
+  \begin{itemize}
+    \item i.e., that don't correspond to MMIO device registers.
+  \end{itemize}
+\end{itemize}
+\begin{lstlisting}[language=C++]
+class OutputDevice1
+{
+// ...
+private:
+  ControlReg* const pcr;        // data members that don't map
+  volatile uint32_t* const pd;  // to MMIO device registers
+  uint32_t lastValueWritten;    // useful for write-only regs
+};
+\end{lstlisting}
+
+They may contain virtual functions:
+\begin{lstlisting}[language=C++]
+class DeviceBase {
+public:
+  virtual void reset() = 0;
+  // ...
+};
+class OutputDevice1: public DeviceBase {
+public:
+  void reset() override;
+  // ...
+};
+template<uint32_t controlAddr, uint32_t dataAddr>
+class OutputDevice2: public DeviceBase {
+public:
+  void reset() override;
+  // ...
+};
+OutputDevice1 od1a(0xFFFF0000, 0xFFFF0004);
+OutputDevice1 od1b(0xFFFF0010, 0xFFFF0014);
+// ...
+OutputDevice2<0xEEEE0000, 0xEEEE0010> od2a;
+OutputDevice2<0xEEEE0020, 0xEEEE0040> od2b;
+// ...
+DeviceBase* registers[] = {&od1a, &od1b, ..., &od2a, &od2b, ...};
+const std::size_t numRegisters = sizeof(registers)/sizeof(registers[0]);
+// ...
+for (std::size_t i = 0; i < numRegisters; ++i)
+{                       // reset all registers in system
+  registers[i]->reset();
+}
+\end{lstlisting}
+
+\textbf{Indirect modeling more expensive than direct modeling}:
+\begin{itemize}
+  \item Memory for ''extra'' data members (if present).
+  \item Indirection to get from the object to the register(s) (if needed).
+\end{itemize}
+It's also more flexible:
+\begin{itemize}
+  \item May add other data members.
+  \item May declare virtual functions.
+\end{itemize}
+
+
+\subsubsection{Preventing Likely Client Errors}
+Clients that model hardware directly can easily be misused, e.g.:
+\begin{itemize}
+  \item Clients might instantiate them at non-MMIO addresses.
+  \item Clients who use placement new might think they need to call delete.
+  \begin{itemize}
+    \item They don't, though they may need to manually call the destructor.
+  \end{itemize}
+\end{itemize}
+\textbf{To prevent such errors, consider declaring the destructor private.}
+
+
+\begin{tabular}{|p{9.2cm}|p{9.2cm}|}
+\begin{lstlisting}
+class OutputDevice3    // class modeling hardware directly
+{                      // prevents some kinds of client errors
+  // ...
+private:
+  ~OutputDevice3() {}
+  ControlReg cr;
+  volatile uint32_t data;
+};
+\end{lstlisting}
+&
+\begin{lstlisting}
+OutputDevice3 d;  // error! implicit destructor invocation. (We want to preven
+                  // MMIO objects from being placed on the stack.)
+
+OutputDevice3* pd =
+  new (reinterpret_cast<void*>(0xFFFF0000)) OutputDevice3; // fine
+// ...
+delete pd;        // error! another implicit destructor invocation
+\end{lstlisting}
+\end{tabular}
+
+\paragraph{Basic idea:}
+\textbf{A fundamental design goal is that \textit{design violations} should not compile.}
+
+\subsubsection{Generalizing via Templates}
+Devices are likely to vary in several ways:
+\begin{itemize}
+  \item Number of bits in each register.
+  \item Which bits correspond to ready and interrupt status, etc.
+\end{itemize}
+Templates make it easy to handle such variability:
+\begin{lstlisting}[language=C++]
+template<typename RegType, RegType readyBitMask, RegType interruptBitMask>
+class ControlReg {
+public:
+  bool ready() const {
+    return (regValue & readyBitMask) == readyBitMask;}
+  bool interruptsEnabled() const {
+    return (regValue & interruptBitMask) == interruptBitMask;}
+  void enableInterrupts() {regValue |= interruptBitMask;}
+  void disableInterrupts() {regValue &= ~interruptBitMask;}
+private:
+  volatile RegType regValue;
+};
+\end{lstlisting}
+
+\paragraph{Usage}
+\begin{lstlisting}[language=C++]
+// CRui03 is a control register the size of an uint32_t where
+// bit 0 is the ready bit and bit 3 is the interrupt bit
+
+typedef ControLReg<uint32_t, bit0, bit3> CRui03;
+
+CRui03& cr1 = *new (reinterpret_cast<void*>(0xFFFF0000)) CRui03;
+// ...    // use cr1
+
+
+// CRuc15 is a control register the size of an uint8_t where
+// bit 1 is the ready bit and bit 5 is the interrupt bit
+
+typedef ControLReg<uint8_t, bit1, bit5> CRuc15;
+
+CRuc15& cr2 = *new (reinterpret_cast<void*>(0xFFFF0010)) CRuc15;
+// ...    // use cr2
+\end{lstlisting}
+
+\subsubsection{Summary}
+C++ tools you'll probably want to use:
+\begin{itemize}
+  \item Classes
+  \item Class templates (with both type and non-type parameters)
+  \item Inline functions
+  \item Placement new and reinterpret\_cast
+  \item const pointers
+  \item volatile memory
+  \item References
+  \item Private member functions, e.g., copy constructor, destructor.
+\end{itemize}
 %TODO: weitermachen
 
+
+\subsection[RAII]{RAII - RESOURCE ACQUISITION IS INITIALISATION}
+
+\paragraph{Motivation}
+Resourcen (Datei, Speicher, Semaphoren) müssen vor Gebrauch angefordert und danach wieder freigegeben werden.
+Dazwischen könnte aber z.B. eine Exception auftreten, was das Freigeben verhindert.
+
+\paragraph{Lösung}
+Damit die Resource trotzdem freigegeben wird, kann sie als Klassen-Objekt instanziert werden. Das Objekt wird automatisch gelöscht wenn es seine Gültigkeit (out-of-scope) verliert.
+\begin{compactitem}
+	\item Konstruktor fordert die Resource an
+	\item Destruktor gibt sie wieder frei
+\end{compactitem}
+
+
+\paragraph{Heap-Objekte}
+Für Heap-Objekte stellt die Boost-Library Templates für diesen Zweck zur Verfügung.\\
+Problem:
+\begin{lstlisting}
+void f()
+{
+	Person* p = new Person("irgendwer");
+	// mach etwas mit p
+	// was ist, wenn vorher eine Exception geworfen wird?
+	delete p;
+}
+\end{lstlisting}
+
+Lösung:
+\begin{lstlisting}
+void f()
+{
+	boost::shared_ptr<Person> p(new Person("irgendwer"));
+	// mach etwas mit p
+	// Beim Verlassen des Blocks räumt Destruktor von shared_ptr
+	// automatisch auf und löscht die Person
+}
+\end{lstlisting}
+
+
+\paragraph{Semaphoren} Für Semaphoren könnte die folgende Implementierung verwendet werden
+
+
+\begin{lstlisting}
+class Semaphore
+{
+public:
+	Semaphore(int s=0): id(s) {getSem(s);}
+	~Semaphore() {releaseSem(id);}
+private:
+	int id;
+};
+\end{lstlisting}
+\begin{lstlisting}
+void f()
+{
+  // kritischer Abschnitt
+  {
+    Semaphore myS;
+  } // hier wird Semaphore freigegeben, Destruktor wird aufgerufen
+}
+\end{lstlisting}
 
 
 \paragraph{Allocation Strategies: }
@@ -1998,296 +2723,3 @@ Für Integer Konstanten sollte immer enum verwendet werden. Für Double Konstant
     const   & Daten werden ins Rom geschrieben \\
     vtbl's  & werden in den Read Only Bereich gespeichert (ROM)
 \end{tabular}\\
-
-
-
-
-\subsection{Modeling Memory-Mapped I/O}
-Viele Systeme haben ihre I/O (\textit{memory-mapped IO devices}) im Programm-Adressbereich.
-Mit C++ ist es einfach diese \textit{memory-mapped IO devices} mithilfe von Objekten anzusteuern.
-
-\begin{tabular}{|p{9.2cm}|p{9.2cm}|}
-    \hline
-    Placement new   &   Ras Casts\\
-    \hline \hline
-    + Konstruktor wird automatisch aufgerufen & - Konstroktur muss zusätzlich aufgerufen werden \\
-    - Kann zusätzlichen Overhead generieren (Kompiler abhängig) & Keinen Overhead\\ \hline
-\end{tabular}
-
-\vspace{0.5cm}
-
-\begin{tabular}{|p{9.2cm}|p{9.2cm}|}
-    \hline
-    Compiler Extension     &   Linker Commands \\
-    \hline\hline
-    - Nicht Portabel & + Besser Portabel als Compiler Extension (Platform spezifische Adressen sind im Linkerskript vorhanden) \\
-    + Kein Pointer \newline ($\rightarrow$ kein benötigter Speicher für den Pointer) & Mangled Names werden verwendet\\
-    \hline
-\end{tabular}
-
-\paragraph{Modeling Memory-Mapped IO}
-\begin{itemize}
-	\item Atomic reads/writes may require explicit synchronization.
-	\item Individual bits may sometimes be read-only, other times write-only.
-	\item Clearing a bit may require assigning a 1 to it.
-	\item One status register may control more than one data register.
-		E.g., bits 0-3 are for one data register, bits 4-7 for another.
-\end{itemize}
-
-\paragraph{Modeling a Control Register}~
-\begin{lstlisting}
-enum { bit0 = 0x1, bit1 = 0x2, ... , bit31 = 0x80000000 };
-
-class ControlReg {
-public:
-	bool ready() const 	{ return regValue & bit0; }
-	bool interruptsEnabled() const { return regValue & bit2; }
-	void enableInterrupts() { regValue |= bit2; }
-	void disableInterrupts(){ regValue &= ~bit2; }
-private:
-	volatile unsigned regValue;		// data in the register may change
-									// outside program control
-};
-\end{lstlisting}
-
-All functions are inline, so their existence should incur no cost.
-
-\paragraph{Placement new vs. Raw Casts}~\\
-\emph{Placement new} wird normalerweise dem \emph{raw} \texttt{reinterpret\_cast} Vorgezogen, \emph{placement new} den Konstruktor aufruft, was mit \texttt{reinterpret\_cast} selber gemacht werden müsste:
-\begin{lstlisting}
-pcr->ControlReg();
-\end{lstlisting}
-
-\paragraph{Placement new}~\\
-Operator new’s fundamental job is not to allocate memory, it’s to identify where an object should go.
-
-\begin{itemize}
-	\item You can pass operator new where you want to put something, and it will return that location
-	\item This form of operator new is called placement new.
-			It’s a standard form available everywhere.
-\end{itemize}
-
-Beispiel mit Pointer:
-\begin{lstlisting}
-ControlReg * const pcr = new (reinterpret_cast<void*>(0xFFFF0000)) ControlReg;
-
-while (!pcr->ready()) ; 			// wait until the ready bit is on
-pcr->enableInterrupts(); 			// enable device interrupts
-if (pcr->interruptsEnabled())... 	// if interrupts are enabled...
-
-\end{lstlisting}
-
-Beispiel mit Referenz:
-\begin{lstlisting}
-ControlReg& cr = *new (reinterpret_cast<void*>(0xFFFF0000)) ControlReg;
-
-while (!cr.ready()) ; 				// wait until the ready bit is on
-cr.enableInterrupts(); 				// enable device interrupts
-if (cr.interruptsEnabled()) ... 	// if interrupts are enabled...
-\end{lstlisting}
-~ \\
-Mit \textit{placement new} wird kein Speicher alloziert, somit darf auch kein delete ausgeführt werden.
-\begin{lstlisting}
-    int * a = new int[10];          //Speicher Allozierung
-    delete[] a;                     //Heap wird gelöscht wichtig delete[] für Array
-
-    int * b = new (0xFFFF0000) int; //Placement new an der Adressse 0xFFFF0000
-    delete b;                       //!!ERROR, Keine Delete beim Placement new
-\end{lstlisting}
-
-\paragraph{Raw Casts}~
-\begin{lstlisting}
-ControlReg *pcr = reinterpret_cast<ControlReg*>(0xFFFF0000);	// pointer version
-
-ControlReg& cr = *reinterpret_cast<ControlReg*>(0xFFFF0000);	// reference version
-\end{lstlisting}
-
-
-
-\paragraph{Direkt vs Indirekt}~
-\\
-\vspace{0.5cm}
-\begin{tabular}{|p{9.2cm}|p{9.2cm}|}
-    \hline
-    Direkt   &   Indirekt\\
-    \hline \hline
-    Enthalten nur statische Daten & Objekte nicht an eine spezifische Adresse gebunden (wird vom Client mit Template oder mit einem Konstruktor Argument definiert\\
-    Enthalten nie virtuelle Funktionen & Kann zusätzliche Daten Member enthalten\\
-    Schneller als Indirekt& Benötigt zusätzlichen Speicher (Pointer)\\
-    & Flexibler als direkt\\
-    \hline
-\end{tabular}
-
-
-
-\paragraph{Direkt}~
-\\
-\begin{tabular}{|p{9.2cm}|p{9.2cm}|}
-
-\begin{lstlisting}
-class OutputDevice3
-{
-  public:
-    ControlReg& control() {return cr;}
-    void write(uint32_t value) {data = value;}
-  private:
-    OutputDevice3(const OutputDevice3&); // prevent copying
-    ControlReg cr;
-    volatile uint32_t data;
-};
-\end{lstlisting}
-&
-Client
-\begin{lstlisting}
-// create OutputDevice3 object at address 0xFFFF0000
-OutputDevice3& od =
-*new (reinterpret_cast<void*>(0xFFFF0000)) OutputDevice3;
-\end{lstlisting}
-\end{tabular}
-
-\paragraph{Indirekt}~
-\\
-\begin{tabular}{|p{9.2cm}|p{9.2cm}|}
-\begin{lstlisting}
-class OutputDevice1
-{
-  ...
-  private:
-    ControlReg* const pcr; // data members that do not map
-    volatile uint32_t* const pd; // to MMIO device registers
-    uint32_t lastValueWritten; // useful for write-only regs
-};
-\end{lstlisting}
-&
-Client
-
-\\
-\hline
-\begin{lstlisting}
-class DeviceBase {
-  public:
-    virtual void reset() = 0;
-    ...
-};
-
-class OutputDevice1: public DeviceBase {
-  public:
-    virtual void reset();
-    ...
-};
-
-template<uint32_t controlAddr, uint32_t dataAddr>
-class OutputDevice2: public DeviceBase {
-public:
-virtual void reset();
-...
-};
-\end{lstlisting}
-&
-\begin{lstlisting}
-OutputDevice1 od1a(0xFFFF0000, 0xFFFF0004);
-OutputDevice1 od1b(0xFFFF0010, 0xFFFF0014);
-...
-OutputDevice2<0xEEEE0000, 0xEEEE0010> od2a;
-OutputDevice2<0xEEEE0020, 0xEEEE0040> od2b;
-...
-DeviceBase* registers[] = {&od1a, &od1b, ..., &od2a, &od2b, ...};
-const std::size_t numRegisters =
-sizeof(registers)/sizeof(registers[0]);
-...
-for (std::size_t i = 0; i < numRegisters; ++i)
-{ // reset all registers in system
-  registers[i]->reset();
-}
-\end{lstlisting}
-\end{tabular}
-
-\paragraph{Preventing Client Errors}~
-
-\begin{tabular}{|p{9.2cm}|p{9.2cm}|}
-\begin{lstlisting}
-// class modeling hardware directly
-class OutputDevice3
-{ // prevents some kinds of client errors
-  ...
-  private:
-    ~OutputDevice3() {}
-    ControlReg cr;
-    volatile uint32_t data;
-};
-\end{lstlisting}
-&
-\begin{lstlisting}
-OutputDevice3 d;
-// error! implicit destructor invocation.
-// (We want to prevent MMIO objects from
-// being placed on the stack.)
-
-OutputDevice3* pd =
-new (reinterpret_cast<void*>(0xFFFF0000)) OutputDevice3; // fine
-...
-delete pd; // error! another implicit destructor invocation
-\end{lstlisting}
-\end{tabular}
-
-\subsection[RAII]{RAII - RESOURCE ACQUISITION IS INITIALISATION}
-
-\paragraph{Motivation}
-Resourcen (Datei, Speicher, Semaphoren) müssen vor Gebrauch angefordert und danach wieder freigegeben werden.
-Dazwischen könnte aber z.B. eine Exception auftreten, was das Freigeben verhindert.
-
-\paragraph{Lösung}
-Damit die Resource trotzdem freigegeben wird, kann sie als Klassen-Objekt instanziert werden. Das Objekt wird automatisch gelöscht wenn es seine Gültigkeit (out-of-scope) verliert.
-\begin{compactitem}
-	\item Konstruktor fordert die Resource an
-	\item Destruktor gibt sie wieder frei
-\end{compactitem}
-
-
-\paragraph{Heap-Objekte}
-Für Heap-Objekte stellt die Boost-Library Templates für diesen Zweck zur Verfügung.\\
-Problem:
-\begin{lstlisting}
-void f()
-{
-	Person* p = new Person("irgendwer");
-	// mach etwas mit p
-	// was ist, wenn vorher eine Exception geworfen wird?
-	delete p;
-}
-\end{lstlisting}
-
-Lösung:
-\begin{lstlisting}
-void f()
-{
-	boost::shared_ptr<Person> p(new Person("irgendwer"));
-	// mach etwas mit p
-	// Beim Verlassen des Blocks räumt Destruktor von shared_ptr
-	// automatisch auf und löscht die Person
-}
-\end{lstlisting}
-
-
-\paragraph{Semaphoren} Für Semaphoren könnte die folgende Implementierung verwendet werden
-
-
-\begin{lstlisting}
-class Semaphore
-{
-public:
-	Semaphore(int s=0): id(s) {getSem(s);}
-	~Semaphore() {releaseSem(id);}
-private:
-	int id;
-};
-\end{lstlisting}
-\begin{lstlisting}
-void f()
-{
-  // kritischer Abschnitt
-  {
-    Semaphore myS;
-  } // hier wird Semaphore freigegeben, Destruktor wird aufgerufen
-}
-\end{lstlisting}
