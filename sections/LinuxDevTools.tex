@@ -1,12 +1,38 @@
 \section{Linux Development Tools}
-\subsection{Entwicklertools}
+\subsection{Entwicklungstools}
 \begin{description}
     \item [Integrated Development Environment (IDE) $\rightarrow$ Eclipse] \hfill \\
     Editor, Compiler, Linker, Debugger, etc. \\
     Viele Informationen über Code (-Wall)
-    \item [Cross-Plattform und Proprietäre Software (Closed Source)] \hfill \\
+    \item [Cross-Plattform und Proprietäre (herstellerspezifische) Software] \hfill \\
     Bsp. Qt (Cross-Plattform)
+    \item [OSS]$~$\\
+    Die OSS-Community bietet laufend neue Tools, am meisten wird für Linux angeboten
 \end{description}
+
+\subsection{Häufige Fragen}
+\begin{itemize}
+  \item Welches Tool für Sourcecode-Debugging (evtl. multi-threaded)
+  \item Speicherfehler ermitteln
+  \begin{itemize}
+    \item Memory leaks
+    \item Buffer overflows
+  \end{itemize}
+  \item Codeüberdeckung (Code Coverage)
+  \item Performance Analyse (Profiling)
+\end{itemize}
+
+\subsection{OSS-Tools für Linux}
+\begin{itemize}
+  \item Wir beschränken uns auf OSS-Tools für Linux
+  \item GNU-Binutils
+  \begin{itemize}
+    \item GNU Binary Utilities (kurz binutils) sind eine Sammlung von Tools für Software-Entwickler
+    \item Erzeugung und Manipulation von Programmen
+    \item Analyse und Informationsbeschaffung aus Objektcode, Bibliotheken, Maschinencode etc.
+    \item \url{http://www.gnu.org/software/binutils/}
+  \end{itemize}
+\end{itemize}
 
 \subsection{GNU Binutils}
 \begin{itemize}
@@ -16,45 +42,94 @@
     \item Um Tools nutzen zu können mit -g (Debugging Flags) kompilieren
 \end{itemize}
 
+\subsubsection{nm}
+\begin{itemize}
+  \item Lists symbols from object files
+\end{itemize}
+\begin{lstlisting}[style=bash]
+$ nm CoffeMachine
+...
+00000000004164b4 T main
+                 U malloc@@GLIBC_2.2.5
+                 U memcpy@@GLIBC_2.14
+                 U memset@@GLIBC_2.2.5
+000000000040399a T _ZN17CoffeeMachineCtrl10resetWaterEv
+00000000004043ae T _ZN17CoffeeMachineCtrl11resetCoffeeEv
+...
+$
+\end{lstlisting}
+Diese Namen sind mangled names.
+
 \subsubsection{c++filt}
 \begin{itemize}
-    \item Mangled Names anzeigen
-    \item CoffeeMachineTest::testBeansFSM() $\rightarrow$ \_ZN17CoffeeMachineTest12testBeansFSMEv
+    \item Filter to demangle encoded C++ symbols
 \end{itemize}
+\begin{lstlisting}[style=bash]
+$ c++filt _ZN17CoffeeMachineTest12testBeansFSMEv
+CoffeeMachineTest::testBeansFSM()
+$
+\end{lstlisting}
 
 \subsubsection{gprof}
 \begin{itemize}
+    \item Display profiling information
     \item Ausführungszeiten von Programmen (Kann in Eclipse integriert werden)
-    \item pollt Programm Counter mit 100Hz $\rightarrow$ Grobe Schätzung der Zeit
+    \item pollt Programm Counter mit 100Hz $\rightarrow$ sehr grobe Schätzung der Zeit
     \item Besser: valgrind (genauer)
 \end{itemize}
 
-\subsubsection{nm}
-\begin{itemize}
-    \item Zeigt die Symbole (Funktionen / Variablen) im Object File mit Adresse
-\end{itemize}
-\begin{lstlisting}[style=cpp]
-0000000000403d86 T _ZN17CoffeeMachineCtrl13processCoffeeENS_5EventE
-\end{lstlisting}
-
 \subsubsection{objdump}
 \begin{itemize}
-    \item Zeigt Informationen über eine oder mehrere Objektdateien
+    \item Displays information from object files (many options)
     \item Z.B. -d $\rightarrow$ Disassembly erstellen
-    \item Z.B. -s $\rightarrow$ Disassembly erstellen mit Sourcecode
+    \item Z.B. -S $\rightarrow$ Disassembly erstellen mit Sourcecode
 \end{itemize}
-\includegraphics[width=0.5\textwidth]{images/LinuxDevTools/objdump.png}
+\begin{lstlisting}[style=bash]
+$ objdump -d CoffeeMachine
+CoffeeMachine:    file format elf64-x86-64
+Disassembly of section .init:
+0000000000402978 <_init>:
+  402978:    48 83 ec 08             sub   $0x8,%rsp
+  40297c:    48 8b 05 65 a6 21 00    mov   0x21a665(%rip),%rax     # 61cfe8 <_DYNAMIC+0x200>
+  402983:    48 85 c0                test  %rax,%rax
+  402986:    74 05                   je    40298d <_init+0x15>
+  402988:    e8 b3 00 00 00          callq 402a40 <__gmon_start__@plt>
+  40298d:    48 83 c4 08             add   $0x8,%rsp
+...
+$
+\end{lstlisting}
+\begin{lstlisting}[style=bash]
+$ objdump -S CoffeeMachine
+...
+  40382f:    be e0 2e 40 00          mov   $0x402ee0,%esi
+  403834:    48 89 c7                mov   %rax,%rdi
+  403837:    e8 04 f6 ff ff          callq 402e40 <_ZNSolsEPFRSoS_E@plt>
+      if (evNoWater == e)
+  40383c:    83 7d f4 04             cmpl  $0x4,-0xc(%rbp)
+  403840:    75 5d                   jne   40389f <_ZN17CoffeeMachineCtrl12processWaterENS_5EventE+0xcb>
+  403842:    48 8b 05 97 c8 21 00    mov   0x21c897(%rip),%rax
+...
+$
+\end{lstlisting}
 
 \subsubsection{size}
 \begin{itemize}
-    \item Zeigt die Gesamt- und Teilgrössen an
+    \item Lists the section sizes of an object file
 \end{itemize}
-\begin{lstlisting}[style=cpp]
+\begin{lstlisting}[style=bash]
 $ size CoffeeMachine
-text   data  bss   dec    hex   filename
-117517 11456 25768 154741 25c75 CoffeeMachine
+  text    data     bss      dec     hex filename
+117517   11456   25768   154741   25c75 CoffeeMachine
 $
 \end{lstlisting}
+
+\begin{description}
+  \item[text:] code, const data $\rightarrow$ goes into ROM
+  \item[data:] statically-allocated variables that are explicitly initialized to any value $\rightarrow$ goes into RAM
+  \item[bss:] statically-allocated variables that are not explicitly initialized to any value $\rightarrow$ goes into RAM
+  \item[dec:] text + data + bss
+  \item[hex:] dec in hex
+\end{description}
 
 \subsection{Codeüberdeckung oder -abdeckung (code coverage)}
 Bei der Ausführung eines Programms wird versucht, möglichst den ganzen
@@ -66,7 +141,7 @@ Code mindestens einmal auszuführen.
 \end{itemize}
 In der Praxis wird meist nur Anweisungsüberdeckung verlangt,
 Zweigüberdeckung wird angestrebt (bei Schleifen explodiert die Anzahl Pfade).\\\\
-Überdeckungsgrad \textless 100 \% bedeutet, dass mit den vorhandenen Testfällen nicht alle Anweisungen/Zweige/Pfade ausgeführt werden (ist u.a. auch ein gutes Gütemass für die Testfälle). Folgende Massnahmen können in diesem Fall vollzogen werden: 
+Überdeckungsgrad \textless 100 \% bedeutet, dass mit den vorhandenen Testfällen nicht alle Anweisungen/Zweige/Pfade ausgeführt werden (ist u.a. auch ein gutes Gütemass für die Testfälle). Folgende Massnahmen können in diesem Fall vollzogen werden:
 \begin{itemize}
     \item Zusätzliche Testfälle definieren
     \item Nicht überdeckter Code analysieren, z.B. mittels Code Inspection
@@ -82,7 +157,7 @@ Beim nicht ausgeführten Code kann es sich auch um toten Code handeln. Wenn logi
 \textbf{Beispiel:}
 \begin{lstlisting}[style=bash]
 $ gcc -fprofile-arcs -ftest-coverage tmp.c
-$ a.out
+$ ./a.out
 $ gcov tmp.c
 90.00% of 10 source lines executed in file tmp.c
 Creating tmp.c.gcov.
@@ -90,23 +165,23 @@ $
 \end{lstlisting}
 Output tmp.c.gcov:
 \begin{lstlisting}[style=bash]
--: 0:Source:tmp.c
--: 0:Graph:tmp.gcno
--: 0:Data:tmp.gcda
--: 0:Runs:1
--: 0:Programs:1
--: 1:#include <stdio.h>
--: 2:
--: 3:int main (void)
-1: 4:{
-1: 5: int i, total;
--: 6:
-1: 7: total = 0;
--: 8:
-11: 9: for (i = 0; i < 10; i++)
-10: 10: total += i;
--: 11:
-1: 12: if (total != 45)
+    -: 0:Source:tmp.c
+    -: 0:Graph:tmp.gcno
+    -: 0:Data:tmp.gcda
+    -: 0:Runs:1
+    -: 0:Programs:1
+    -: 1:#include <stdio.h>
+    -: 2:
+    -: 3:int main (void)
+    1: 4:{
+    1: 5: int i, total;
+    -: 6:
+    1: 7: total = 0;
+    -: 8:
+   11: 9: for (i = 0; i < 10; i++)
+   10: 10: total += i;
+    -: 11:
+    1: 12: if (total != 45)
 #####: 13: printf ("Failure\n");
 -: 14: else
 1: 15: printf ("Success\n");
@@ -123,18 +198,18 @@ Memcheck detektiert Speichermanagementprobleme
     \item Alle Schreibe- und Lesezugriffe auf den Speicher werden überprüft
     \item malloc/new/free/delete wird überprüft, um Speicherlecks zu detektieren
     \item Arraygrenzen-Überwachung von Memcheck ist für den Heap-Speicher ausgelegt und nicht für Arrays auf dem Stack oder für statische Arrays
+    \item \url{http://valgrind.org/docs/manual/mc-manual.html}
 \end{itemize}
 \subsubsection{Callgrind}
 Callgrind kann die Laufzeit eines Programms analysieren
 \begin{itemize}
     \item In der Standardkonfiguration wird die Anzahl der ausgeführten Instruktionen aufgezeichnet
     \item Die aufgezeichnete Anzahl der Instruktionen wird zudem mit Sourcecode-Zeilen und Funktionsaufrufen in Beziehung gesetzt
-    \item Cachesimulation (Cachegrind) kann aktiviert werden, die weitere Informationen über die Laufzeitperformance des Programms geben kann    
+    \item Cachesimulation (Cachegrind) kann aktiviert werden, die weitere Informationen über die Laufzeitperformance des Programms geben kann
+    \item \url{http://valgrind.org/docs/manual/cl-manual.html}
 \end{itemize}
 \subsubsection{Valgrind-Output}
 \begin{itemize}
     \item Das Ergebnis der Laufzeitanalyse wird in eine Datei geschrieben
     \item Die Datei kann dann mit dem Programm KCachegrind visualisiert werden
 \end{itemize}
-
-
