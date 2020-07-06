@@ -244,3 +244,299 @@ Keypad proven to never authenticate an incorrect PIN\\
 
 Problem: The moment an incorrect digit is entered, buzzer sounds, PIN entry is re-started\\
 \textbf{10000 tries just went down to 40}
+
+\subsection{Cryptology Overview}
+\includegraphics[width=0.5\linewidth]{images/EmbeddedSecurity/cryptologyOverview}
+
+\textbf{Security through obscurity is no security at all}
+\begin{itemize}
+  \item No homebrew ciphers, no secret algorithms!
+  \begin{itemize}
+    \item The algorithm must not be secret
+    \item The secrecy is in the keys, not in the algorithm (Kerckhoff's principle)
+  \end{itemize}
+  \item Breaking one device vs. breaking all devices
+  \begin{itemize}
+    \item Code is the same, keys are different
+  \end{itemize}
+  \item Real world analogy
+  \begin{itemize}
+    \item Attacker sees lock maker \& model
+    \item Best option is brute force attack
+  \end{itemize}
+\end{itemize}
+
+\subsection{Cryptography \& Random Numbers}
+\begin{itemize}
+  \item Many cryptographic operations require randomness
+  \begin{itemize}
+    \item Key generation
+    \item Certain block cipher modes
+    \item Secure protocols
+  \end{itemize}
+  \item But generating \& using random numbers is hard
+  \begin{itemize}
+    \item Computers are deterministic
+    \item Estimating entropy is hard
+  \end{itemize}
+  \item PRNGs require a (truly) random seed, some usages don't seed at all(!!!)
+  \item Use a CSPRNG (CS = Cryptographically Secure) if you have one
+\end{itemize}
+\textbf{Don't use C's rand() for anything security related!}
+
+\subsection{Security Requirements}
+\begin{description}
+  \item[Confidentiality] (Vertraulichkeit)\\ Message can be understood only by the intended entities
+  \item[Integrity] (Integrität)\\ Message is not altered/tampered by a third party
+  \item[Authentication] (Authentisierung)\\ Ensures that the entities involved in an operation are who they claim to be
+  \item[Non-Repudiation] (Nichtzurückweisbarkeit)\\ An entity cannot deny an action that it has performed
+\end{description}
+
+\subsubsection{Arrows in the quiver}
+\begin{itemize}
+  \item Secret key (symmetric) cryptography (AES, 3DES)
+  \item Public key (asymmetric) cryptography
+  \item Hashing
+  \item \textbf{All secure data flows rely on more or less complex combinations of these algorithms}
+\end{itemize}
+
+\subsection{Secret key (symmetric) cryptography}
+
+\begin{itemize}
+  \item Very similar to lock \& key system
+  \begin{itemize}
+    \item Without the key, you can't get in
+  \end{itemize}
+  \item The lock is publicly viewable
+  \begin{itemize}
+    \item Key must remain with owner only
+  \end{itemize}
+  \item If the lock is weak, the key isn't necessary
+  \begin{itemize}
+    \item Same is true of a weak cipher
+  \end{itemize}
+  \item One key used to lock \& unlock the mechanism
+  \begin{itemize}
+    \item Symmetric crypto: same key used to encrypt and decrypt
+  \end{itemize}
+\end{itemize}
+\begin{tabular}{|l|l|}
+  \hline
+  \textbf{Encryption:} & Ciphertext = Plaintext $\oplus$ Key\\
+  \hline
+  \textbf{Decryption:} & Plaintext = Ciphertext $\oplus$ Key\\
+  \hline
+\end{tabular}
+
+\subsubsection{One Time Pad (OTP)}
+Key: random string of bits, same length as plaintext
+\begin{itemize}
+  \item Impossible to crack when used correctly
+\end{itemize}
+
+Complications:
+\begin{itemize}
+  \item Generating true random numbers
+  \begin{itemize}
+    \item ''Bad'' random numbers are way too common
+  \end{itemize}
+  \item Never reuse the pad
+  \begin{itemize}
+    \item It's called ''one time'' for a reason
+  \end{itemize}
+  \item Key distribution
+  \begin{itemize}
+    \item Requires its own secure channel / method
+  \end{itemize}
+  \item Key synchronization
+  \begin{itemize}
+    \item Start at what character on what page of the pad?
+  \end{itemize}
+  \item Key disposal
+\end{itemize}
+
+\subsubsection{Alternatives to OTP}
+\begin{itemize}
+  \item Use shorter key
+  \item Should be easier to handle
+  \begin{itemize}
+    \item Later: Key exchange with Asymmetric Cryptography
+  \end{itemize}
+  \item Goal:
+  \begin{itemize}
+    \item Change 1 bit of plaintext $\rightarrow$ Flip $\approx$ 50 \% of bits in ciphertext
+  \end{itemize}
+  \item Key length is relevant if best attack is brute force
+  \begin{itemize}
+    \item each additional bit doubles the effort
+    \item Example AES: 128, 192, 256 bits
+  \end{itemize}
+  \item Old ciphers
+  \begin{itemize}
+    \item DES, 3DES
+  \end{itemize}
+  \item For today's use
+  \begin{itemize}
+    \item AES (Advanced Encryption Standard, Block Cipher)
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Block Ciphers and their Modes}
+\begin{minipage}{0.7\linewidth}
+  \begin{itemize}
+    \item AES block size: 128 bit
+    \item How blocks of plaintext are processed
+    \begin{itemize}
+      \item Tradeoffs \& considerations
+      \item We will look at several but not all modes
+    \end{itemize}
+    \item Initialization vectors
+    \begin{itemize}
+      \item Very important
+      \item Typically required to be unique, sometimes also must be unpredictable
+    \end{itemize}
+    \item Padding
+    \begin{itemize}
+      \item Most of the time, (msgLen \% blockSize) != 0
+      \item Padding correctly is very important
+    \end{itemize}
+  \end{itemize}
+\end{minipage}
+\begin{minipage}{0.3\linewidth}
+  \includegraphics[width=\linewidth]{images/EmbeddedSecurity/aes}
+\end{minipage}
+
+\subsubsection{Electronic Codebook Mode (ECB)}
+Don't use this mode\\
+\begin{minipage}{0.6\linewidth}
+  \includegraphics[width=0.8\linewidth]{images/EmbeddedSecurity/ecbBlock}
+\end{minipage}
+\begin{minipage}{0.4\linewidth}
+  \includegraphics[width=0.9\linewidth]{images/EmbeddedSecurity/ecbImage}
+\end{minipage}
+
+\subsubsection{Cipher Block Chaining (CBC) Mode}
+\begin{minipage}{0.3\linewidth}
+\begin{itemize}
+  \item Good mode
+  \item IV (Initialization Vector) (aka Nonce: number only used once) must be set and unique, but may not be secret!
+\end{itemize}
+\end{minipage}
+\begin{minipage}{0.7\linewidth}
+  \includegraphics[width=\linewidth]{images/EmbeddedSecurity/cbcBlock}
+\end{minipage}
+
+\subsubsection{Counter (CTR) Mode}
+\begin{minipage}{0.5\linewidth}
+\begin{itemize}
+  \item Good mode
+  \item IV (Initialization Vector) (aka Nonce) must be set and unique, but may not be secret!
+  \item Counter is incremented for each block
+\end{itemize}
+\end{minipage}
+\begin{minipage}{0.5\linewidth}
+  \includegraphics[width=\linewidth]{images/EmbeddedSecurity/ctrBlock}
+\end{minipage}
+
+\subsubsection{Which Cipher Mode Should I Use?}
+\begin{itemize}
+  \item Says Bruce Schneier:
+  \begin{itemize}
+    \item CBC with random IV
+    \item Previously recommended CTR mode
+  \end{itemize}
+  \item Why the change?
+  \begin{itemize}
+    \item Too often, CTR's nonce was not unique
+    \begin{itemize}
+      \item Implementation issues (e.g. bugs) or deliberate attacks
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Authenticated Encryption Modes}
+\textbf{Some modes provide authentication alongside secrecy}\\
+Most common of these modes:
+\begin{itemize}
+  \item OCB (Offset Cookbook Mode)
+  \begin{itemize}
+    \item Essentially integrates a MAC into operation
+    \item Doesn't require separate MAC \& encryption computations
+    \item Covered by two patents (free license for OSS)
+  \end{itemize}
+  \item GCM (Galois Counter Mode), supported by STM32
+  \begin{itemize}
+    \item Combines CTR mode with Galois field multiplication
+    \item Block sizes of 128, 192 and 256 bits
+    \item Unencumbered by patents
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Stream Cipher Basics}
+\begin{itemize}
+  \item Stram Ciphers generate a key stream
+  \begin{itemize}
+    \item Key stream used to encrypt plaintext\\
+    Ciphertext = Plaintext $\oplus$ Key stream
+  \end{itemize}
+  \item Plaintext, Ciphertext and Key
+  \begin{itemize}
+    \item All the same length
+    \item No padding required for stream cipher (it's not a block)
+  \end{itemize}
+  \item Security of system
+  \begin{itemize}
+    \item It's the key stream generator
+    \item Output must be pseudorandom bit stream
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{Stream Cipher Inputs}
+\begin{itemize}
+  \item Key stream generator inputs
+  \begin{itemize}
+    \item Initialization Vector (IV), secret key
+  \end{itemize}
+  \item IV must be a nonce
+  \begin{itemize}
+    \item Number used once
+    \item \textbf{Must be different each time}
+    \item Otherwise identical key stream generated
+  \end{itemize}
+  \item IV doesn't need to be secret or random
+  \begin{itemize}
+    \item Generally transmitted in clear alongside ciphertext
+    \item Needed by receiving party to generate same key
+  \end{itemize}
+\end{itemize}
+
+\subsection{Public key (asymmetric) cryptography}
+
+\subsubsection{Hashing}
+\paragraph{Hash function}
+\begin{itemize}
+  \item Input: an arbitrarily long message (stream, file, etc.)
+  \item Output: ''Digests'' input into a shorter, fixed-length representation
+  \begin{itemize}
+    \item The message's ''digital fingerprint''
+  \end{itemize}
+  \item Digest is not an encrypted form
+  \item It's irreversible
+  \begin{itemize}
+    \item There are an infinite number of inputs for any given digest/output
+  \end{itemize}
+  \item But: it's very hard to manipulate the long message and still get the same digest
+  \item Examples: MD5, SHA-1, SHA-2 (all supported by STM32)
+\end{itemize}
+
+\paragraph{Common uses of hash function}
+\begin{itemize}
+  \item Integrity Check
+  \item File de-duplication
+  \item Password storage \& verification
+  \item Digital Signatures
+  \item Message Authentication Codes
+  \item Key derivation / generation from secret key
+  \item Pseudo-Random Number Generation
+  \item Proof of work (e.g. HashCash, Bitcoin)
+\end{itemize}
