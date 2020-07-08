@@ -166,7 +166,35 @@ Bei zyklischen Codes werden zur mathematischen Behandlung Code-Sequenzen addiert
 	\item Ganz links ist der Input, ganz rechts der Output
 	\item Wenn dieses LFSR als CRC verwendet wird, braucht es ganz links nochmals ein XOR, an dem der Bitstream hineingeführt wird.
 \end{itemize}
-\includegraphics[width=0.6\linewidth]{images/CRC/lfsr}
+\includegraphics[width=0.6\linewidth]{images/CRC/lfsr.png}
+\subsubsection{LFSR Beispiel}
+$G(x)=\textcolor{blue}{x^3}+ \textcolor{green}{x^2} + \textcolor{red}{1}$ mit einem gegebenen $M(x)= 010001$ und $G(x)= 1101$
+
+
+\begin{minipage}{\linewidth}
+	\begin{minipage}[b]{0.7\linewidth}
+		\centering
+		\includegraphics[width=0.7\linewidth]{images/CRC/ff-LFSR.png} 
+	\end{minipage}
+	\begin{minipage}[b]{0.29\linewidth}
+		\centering
+\renewcommand{\arraystretch}{1}
+
+\begin{tabular}{cccc}
+	in	& $Q_{\textcolor{red}{1}}$	& $Q_{\textcolor{green}{2}}$	& $Q_{\textcolor{blue}{3}}$	\\
+	\hline
+	1 	& 	0 	& 	0 	& 	0 	\\
+	0 	& 	1 	& 	0 	& 	0 	\\
+	1 	& 	0 	& 	1 	& 	0 	\\
+	0 	& 	0 	& 	0 	& 	1 	\\
+	0 	& 	1 	& 	0 	& 	0 	\\
+	1 	& 	0 	& 	1 	& 	0 	\\
+	\hline
+	& 	\textcolor{red}{0} 	& 	\textcolor{red}{0} 	& 	\textcolor{red}{1}  	\\
+\end{tabular}
+	\end{minipage}
+\end{minipage}
+
 
 \subsubsection{Hardware Accelerators in $\mu$C auf Basis eines LFSR}
 \begin{itemize}
