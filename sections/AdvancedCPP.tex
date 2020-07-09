@@ -5,11 +5,11 @@
 Embedded systems using C++ are diverse:
 \begin{multicols}{2}
 \begin{itemize}
-	\item No OS? Maybe.
-	\item Multiple thread or tasks? Maybe.
-	\item ''Old'' or ''weak'' compilers, etc.? Maybe.
-	\item No hard drive? Often.
-	\item Difficult to field-upgrade? Typically.
+	\item Real-time? Maybe.
+	\item Safety-critical? Maybe.
+	\item Challengin memeory limitations? Maybe.
+	\item Challengin CPU limitations? Maybe.
+	\item No heap? Maybe.
 \end{itemize}
 \columnbreak
 \begin{itemize}
@@ -460,13 +460,12 @@ void printCC2(const ComicCharacter* pc)
 {
   pc->print();  // dynamische Auflösung
 }
-
 Duck donald;
 SuperHero luckyLuke;
 printCC1(donald);     // Duck::print()
 printCC2(&luckyLuke); // SuperHero::print()
 \end{lstlisting}
-\vfill\null
+%\vfill\null
 \columnbreak
 \includegraphics[width=0.5\linewidth]{images/AdvancedCPP/classDiagram}
 \end{multicols}
@@ -2446,7 +2445,7 @@ Clients that model hardware directly can easily be misused, e.g.:
 \textbf{To prevent such errors, consider declaring the destructor private.}
 
 
-\begin{tabular}{|p{9.2cm}|p{9.2cm}|}
+\begin{tabular}{p{9.2cm}p{9.2cm}}
 \begin{lstlisting}
 class OutputDevice3    // class modeling hardware directly
 {                      // prevents some kinds of client errors
