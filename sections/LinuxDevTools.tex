@@ -1,3 +1,4 @@
+%!TEX root = ../EmbSW2.tex
 \section{Linux Development Tools}
 \subsection{Entwicklungstools}
 \begin{description}
@@ -137,7 +138,7 @@ Code mindestens einmal auszuführen.
 \begin{itemize}
     \item Anweisungsüberdeckung (instruction coverage): Jede Anweisung des Programms wird mindestens einmal ausgeführt
     \item Zweigüberdeckung (branch coverage): Jeder Programmzweig wird mindestens einmal durchlaufen
-    \item Pfadüberdeckung (path coverage): Jeder Programmpfad, d.h. alle Zweigkombinationen, wird mindestens einmal durchlaufen
+    \item Pfadüberdeckung (path coverage): Jeder Programmpfad, d.h. alle Zweigkombinationen, wird/werden mindestens einmal durchlaufen
 \end{itemize}
 In der Praxis wird meist nur Anweisungsüberdeckung verlangt,
 Zweigüberdeckung wird angestrebt (bei Schleifen explodiert die Anzahl Pfade).\\\\
@@ -146,7 +147,7 @@ Zweigüberdeckung wird angestrebt (bei Schleifen explodiert die Anzahl Pfade).\\
     \item Zusätzliche Testfälle definieren
     \item Nicht überdeckter Code analysieren, z.B. mittels Code Inspection
 \end{itemize}
-Beim nicht ausgeführten Code kann es sich auch um toten Code handeln. Wenn logisch falsch $\rightarrow$ korrigieren bzw. entfernen. Wenn aufgrund defensiven Programmierstil (z.B. default: break) $\rightarrow$ lassen.
+Beim nicht ausgeführten Code kann es sich auch um toten Code handeln. Wenn logisch falsch $\rightarrow$ korrigieren bzw. entfernen. Wenn aufgrund defensiven Programmierstils (z.B. default: break) $\rightarrow$ lassen.
 \subsubsection{Code Coverage Tool: gcov}
 \begin{itemize}
     \item gcov kann in der Kommandozeile oder in Eclipse genutzt werden
@@ -183,10 +184,10 @@ Output tmp.c.gcov:
     -: 11:
     1: 12: if (total != 45)
 #####: 13: printf ("Failure\n");
--: 14: else
-1: 15: printf ("Success\n");
-1: 16: return 0;
--: 17:}
+    -: 14: else
+    1: 15: printf ("Success\n");
+    1: 16: return 0;
+    -: 17:}
 \end{lstlisting}
 
 \subsection{Performance Profiling - Valgrind}

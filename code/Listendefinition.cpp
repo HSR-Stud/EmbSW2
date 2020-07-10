@@ -1,7 +1,7 @@
 struct Field
 {
   Key id; 		// z.B. int
-  Content cont; // Typ, der den ganzen Inhalt umfasst
+  Content cont;         // Typ, der den ganzen Inhalt umfasst
 }
 
 Field list[listLength];

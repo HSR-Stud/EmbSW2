@@ -1,3 +1,4 @@
+%!TEX root = ../EmbSW2.tex
 \section{Algorithmen}
 
 \subsection{Beschreibungsmethoden}
@@ -48,7 +49,7 @@
 \subsection{Komplexitätstheorie}
 \subsubsection{Hauptziele}
     \begin{itemize}
-        \item Berechngungskomplexität: Zeitkomplexität als Anzahl der Rechenoperationen sowie Speicherplatzkomplexität
+        \item Berechnungskomplexität: Zeitkomplexität als Anzahl der Rechenoperationen sowie Speicherplatzkomplexität
         \item Spezifikation der Probleme und Methode zur Klassifikation in "'praktisch lösbare"' und "'praktisch unlösbare"' Probleme
         \item Vergleiche der Effizienz (Berechnungsstärke) verschiedener Algorithmen (deterministischer, nichtdeterministischer und zufallsgesteuerter)
     \end{itemize}
@@ -77,7 +78,7 @@ Laufzeitabschätzung nach oben:
 	\mathcal{O}(g) = \{f: X \rightarrow X \mid \exists {c_1}>0 \wedge \exists c_2>0 \wedge \exists n_0 \in X  \forall n \geq n_0 : f(n) \leq c_1\cdot g(n) + c_2\}
 \end{equation}
 $\mathcal{O}(g)$ heisst: $f(n)$ wächst höchstens so stark wie $g(n)$, allenfalls multipliziert mit einem konstanten Faktor und addiert mit einem konstanten Term.\\
-Beispiel: Gegeben sei die Aufwandfunktion $f(n)=3n^2 + 6n + 7$. Die Funktion $f(n)$ ist ein Element der Menge $O(n^2)$, da z.B. $f(n) \leq 9n^2 + 7$ \ \ $\forall n \geq 0$.\\
+Beispiel: Gegeben sei die Aufwandfunktion $f(n)=3n^2 + 6n + 7$. Die Funktion $f(n)$ ist ein Element der Menge $\mathcal{O}(n^2)$, da z.B. $f(n) \leq 9n^2 + 7$ \ \ $\forall n \geq 0$.\\
 
 \textbf{$\Omega$-Notation}\\
 Laufzeitabschätzung nach unten:
@@ -86,10 +87,10 @@ Laufzeitabschätzung nach unten:
 \end{equation}
 $\Omega(g)$ heisst: $f(n)$ wächst mindestens so stark wie $g(n)$\\
 
-\textbf{$\Theta$-Notation (Theta-Notation}\\
-O- und $\Omega$-Notation vereint:
+\textbf{$\Theta$-Notation (Theta-Notation)}\\
+$\mathcal{O}$- und $\Omega$-Notation vereint:
 \begin{equation}
-\Theta(g)= O(g) \cap \Omega(g)
+\Theta(g)= \mathcal{O}(g) \cap \Omega(g)
 \end{equation}
 $\Theta(g)$ heisst: $f(n)$ ist sowohl $\mathcal{O}(g)$ als auch $\Omega(g)$\\
 
@@ -304,11 +305,11 @@ Eine vernünftige Wahl des Pivots ist also wichtig. Ein Ansatz ist die median-of
 \hline
 Algorithmus & $C_{min}$ & $C_{ave}$ & $C_{max}$ & $O_C(\cdot)$ \\
 \hline
-Straight Selection & \multicolumn{3}{|c|}{$\frac{n}{2}\cdot (n-1)$} & $n^2$ \\
+Straight Selection & \multicolumn{3}{c|}{$\frac{n}{2}\cdot (n-1)$} & $n^2$ \\
 \hline
 Straight Insertion & $n-1$ & $\frac{1}{4}\cdot (n^2 + 3n -4)$ & $\frac{1}{2}\cdot (n^2+n-2)$ & $n^2$ \\
 \hline
-Bubblesort & \multicolumn{3}{|c|}{$\frac{n}{2}\cdot (n-1)$} & $n^2$ \\
+Bubblesort & \multicolumn{3}{c|}{$\frac{n}{2}\cdot (n-1)$} & $n^2$ \\
 \hline
 Quicksort & $n\cdot log_{2}(n)$ & $2\cdot n \cdot ln(n)$ & $\frac{1}{2}\cdot (n+3)(n+2)-10$ & $n^2$ \\
 \hline
@@ -319,7 +320,7 @@ Quicksort & $n\cdot log_{2}(n)$ & $2\cdot n \cdot ln(n)$ & $\frac{1}{2}\cdot (n+
 \hline
 Algorithmus & $M_{min}$ & $M_{ave}$ & $M_{max}$ & $O_M(\cdot)$ \\
 \hline
-Straight Selection & \multicolumn{3}{|c|}{$3\cdot (n-1)$} & $n$ \\ % & $3\cdot (n-1)$ & $3\cdot (n-1)$ & $n$ \\
+Straight Selection & \multicolumn{3}{c|}{$3\cdot (n-1)$} & $n$ \\ % & $3\cdot (n-1)$ & $3\cdot (n-1)$ & $n$ \\
 \hline
 Straight Insertion & $3\cdot (n-1)$ & $\frac{1}{4}\cdot (n^2 + 11n -12)$ & $\frac{1}{2}\cdot (n^2+5n-6)$ & $n^2$ \\
 \hline

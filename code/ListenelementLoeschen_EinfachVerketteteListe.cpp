@@ -11,8 +11,8 @@ void SList::deleteAt(int pos)
     {
       p = p->next;
     }
-  pDel = p->next;
-  p->next = pDel->next;
+    pDel = p->next;
+    p->next = pDel->next;
   }
   delete pDel;
   --nr;
