@@ -7,14 +7,14 @@ Embedded systems using C++ are diverse:
 \begin{itemize}
 	\item Real-time? Maybe.
 	\item Safety-critical? Maybe.
-	\item Challengin memeory limitations? Maybe.
-	\item Challengin CPU limitations? Maybe.
+	\item Challenging memory limitations? Maybe.
+	\item Challenging CPU limitations? Maybe.
 	\item No heap? Maybe.
 \end{itemize}
 \columnbreak
 \begin{itemize}
 	\item No OS? Maybe.
-	\item Multiple thread or tasks? Maybe.
+	\item Multiple threads or tasks? Maybe.
 	\item ''Old'' or ''weak'' compilers, etc.? Maybe.
 	\item No hard drive? Often.
 	\item Difficult to field-upgrade? Typically.
@@ -69,7 +69,7 @@ void doThat(const std::string& name = "Unnamed"); // Bad
 const std::string defaultName = "Unnamed";
 void doThat(const std::string& name = defaultName); // Better
 				\end{lstlisting}
-				Overloading can be a cheaper alternative. (Brauch aber mehr Code.)
+				Overloading can be a cheaper alternative. (Braucht aber mehr Code.)
 			\item  Constructors and destructors: They contain code for mandatory initialization and finalization. However, they may yield chains of calls up the hierarchy.
 			\item Single inheritance.
 		\end{itemize}
@@ -165,7 +165,7 @@ Beispiel:\vspace{-\baselineskip}
 
 \subsubsection{Gewährleistung von Portabilität}
 \begin{itemize}
-	\item Ab C99 werden im Headerfile <inttypes.>, bzw. <stdint.h> verschiedene Typen mit genauer Breite definiert. Es ist deshalb sinnvoll, entweder genau diese Typen zu verwenden oder allenfalls diese mittels typedef zu definieren.
+	\item Ab C99 werden im Headerfile $<$inttypes.h$>$, bzw. $<$stdint.h$>$ verschiedene Typen mit genauer Breite definiert. Es ist deshalb sinnvoll, entweder genau diese Typen zu verwenden oder allenfalls diese mittels typedef zu definieren.
 	\item Die Konventionen lauten wie folgt:\\
 	\lstinline{intN_t}, wobei N = 8, 16, 32 für signed int-Typen\\
 	Beispiele: \lstinline{in8_t, int16_t int32_t}\\
@@ -205,6 +205,7 @@ uint_fastN_t
 }
 \end{lstlisting}
 \vfill\null
+\columnbreak
 \lstinline{++i;} entspricht:
 \begin{lstlisting}
 {
@@ -212,12 +213,13 @@ uint_fastN_t
   "return" i;
 }
 \end{lstlisting}
+\vfill\null
 \end{multicols}
 Die Postfix-Operatoren bedingen im Prinzip ein tmp-Objekt. Gute Compiler werden das optimieren, schlechte jedoch nicht.
 
 \subsubsection{Taking address of local variables}
 \textbf{Hidden Cost}\\
-Local variables are only allocated to the stack if they have to be. Keeping them in registers (and sharing a register between different ones not used at the same time) gives big gains in performance (that is, not having to do loads and stores). Taking the address of a local woll force it to the stack regardless of optimization level.\\
+Local variables are only allocated to the stack if they have to be. Keeping them in registers (and sharing a register between different ones not used at the same time) gives big gains in performance (that is, not having to do loads and stores). Taking the address of a local will force it to the stack regardless of optimization level.\\
 \\
 \textbf{Cortex-M3}\\
 All Cortex-M3 compilers support all-in-register locals when optimizations are turned on (size or speed).
@@ -243,7 +245,7 @@ All Cortex-M3 compilers support all-in-register locals when optimizations are tu
 			\item Virtuelle Funktionen werden kaum inlined (inline: compile-time, virtual: run-time)
 			\item ''Komplizierte'' Funktionen ebenfalls nicht (der jeweilige Compiler entscheidet, was ''kompliziert'' ist)
 			\item Rekursive Funktionen werden nie inlined
-			\item (Ältere) Linker können kaum Inlining,d.h. die inline-Funktionen sollten bereits dem Compiler vollständig bekannt sein. Dies kann erreicht werden, indem die Inline-Funktionen direkt im Header definiert werden.
+			\item (Ältere) Linker können kaum Inlining, d.h. die inline-Funktionen sollten bereits dem Compiler vollständig bekannt sein. Dies kann erreicht werden, indem die Inline-Funktionen direkt im Header definiert werden.
 		\end{itemize}
 \end{itemize}
 
@@ -292,7 +294,7 @@ Compilers rarely inline functions only declared in headers.
 	\end{itemize}
 	\item Still, manual inline declarations remain a necessary evil.
 \end{itemize}
-\textbf{Bottom Line:}\\
+\textbf{Bottom Line:}
 \begin{itemize}
 	\item Inlining is almost always a good bet for small, frequently called functions.
 	\begin{itemize}
@@ -318,7 +320,7 @@ Nützlich zum Beispiel für eine shared library / DLL.
 
 \subsubsection{Lösung}
 \begin{itemize}
-\item ''Versteckte'' Implementierung im .cpp File wird in einem separatem File versteckt
+\item ''Versteckte'' Implementierung im .cpp File wird in einem separaten File versteckt
 \item Im Header nur noch die öffentliche Schnittstelle mit einem privaten Pointer auf die ''versteckte'' Implementierung
 \begin{itemize}
   \item am besten: ein \lstinline[language=C++]{shared_ptr<Impl>}
@@ -422,17 +424,17 @@ pa = new Book;
 		\begin{itemize}
 			\item Bereits zur Compilezeit wird festgelegt, welcher (Elementfunktions-) Code
 				ausgeführt wird (Normalfall)
-			\item Bei statischen Aufrugen erfolgt die Auswahl der richtigen Funktion bereits bei der Übersetzung (d.h. ohne Oberhead).
+			\item Bei statischen Aufrufen erfolgt die Auswahl der richtigen Funktion bereits bei der Übersetzung (d.h. ohne Overhead).
 		\end{itemize}
 	\item Dynamic binding (late binding, dynamische Bindung)
 		\begin{itemize}
 			\item Erst zur Laufzeit wird in Abhängigkeit des Objekts festgelegt, welcher
 				(Elementfunktions-) Code ausgeführt wird
-      \item Bei dynamischen Aufrufen (über Pointer oder Referenzen) erfolgt die Auswahl der richtigen Funktion zur Laufzeit aufgrund des tatsächlichen (dynamischen) Tpys des Objekts. Dies ist mit etwas Overhead verbunden.
+      \item Bei dynamischen Aufrufen (über Pointer oder Referenzen) erfolgt die Auswahl der richtigen Funktion zur Laufzeit aufgrund des tatsächlichen (dynamischen) Typs des Objekts. Dies ist mit etwas Overhead verbunden.
 		\end{itemize}
 \end{itemize}
 
-\subsubsection{Statische Aufruf von virtuellen Elementfunktionen}
+\subsubsection{Statischer Aufruf von virtuellen Elementfunktionen}
 \begin{multicols}{2}
 \begin{lstlisting}[language=C++]
 Duck donald;
@@ -498,7 +500,7 @@ printCC2(&luckyLuke); // SuperHero::print()
 class B {
   public:
     B();
-    virtual  ~B();
+    virtual ~B();
     virtual void f1();
     virtual int f2(char c) const;
     virtual void f3(int x) = 0;   // pure virtual
@@ -554,7 +556,7 @@ Note how corresponding function implementations have corresponding indices in th
 \begin{lstlisting}[language=C++]
 class D2: public B {
   public:
-    D2;
+    D2();
     void f3(int x) override;
     // ...
 };
@@ -602,7 +604,8 @@ vptrs are set by code compilers insert into constructors and destructors
   \item In a hierarchy, each class's constructor sets the vptr to point to that class's vtbl
   \item Ditto for the destructors in a hierarchy
 \end{itemize}
-Copmilers are permitted to optimize away unnecessary vptr assignments\\
+Compilers are permitted to optimize away unnecessary vptr assignments\\
+
 \begin{minipage}{0.7\linewidth}
 \begin{itemize}
   \item E.g., vptr setup for a D object could look like this:\\
@@ -690,8 +693,8 @@ class D: public B {...};
 \begin{center}
   \includegraphics[width=\linewidth]{images/AdvancedCPP/SI}
 \end{center}
-\end{minipage}
-\vspace{0.5\baselineskip}
+\end{minipage}%
+\vspace{\baselineskip}
 \begin{minipage}{0.75\linewidth}
 Under MI, it looks more like this:
 \begin{lstlisting}[language=C++]
@@ -712,7 +715,7 @@ class D: public B1, public B2 {...};
 \begin{center}
   \includegraphics[width=\linewidth]{images/AdvancedCPP/MI}
 \end{center}
-\end{minipage}
+\end{minipage}%
 \vspace{0.5\baselineskip}
 There is a good reason for this:
 \begin{lstlisting}[language=C++]
@@ -734,7 +737,7 @@ if ((void*)pb2 == (void*)pd) ... // test fails
 
 \subsubsection{Wieso ist virtual notwendig?}
 \begin{itemize}
-  \item In Java sind alle (nicht static, nicht final) Methoden dynamisch gebunden, in C++ nur die Elementfunktionen, die virtal deklariert sind.
+  \item In Java sind alle (nicht static, nicht final) Methoden dynamisch gebunden, in C++ nur die Elementfunktionen, die virtual deklariert sind.
   \begin{itemize}
     \item Die dynamische Bindung erfordert einen Overhead für Laufzeitunterstützung und Interpretation, dieser wird in Java akzeptiert.
     \item C++ versucht, möglichst effizient zu sein. Der Programmierer soll sehen, wenn etwas Effizienz kostet.
@@ -805,7 +808,7 @@ class SomeClass {
   public:
     SomeClass() {...} // still implicitly inline
     void mf1() {...}  // still implicitly inline
-    void mf2() {...}  // declaration only; no definition
+    void mf2()        // declaration only; no definition
     // ...            // provided in this file
 };
 \end{lstlisting}
@@ -857,6 +860,7 @@ class C {
 };
 \end{lstlisting}
 Object files should contain only those functions that are called.
+\vfill\null
 \end{multicols}
 
 \paragraph{Dead code}
@@ -1026,7 +1030,7 @@ All Stack instantiations for pointer types thus share their code.
 Code hoisting works well with inlining to avoid duplication arising from non-type template parameters:\\
 \textbf{Bad:}
 \begin{lstlisting}[language=C++]
-template<typename T, std::size_t bufSz> // Suspect design: each BUFSZ value will yield a new
+template<typename T, std::size_t bufSz> // Suspect design: each bufSz value will yield a new
 class Buffer {                          // set of member functions
   T buffer[bufSz];
   public:
@@ -1039,7 +1043,7 @@ template<typename T>                    // Better design:
 class BufferBase {                      // BufferBase is independent of bufSz
   // ...
 };
-template<typename T, std::size_t bufSz> // Buffer does only BUFSZ-dependent operations.
+template<typename T, std::size_t bufSz> // Buffer does only bufSz-dependent operations.
 class Buffer: public BufferBase<T> {
   // ...                                // Ideally, all are inline, so
 };                                      // Buffer classes cost nothing
@@ -1099,7 +1103,7 @@ void doSomething(const T& obj)
 \end{lstlisting}
 
 \subsubsection{Data Bloat}
-Not all bloat us due to code. Unnecessary classes can yield data bloat, too:
+Not all bloat is due to code. Unnecessary classes can yield data bloat, too:
 \begin{itemize}
   \item Some classes have a vtbl, so unnecessary classes $\rightarrow$ unnecessary vtbls.
   \begin{itemize}
@@ -1173,7 +1177,8 @@ Key question: when is it known which implementation should be used?
     \item Based on vptrs, vtbls, non-inline function calls.
   \end{itemize}
 \end{itemize}
-\textbf{Example:}
+\pagebreak
+\textbf{Example:}\\
 \begin{minipage}{11cm}
 \begin{lstlisting}
 class Packet { // base class (''interface'')
@@ -1287,7 +1292,7 @@ class DeviceDriver  // all nonvirtual non-inline functions
 \end{lstlisting}
 All client code includes this header and codes against this class.
 \begin{itemize}
-  \item Note lack of virtual funcions.
+  \item Note lack of virtual functions.
 \end{itemize}
 \begin{lstlisting}[language=C++]
 // EFDevice.cpp (generates EDFevice.o, EFDevice.obj, or EFDevice.dll, etc.)
@@ -1342,7 +1347,7 @@ Link with:
 \begin{itemize}
   \item Deployment platform unknown at compilation, known during linking.
   \begin{itemize}
-    \item No need for flexibility or expense of runtim polymorphism.
+    \item No need for flexibility or expense of runtime polymorphism.
     \begin{itemize}
       \item No vtbls.
       \item No indirection through vtbls.
@@ -1477,7 +1482,7 @@ struct Device {
 
 \subsection{Dynamic Memory Managment (DMM)}
 \begin{itemize}
-  \item Dynamic memory managment is present in many embedded systems.
+  \item Dynamic memory management is present in many embedded systems.
   \begin{itemize}
     \item Even if malloc/free/new/delete never called.
   \end{itemize}
@@ -1642,7 +1647,7 @@ private:
 };
 \end{lstlisting}
 \begin{itemize}
-  \item allocat/deallocate behave like class-specific new/delete.
+  \item allocate/deallocate behave like class-specific new/delete.
   \item Pointer data member $\rightarrow$ copying functions should be declared.
   \item If LIFOAllocator templatized, ctor params could be template params.
   \begin{itemize}
@@ -1720,7 +1725,7 @@ private:
 \begin{itemize}
   \item Pointer data member $\rightarrow$ copying functions should be declared
   \item If PoolAllocator untemplatized, template param could be ctor param.
-  \item Ideally,, we'd ensure that elementSize $>$ 0, better: $\geq$ sizeof(Node*).
+  \item Ideally, we'd ensure that elementSize $>$ 0, better: $\geq$ sizeof(Node*).
 \end{itemize}
 
 \textbf{PoolAllocator::PoolAllocator():}
@@ -1795,8 +1800,8 @@ void PoolAllocator<elementSize>::deallocate(void* ptr,
 \end{tabular}
 
 \paragraph{Block Allocation}
-Essentially a set of pools with different element (block) sizes:
-\includegraphics[width=0.5\linewidth]{images/AdvancedCPP/blockAllocation}
+Essentially a set of pools with different element (block) sizes:\\
+\includegraphics[width=0.5\linewidth]{images/AdvancedCPP/blockAllocation}\\
 n-byte requests handled by first pool with size $\geq$ n and non-full free list.\\
 Useful when:
 \begin{itemize}
@@ -2073,7 +2078,7 @@ What follows is a \textit{framework} for modeling memory-mapped IO, not a prescr
 \subsubsection{Grundsätzliches zu MMIO}
 (siehe HAL in EmbSW1)
 \begin{itemize}
-  \item Embedded Systems werden sehr intensiv mittels Registern programmier, d.h. durch Setzen oder Löschen einzelner Bits
+  \item Embedded Systems werden sehr intensiv mittels Registern programmiert, d.h. durch Setzen oder Löschen einzelner Bits
   \item Register können mittels Bitfeldern modelliert werden.
   \begin{itemize}
     \item Nicht portabel
@@ -2086,7 +2091,7 @@ What follows is a \textit{framework} for modeling memory-mapped IO, not a prescr
 \end{itemize}
 
 \subsubsection{Modeling a Control Register}
-Suppose we have a fout-byte control register such that:
+Suppose we have a four-byte control register such that:
 \begin{itemize}
   \item Bit 0 indicates readiness: 1 $\rightarrow$ ready, 0 $\rightarrow$ not ready.
   \item Bit 2 indicates whether interrupts are enabled: 1 $\rightarrow$ enabled, 0 $\rightarrow$ not.
@@ -2159,7 +2164,7 @@ ControlReg& cr = *reinterpret_cast<ControlReg*>(0xFFFF0000);
 \end{itemize}
 But there are times when reinterpret\_cast can be superior:
 \begin{itemize}
-  \item If placement new isn't optimized to zweo instructions (and you care).
+  \item If placement new isn't optimized to zero instructions (and you care).
   \item If you want to ROM the address of an IO register \textit{and}
   \begin{itemize}
     \item Your compiler will ROM the result of a reinterpret\_cast \textit{and}
@@ -2458,7 +2463,7 @@ private:
 \end{lstlisting}
 &
 \begin{lstlisting}
-OutputDevice3 d;  // error! implicit destructor invocation. (We want to preven
+OutputDevice3 d;  // error! implicit destructor invocation. (We want to prevent
                   // MMIO objects from being placed on the stack.)
 
 OutputDevice3* pd =
