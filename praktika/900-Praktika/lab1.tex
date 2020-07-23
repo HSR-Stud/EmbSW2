@@ -1,0 +1,96 @@
+\subsection{Aufgabe 1: Realisierung einer einfach verketteten Liste}
+Realisierung einer einfach verketteten Liste
+Implementieren Sie eine einfach verkettete Liste für double-Werte in C++ mit der Entwicklungsumgebung
+Eclipse. Die Listenklasse erhält den Namen SList.
+SList soll die nachfolgenden Methoden anbieten, wobei die geeigneten Parameter noch zu definieren sind.
+Achten Sie auf den korrekten Einsatz von const.
+\begin{itemize}
+\item Nehmen Sie als Ausgangspunkt das vorgegebene Eclipse-Projekt. Ergänzen Sie bei Bedarf auch das einfache
+Testprogramm.
+\item Konstruktor (Ctor) Initialisiert eine leere Liste.
+\item Destruktor (Dtor) Löscht die gesamte Liste und gibt den allozierten Speicher wieder frei.
+\item \texttt{insertAt} Fügt ein Element an (nach) der bezeichneten Position ein. Einfügen am Anfang der Liste kann mittels Position 0 bewerkstelligt werden.
+\item\texttt{deleteAt}
+Löscht das Element an der bezeichneten Position.
+\item\texttt{search}
+Sucht das erste Element in der Liste mit dem definierten Wert und gibt die Position zurück. Falls das Element
+nicht in der Liste vorhanden ist, wird als Position der Wert 0 zurückgegeben.
+\item\texttt{isEmpty}
+Gibt true zurück, falls die Liste leer ist.
+\item\texttt{getNumber}
+Gibt die Anzahl der Elemente der Liste zurück.
+\item\texttt{getValue}
+Gibt den Wert des Elementes an der bezeichneten Position zurück.
+\item\texttt{setValue}
+Setzt den Wert des Elementes an der bezeichneten Position.
+\item\texttt{print}
+Schreibt den Inhalt der Liste in die Console.
+\end{itemize}
+
+\subsubsection{Lösung}
+
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak01/Loesung/Lists/src/SList.h}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak01/Loesung/Lists/src/SList.cpp}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak01/Loesung/Lists/src/Lists.cpp}
+
+\subsection{Aufgabe 2: Liste für beliebige Typen}
+
+Erweitern Sie die Klasse SList so, dass beliebige Typen abgespeichert werden können. Achten Sie dabei
+auch auf die korrekte Verwendung von Referenzen und des \texttt{const} Qualifiers.
+
+Zur Erinnerung: Sie müssen hier Templates verwenden.
+
+\subsubsection{Lösung}
+
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak01/Loesung/A2/src/SList.h}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak01/Loesung/A2/src/ListTest.cpp}
+
+\subsection{Aufgabe 3: Realisierung einer doppelt verketteten Liste}
+
+Implementieren Sie die Klasse \texttt{DList}, welche eine doppelt verkettete Liste für double-Werte in C++ definiert.
+\texttt{DList} soll dieselben Methoden anbieten wie bereits \texttt{SList} in Aufgabe 1.
+Bemerkung: hier müssen Sie keine Templates verwenden.
+
+\subsubsection{Lösung}
+
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak01/Loesung/Lists/src/DList.h}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak01/Loesung/Lists/src/DList.cpp}
+
+\subsection{Aufgabe 4: Gemeinsame Basisklasse}
+
+Die beiden Listen \texttt{SList} und \texttt{DList} haben verschiedene Gemeinsamkeiten, eine gemeinsame Basisklasse
+List bietet sich offensichtlich an. Implementieren Sie eine gemeinsame Basisklasse \texttt{List}. Achten Sie darauf,
+dass die Sichtbarkeiten (\texttt{public}, \texttt{private}, \texttt{protected}) so gewählt werden, dass die Unterklassen Zugriff
+auf die von ihnen benötigten Daten haben. Es ist jedoch keine Lösung, einfach alles als \texttt{public} zu deklarieren.
+
+\subsubsection{Lösung}
+
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak01/Loesung/A4/src/DList.h}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak01/Loesung/A4/src/DList.cpp}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak01/Loesung/A4/src/SList.h}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak01/Loesung/A4/src/SList.cpp}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak01/Loesung/A4/src/Lists.cpp}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak01/Loesung/A4/src/List.h}
+
+\subsection{Aufgabe 5: Gemeinsame Basisklasse mit Templates}
+
+Die komfortabelste Lösung ist offensichtlich, die beiden Klassen \texttt{SList} und \texttt{DList} als Templateklassen zu implementieren mit einer gemeinsamen Basisklasse.
+
+\subsubsection{Lösung}
+
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak01/Loesung/A5/src/DList.h}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak01/Loesung/A5/src/SList.h}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak01/Loesung/A5/src/List.h}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak01/Loesung/A5/src/ListTest.cpp}

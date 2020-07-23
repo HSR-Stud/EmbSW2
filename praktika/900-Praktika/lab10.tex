@@ -1,0 +1,83 @@
+\subsection{Aufgabe 1: Fixed-size Pool}
+
+Ihre Aufgabe ist es, einen Fixed-size Pool in Anlehnung an die in der Vorlesung gezeigte Variante zu imple-mentieren. Sie müssen die Klassen \texttt{PoolAllocator, HeapException, HeapSizeMismatch und OutOfHeap} realisieren, wobei die letzten beiden Klassen Unterklassen von HeapException sind. Die Exceptionklassen müssen möglichst schlank implementiert werden (was heisst das?).
+Packen Sie alle Klassendeklarationen in das File \texttt{PoolAllocator.h}, definieren Sie sehr kurze Elementfunk-tionen implizit \texttt{inline}, alle weiteren separat, ebenfalls im File \texttt{PoolAllocator.h}. Alle Klassen müssen in den Namespace \texttt{dynamicMemory} gelegt werden. Nachfolgend finden Sie einen Ausschnitt aus der Deklaration der Klasse \texttt{dynamicMemory::PoolAllocator}.
+
+\begin{lstlisting}[language=C++, style=C++]
+template<std::size_t heapSize, std::size_t elemSize>
+class PoolAllocator
+{
+    public:
+        PoolAllocator(/* TODO: params (heap address */);
+        void* allocate(std::size_t bytes);
+        // TODO: implement this
+        // throw a HeapSizeMismatch Exception if 'bytes' doesn't match elemSize
+        // throw a OutOfHeap Exception if requested 'bytes' aren't available
+        void deallocate(/* TODO: params */) noexcept;
+        // TODO: implement this
+        // add this element to the freelist
+        // set the pointer to nullptr
+    private:
+        union Node
+        {
+            uint8_t data[elemSize]; // sizeof(data) should be >= sizeof(Node*)
+            Node* next;
+        };
+        Node* freeList;
+    };
+    template<std::size_t heapSize, std::size_t elemSize>
+    PoolAllocator<heapSize, elemSize>::PoolAllocator(uint8_t* heapAddr)
+    {
+    // TODO: implement this
+}
+\end{lstlisting}
+
+Das Testprogramm finden Sie im Verzeichnis ./Vorgabe. Der Output des Testprogramms soll wie folgt aus-sehen (Die Anfangsadresse kann unterschiedlich sein):
+
+\begin{lstlisting}[language=C++, style=C++]
+p[0] = 0x7ffe93438070
+p[1] = 0x7ffe93438078
+p[2] = 0x7ffe93438080
+p[1] = 0
+p[3] = 0x7ffe93438078
+Heapsize mismatch exception occurred
+\end{lstlisting}
+
+\begin{enumerate}
+  \item Implementieren und testen Sie die Klassen vollständig. Erweitern Sie das Testprogramm so, dass auch eine OutOfHeap-Exception geprüft wird.
+\item Erweitern Sie die Elementfunktion \texttt{dynamicMemory::PoolAllocator::allocate()} so, dass die Anzahl der angeforderten Bytes nicht mehr genau der Elementgrösse entsprechen muss, sondern kleiner oder gleich der Elementgrösse sein kann.
+\end{enumerate}
+
+\subsubsection{Lösung}
+
+\begin{enumerate}
+  \item  siehe ./Loesung/FixedPool
+Beachten Sie den Referenzparameter in
+\texttt{void deallocate(void*\& ptr)} noexcept
+Dadurch ist es ohne Doppelpointer möglich, \texttt{ptr} auf \texttt{nullptr} zu setzen.
+
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak10/Loesung/FixedPool/src/FixedPool.cpp}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak10/Loesung/FixedPool/src/PoolAllocator.h}
+
+\item  siehe ./Loesung/FixedPoolCeil
+Die einzige Änderung muss in der Elementfunktion
+\texttt{void* allocate()}
+vorgenommen werden. Der Operator != muss durch den $>$-Operator ersetzt werden:
+\texttt{if (bytes > elemSize) // objects smaller than elemSize are allowed}
+
+\texttt{throw HeapSizeMismatch();}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak10/Loesung/FixedPoolCeil/src/FixedPoolCeil.cpp}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak10/Loesung/FixedPoolCeil/src/PoolAllocator.h}
+\end{enumerate}
+
+
+\subsection{Aufgabe 2: Block Allocator}
+Implementieren Sie nun einen Block Allocator. Die Klasse \texttt{BlockAllocator} soll aus 4 Fixed-size Pools ge-mäss Aufgabe 1b) bestehen. Die einzelnen Elementgrössen können der Klasse \texttt{BlockAllocator} mittels Templateparameter mitgegeben werden. Der Block Allocator nimmt jeweils den kleinstmöglichen Pool, um die Anforderungen zu erfüllen. Das bedeutet auch, dass auf den nächstgrösseren Pool zugegriffen wird, falls der kleinere Pool voll ist.
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak10/Loesung/BlockAllocation/src/BlockAllocation.cpp}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak10/Loesung/BlockAllocation/src/PoolAllocator.h}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak10/Loesung/BlockAllocation/src/BlockAllocator.h}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}

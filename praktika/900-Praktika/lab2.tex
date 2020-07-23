@@ -1,0 +1,84 @@
+\subsection{Aufgabe 1: Klasse für die Speicherung von Messwerten}
+Als Vorgabe erhalten Sie eine Templateklasse für eine einfach verkettete Liste. Implementieren Sie darauf basierend eine Klasse für die Verwaltung von Messreihen. Die Klasse speichert eine beliebige Anzahl von Messwerten. Einer zu implementierenden Methode können Sie einen Toleranzwert in Prozent übergeben. Die Methode entfernt dann aus der Liste alle Messwerte, die mehr als dieser Toleranzwert vom Mittelwert der Messwerte abweichen.
+Überlegen Sie sich als erstes, ob die Beziehung zur Listenklasse eine Vererbung oder eine Aggregation ist. Begründen Sie Ihre Wahl.
+
+\subsubsection{Lösung}
+Die Messwertliste ist eine Liste, deshalb ist aus objektorientierter Sicht eine Vererbungsbeziehung vorzuziehen.
+
+\large{Vererbung:}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak02/Loesung/MeasureListInh/src/MeasureList.h}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak02/Loesung/MeasureListInh/src/MeasureList.cpp}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak02/Loesung/MeasureListInh/src/SList.h}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak02/Loesung/MeasureListInh/src/MListMain.cpp}
+
+\large{Aggregation}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak02/Loesung/MeasureListAgg/src/MeasureList.h}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak02/Loesung/MeasureListAgg/src/MeasureList.cpp}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak02/Loesung/MeasureListAgg/src/SList.h}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak02/Loesung/MeasureListAgg/src/MListMain.cpp}
+
+\subsection{Aufgabe 2: Komplexitätsbetrachtungen}
+Bestimmen Sie den benötigten Aufwand der folgenden Algorithmen in $O$-Notation. Alle Algorithmen berech-nen die Potenz $c=a^b$.
+\begin{lstlisting}[language=C++, style=C++, multicols=2]
+/ berechnet 'a^^b', Voraussetzung: b>=0
+double potenz1(double a, int b)
+{
+    double c = 1;
+    while (b > 0)
+    {
+        c = c * a;
+        b = b - 1;
+    }
+    return c;
+    }
+        // berechnet 'a^^b', Voraussetzung: b>=0
+        double potenz2(double a, int b)
+        {
+        if (b == 0)
+        return 1;
+        else
+        return potenz2(a, b-1) * a;
+    }
+    // berechnet 'a^^b', Voraussetzung: b>=0
+    double potenz3(double a, int b)
+    {
+        double c = 1;
+        while (b > 0)
+    {
+        if (b % 2 == 1)
+        c = c * a;
+        a = a * a;
+        b = b / 2;
+    }
+    reeturn c;
+}
+\end{lstlisting}
+\subsubsection{Lösung}
+In der Funktion \texttt{potenz1()} wird die \texttt{while}-Schleife b mal durchlaufen, d.h. dieser Algorithmus ist $O(b)$.
+Die Funktion \texttt{potenz2()} wird b mal rekursiv aufgerufen, weitere Schleifen sind nicht vorhanden, d.h. dieser Algorithmus ist $O(b)$.
+In der Funktion \texttt{potenz3()} wird b bei jedem Schleifendurchlauf halbiert. Die Schleife wird ungefähr $ld(b$) mal durchlaufen (ld = logarithmus dualis, Zweierlogarithmus). \texttt{potenz3()} ist demnach $O(log b)$.
+
+\subsection{Aufgabe 3: Implementation eines dynamischen Stacks mit Hilfe einer verketteten Liste}
+Ein Stack (Stapel, LIFO, Last-In-First-Out) ist eine Datenstruktur, bei der das Element, das zuerst auf den Stack gespeichert wird, als letztes wieder ausgelesen wird.
+
+Implementieren Sie eine Klasse \texttt{Stack}, die nicht auf Arrays, sondern mit der vorgegebenen einfach verket-teten Liste arbeitet. Die \texttt{Stack}-Klasse soll als Template implementiert sein.
+Überlegen Sie sich auch hier als erstes, ob die Beziehung zur Listenklasse eine Vererbung oder eine Aggre-gation ist. Begründen Sie Ihre Wahl.
+
+Als Methoden müssen Sie die bekannten Stackoperationen \texttt{push()}, \texttt{pop()}, \texttt{isEmpty()} und \texttt{peek()} realisie-ren. Reservieren Sie im Konstruktor die als Parameter übergebene Anzahl Listenelemente. Falls ein push() bei einem vollen Stack probiert wird, soll jetzt aber nicht ein Fehler ausgegeben werden, stattdessen sollen Sie den Stack dynamisch um zusätzliche Elemente vergrössern.
+
+\subsubsection{Lösung}
+Der Stack ist nicht eine Liste, er benutzt nur eine für die Speicherung der Daten. Eine Vererbung kommt deshalb nicht in Frage, Aggregation ist die richtige Variante. Da der Stack beliebige Daten speichern können soll, muss er unbedingt als Templateklasse implementiert werden.
+
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak02/Loesung/DynaStack/SList.h}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak02/Loesung/DynaStack/Stack.h}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak02/Loesung/DynaStack/stacktest.cpp}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak02/Loesung/DynaStack/StackUI.h}
