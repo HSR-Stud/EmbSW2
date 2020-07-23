@@ -63,7 +63,7 @@ Dadurch ist es ohne Doppelpointer möglich, \texttt{ptr} auf \texttt{nullptr} zu
 \item  siehe ./Loesung/FixedPoolCeil
 Die einzige Änderung muss in der Elementfunktion
 \texttt{void* allocate()}
-vorgenommen werden. Der Operator != muss durch den >-Operator ersetzt werden:
+vorgenommen werden. Der Operator != muss durch den $>$-Operator ersetzt werden:
 \texttt{if (bytes > elemSize) // objects smaller than elemSize are allowed}
 
 \texttt{throw HeapSizeMismatch();}
