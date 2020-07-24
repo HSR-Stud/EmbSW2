@@ -1,9 +1,9 @@
-//============================================================================
+//===============================================
 // Name        : FixedPoolCeil.cpp
 // Author      : Reto Bonderer
 // Version     : 02.06.2016
 // Description : Fixed-size pool with upper limit implementation
-//============================================================================
+//================================================
 
 #include <iostream>
 #include "PoolAllocator.h"

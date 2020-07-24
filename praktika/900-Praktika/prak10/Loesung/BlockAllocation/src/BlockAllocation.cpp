@@ -1,9 +1,9 @@
-//============================================================================
+//==========================================
 // Name        : BlockAllocation.cpp
 // Author      : Reto Bonderer
 // Version     : 02.06.2016
 // Description : Block allocation with 4 fixed-size pools
-//============================================================================
+//======================================================
 
 #include <iostream>
 #include "BlockAllocator.h"
@@ -28,8 +28,9 @@ int main()
   BlockAllocator<testPool1Size, testElem1Size,
                  testPool2Size, testElem2Size,
                  testPool3Size, testElem3Size,
-                 testPool4Size, testElem4Size> block(&pool1Heap[0], &pool2Heap[0],
-                                                     &pool3Heap[0], &pool4Heap[0]);
+                 testPool4Size, testElem4Size>
+		block(&pool1Heap[0], &pool2Heap[0],
+                      &pool3Heap[0], &pool4Heap[0]);
 
   void* p[nPtrs] = { nullptr }; // some void-pointers
   cout << "Memory Map" << endl;

@@ -1,10 +1,10 @@
-//============================================================================
+//===========================================================
 // Name        : Distributions.cpp
 // Author      : Reto Bonderer
 // Version     :
 // Copyright   : (c) HSR R. Bonderer
 // Description : Tests various integer random distributions
-//============================================================================
+//===========================================================
 
 #include <iostream>
 #include <iomanip>

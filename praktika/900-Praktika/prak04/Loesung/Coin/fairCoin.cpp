@@ -1,10 +1,10 @@
-//============================================================================
+//================================================
 // Name        : biasedCoin.cpp
 // Author      : Reto Bonderer
 // Version     : 20190528
 // Copyright   : (c) HSR R. Bonderer
 // Description : Get a uniform distribution from a biased coin
-//============================================================================
+//=================================================
 
 #include <iostream>
 #include <iomanip>
