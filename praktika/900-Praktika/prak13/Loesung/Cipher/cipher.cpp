@@ -1,4 +1,4 @@
-//============================================================================
+//===================================================
 // Name        : cipher.cpp
 // Author      : Reto Bonderer
 // Version     : 20190528
@@ -10,8 +10,9 @@
 // (2) key is repeated as long as needed and xored byte by byte
 // (3) the plaintext contains mixed cases, digits, punctuation and spaces
 // (4) the plaintext is in English, the 10 most common letters in the English
-//     language are, in order of decreasing frequency: e, t, a, o, i, n, s, h, r, d, l. 
-//============================================================================
+//     language are, in order of decreasing frequency: 
+//      e, t, a, o, i, n, s, h, r, d, l. 
+//=======================================================
 
 #include <cstdint>
 #include <iostream>

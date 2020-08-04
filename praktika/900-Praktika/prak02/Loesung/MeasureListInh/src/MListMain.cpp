@@ -1,10 +1,10 @@
-//============================================================================
+//==================================================
 // Name        : MListMain.cpp
 // Author      : Reto Bonderer
 // Version     :
 // Copyright   : (c) HSR R. Bonderer
 // Description : Measurement list main program
-//============================================================================
+//==================================================
 
 #include <iostream>
 #include "MeasureList.h"
