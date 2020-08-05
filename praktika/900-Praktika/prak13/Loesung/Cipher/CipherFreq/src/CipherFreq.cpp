@@ -1,4 +1,4 @@
-//============================================================================
+//=======================================================
 // Name        : CipherFreq.cpp
 // Author      : Reto Bonderer
 // Version     :
@@ -10,7 +10,7 @@
 // (3) the plaintext contains mixed cases, digits, punctuation and spaces
 // (4) the plaintext is in English, the 10 most common letters in the English
 //     language are, in order of decreasing frequency: e, t, a, o, i, n, s, h, r, d, l.
-//============================================================================
+//========================================================
 
 #include <iostream>
 #include <iomanip>

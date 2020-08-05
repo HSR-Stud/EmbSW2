@@ -70,8 +70,10 @@ double d = t.elapsed();
 \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak03/Loesung/StopWatch/src/StopWatch.cpp}
 \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
 \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak03/Loesung/StopWatch/src/StopWatchTest.cpp}
+\twocolumn
 
 \subsection{Aufgabe 3: Komplexität}
+
 
 Es gilt die Annahme, dass ein gewisses Programm jeden Abend exakt eine Stunde Rechenzeit bekommt.
 Sie haben herausgefunden, dass das Programm $n=1'000'000$ Datensätze verarbeiten kann. Nun wird ein
@@ -93,6 +95,7 @@ langsame in 100 Stunden.
 
 \subsubsection{Lösung}
 
+
 \textbf{Ansatz:}
 
 \begin{itemize}
@@ -113,67 +116,65 @@ langsame in 100 Stunden.
 
 \medskip
 
-$ k_1 \cdot 10^6 = 1 \Longrightarrow k_1 = \underline{10^{-6}}$
+$$ k_1 \cdot 10^6 = 1 \Longrightarrow k_1 = \underline{10^{-6}}$$
+$$ k_1 \cdot n = 100 \Longrightarrow n = \frac{1}{k} \cdot 100 = 10^6 \cdot 100 = \underline{\underline{10^8}}$$
 
-$ k_1 \cdot n = 100 \Longrightarrow n = \frac{1}{k} \cdot 100 = 10^6 \cdot 100 = \underline{\underline{10^8}}$
+\medskip
 
 \noindent
 \textbf{b)}
 \medskip
 
-$ k_2 \cdot 10^6\cdot \log_{10} 10^6 = 1$
-
-$\Rightarrow k_2 \cdot 10^6 \cdot 6 = 1 \Rightarrow k_2 = \frac{1}{6} \cdot \underline{10^-6}$
-
-$ \Rightarrow k_2 \cdot n \cdot \log_{10} n = 100$
-
-$ \Rightarrow n \cdot \log_{10} n = 6 \cdot 10^8 =: c_2 $
-
-$\Rightarrow 10^{n \cdot \log_{10} n} = 10^{c_2}$
-
-$\Rightarrow n^n = 10^{c_2} = 10^{6\cdot10^8}$
+$$ k_2 \cdot 10^6\cdot \log_{10} 10^6 = 1$$
+$$\Rightarrow k_2 \cdot 10^6 \cdot 6 = 1 \Rightarrow k_2 = \frac{1}{6} \cdot \underline{10^-6}$$
+$$ \Rightarrow k_2 \cdot n \cdot \log_{10} n = 100$$
+$$ \Rightarrow n \cdot \log_{10} n = 6 \cdot 10^8 =: c_2 $$
+$$\Rightarrow 10^{n \cdot \log_{10} n} = 10^{c_2}$$
+$$\Rightarrow n^n = 10^{c_2} = 10^{6\cdot10^8}$$
+\medskip
 
 Diese Gleichung lasst sich nicht geschlossen lösen.
 
 solver: $\underline{\underline{n= 76 127 253}}$
 
+\medskip
+
 \noindent
 \textbf{c)}
 \medskip
 
-$ k_3 \cdot (10^6)^2 = 1 $
-
-$\Rightarrow k_3 \cdot 10^12 = 1 \Rightarrow k_3 = \underline{10^{-12}}$
-
-$k_3 \cdot n^2 = 100$
-
-$\Rightarrow \underline{n} = \sqrt{10^{14}} = \underline{\underline{10^7}}$
+$$ k_3 \cdot (10^6)^2 = 1 $$
+$$\Rightarrow k_3 \cdot 10^12 = 1 \Rightarrow k_3 = \underline{10^{-12}}$$
+$$k_3 \cdot n^2 = 100$$
+$$\Rightarrow \underline{n} = \sqrt{10^{14}} = \underline{\underline{10^7}}$$
+\medskip
 
 \noindent
 \textbf{d)}
 \medskip
 
-$ k_4\cdot (10^6)^3 = 1$
-
-$\Rightarrow k_4 \cdot 10^{18} =1 \Rightarrow k_4 = \underline{10^{-18}}$
-
-$k_4 \cdot n^3 = 100 \Rightarrow n^3 = 10^{20}$
-
-$\Rightarrow \underline{n} = 10^{\frac{20}{3}} = \underline{\underline{4641588}}$
+$$ k_4\cdot (10^6)^3 = 1$$
+$$ \Rightarrow k_4 \cdot 10^{18} =1 \Rightarrow k_4 = \underline{10^{-18}}$$
+$$ k_4 \cdot n^3 = 100 \Rightarrow n^3 = 10^{20}$$
+$$ \Rightarrow \underline{n} = 10^{\frac{20}{3}} = \underline{\underline{4641588}}$$
+\medskip
 
 \noindent
 \textbf{e)}
 \medskip
+\medskip
 
-$ k_5 \cdot 10^{10^6} = 1 \Rightarrow k_5 = \underline{\frac{1}{10^{10^6}}}$
+$$ k_5 \cdot 10^{10^6} = 1 \Rightarrow k_5 = \underline{\frac{1}{10^{10^6}}}$$
+$$ k_5 \cdot 10^{n} = 100$$
+$$ \Rightarrow 10^n = 100 \cdot  10^{10^6} =  10^{10^6+2}$$
+$$ \Rightarrow \underline{n} = 10^{6} + 2 = \underline{\underline{1000002}}$$
 
-$ k_5 \cdot 10^{n} = 100$
-
-$ \Rightarrow 10^n = 100 \cdot  10^{10^6} =  10^{10^6+2}$
-
-$\Rightarrow \underline{n} = 10^{6} + 2 = \underline{\underline{1000002}}$
+\medskip
 
 d.h. mit einem 100 Mal schnelleren Rechner können Sie 2 (!) zusätzliche Datensätze berechnen.
+
+
+\onecolumn
 
 \subsection{Aufgabe 4: Sortieralgorithmen}
 Implementieren Sie einen rekursiven Quicksort-Algorithmus, der für Teildaten mit weniger als $M$ Elementen

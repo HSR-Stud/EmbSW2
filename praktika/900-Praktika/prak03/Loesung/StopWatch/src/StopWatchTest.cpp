@@ -1,10 +1,10 @@
-//============================================================================
+//=============================================
 // Name        : StopWatchTest.cpp
 // Author      : Reto Bonderer
 // Version     :
 // Copyright   : (c) HSR R. Bonderer
 // Description : Test program for Stopwatch (Linux style)
-//============================================================================
+//=============================================
 
 #include <iostream>
 #include "StopWatch.h"
