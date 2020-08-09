@@ -1,16 +1,11 @@
+%!TEX root = ../prak.tex
+\section{Lab 13 Security}
 \subsection{Aufgabe 1: Hashing}
-
-Im Verzeichnis ./Vorgabe/Hash finden Sie drei JPG-Files, die alle dieselbe Grösse und denselben Timestamp
-haben. Zwei Dateien sind identisch, eine ist unterschiedlich. Sie sollen herausfinden, welche Datei
-unterschiedlich ist.
-Sie könnten diese Aufgabe mit dem Linux-Befehl diff lösen. Sie könnten die Dateien ebenfalls Byte für
-Byte binär vergleichen. Sie sollen nun aber diese Aufgabe mit Hilfe einer Hashfunktion lösen. Wenn die Dateien
-identisch sind, haben Sie denselben Fingerprint.
+Im Verzeichnis ./Vorgabe/Hash finden Sie drei JPG-Files, die alle dieselbe Grösse und denselben Timestamp haben. Zwei Dateien sind identisch, eine ist unterschiedlich. Sie sollen herausfinden, welche Datei unterschiedlich ist.
+Sie könnten diese Aufgabe mit dem Linux-Befehl diff lösen. Sie könnten die Dateien ebenfalls Byte für Byte binär vergleichen. Sie sollen nun aber diese Aufgabe mit Hilfe einer Hashfunktion lösen. Wenn die Dateien identisch sind, haben Sie denselben Fingerprint.
 
 \subsubsection{Lösung}
-Im Windows Explorer kann unter dem Kontextmenu CRC SHA ein Hash Fingerprint einer Datei erstellt werden,
-z.B. SHA-256. Unter Linux besteht für SHA-256 der Befehl sha256sum.
-Die SHA-256 Hashes der einzelnen Dateien sind:
+Im Windows Explorer kann unter dem Kontextmenu CRC SHA ein Hash Fingerprint einer Datei erstellt werden, z.B. SHA-256. Unter Linux besteht für SHA-256 der Befehl sha256sum. Die SHA-256 Hashes der einzelnen Dateien sind:
 
 img3.jpg: SHA256: EF5CDDD830BBCBF544FFEB18E3B28B4D19D65A5AE16F4618D742683940F9E64D
 
@@ -18,45 +13,40 @@ img4.jpg: SHA256: EF5CDDD830BBCBF544FFEB18E3B28B4D19D65A5AE16F4618D742683940F9E6
 
 img5.jpg: SHA256: 5E8EDB576C3CF31013ED0858E35C280BA5B667164DA2991C1AE2ECAF90975A2B
 
-Aus den erhaltenen Hashes sieht man, dass die Dateien img3.jpg und img4.jpg identisch sind, img5.jpg aber
-abweicht. In img5.jpg wurde nur ein einziges Byte abgeändert, die Metainformation "Photoshop" wurde in
-"Photishop" abgeändert, das eigentliche Bild ist identisch. Man sieht eindrücklich, dass die Änderung eines
-einzigen Bytes einen völlig anderen Hash ergibt. Das ist unter anderem die Stärke einer guten Hashfunktion.
+Aus den erhaltenen Hashes sieht man, dass die Dateien img3.jpg und img4.jpg identisch sind, img5.jpg aber abweicht. In img5.jpg wurde nur ein einziges Byte abgeändert, die Metainformation "Photoshop" wurde in "Photishop" abgeändert, das eigentliche Bild ist identisch. Man sieht eindrücklich, dass die Änderung eines einzigen Bytes einen völlig anderen Hash ergibt. Das ist unter anderem die Stärke einer guten Hashfunktion.
 
-\subsection{Aufgabe 1: Verschlüsselten Text entschlüsseln}
+\subsection{Aufgabe 2: Verschlüsselten Text entschlüsseln}
 
-Eine typische Verschlüsselungsmethode wandelt die Buchstaben eines Textfiles in ASCII und führt Buchstabe
-um Buchstabe eine XOR-Verknüpfung mit einem Wert aus einem geheimen Schlüssel durch. Die XORFunktion
-ist sehr schnell und sie ist symmetrisch, d.h.
-
-\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak13/Loesung/Cipher/CipherFreq/src/CipherFreq.cpp}
+Eine typische Verschlüsselungsmethode wandelt die Buchstaben eines Textfiles in ASCII und führt Buchstabe um Buchstabe eine XOR-Verknüpfung mit einem Wert aus einem geheimen Schlüssel durch. Die XOR-Funktion ist sehr schnell und sie ist symmetrisch, d.h.
 
 \noindent
-\texttt{
-ciphertextByte = plaintextByte $\oplus$ key und \\
+\texttt{ciphertextByte = plaintextByte $\oplus$ key und \\
 plaintextByte = ciphertextByte $\oplus$ key}
 
-Je länger ein Passwort ist und je mehr unterschiedliche Zeichen es enthält, desto sicherer ist das Passwort.
-In diesem Beispiel nehmen wir ein Passwort, das nur aus 3 kleinen Buchstaben (a-z) besteht. Der Schlüssel
-besteht aus der fortlaufenden Aneinanderreihung dieses Passworts.
-In ./Vorgabe/Cipher finden Sie einen ciphertext, der mit einem Passwort bestehend aus 3 Kleinbuchstaben
-verschlüsselt wurde. Ihre Aufgabe besteht darin, das Passwort zu knacken und den Text zu entschlüsseln.
-Zur Lösung können Sie die folgenden Kenntnisse nutzen:
+
+Je länger ein Passwort ist und je mehr unterschiedliche Zeichen es enthält, desto sicherer ist das Passwort. In diesem Beispiel nehmen wir ein Passwort, das nur aus 3 kleinen Buchstaben (a-z) besteht. Der Schlüssel besteht aus der fortlaufenden Aneinanderreihung dieses Passworts.
+In ./Vorgabe/Cipher finden Sie einen ciphertext, der mit einem Passwort bestehend aus 3 Kleinbuchstaben verschlüsselt wurde. Ihre Aufgabe besteht darin, das Passwort zu knacken und den Text zu entschlüsseln. Zur Lösung können Sie die folgenden Kenntnisse nutzen:
 \begin{itemize}
-  \item Das Passwort besteht aus drei Kleinbuchstaben, der Schlüssel wird durch fortlaufendes Aneinanderreihen
-  des Passworts generiert
-  \item  Die Verschlüsselung geschieht mittels XOR-Funktion
-  \item  Der unverschlüsselte englische Text besteht nur aus Gross- und Kleinbuchstaben, Ziffern, Leerzeichen
-  und Satzzeichen
+  \item Das Passwort besteht aus drei Kleinbuchstaben, der Schlüssel wird durch fortlaufendes Aneinanderreihen des Passworts generiert
+  \item Die Verschlüsselung geschieht mittels XOR-Funktion
+  \item Der unverschlüsselte englische Text besteht nur aus Gross- und Kleinbuchstaben, Ziffern, Leerzeichen und Satzzeichen
 \end{itemize}
 
 Als Angriffsvariante können Sie beispielsweise eine oder mehrere der folgenden Strategien anwenden:
 \begin{itemize}
   \item Trial and error
-  \item  Brute force (es gibt 26 * 26 * 26 = 17'576 Möglichkeiten für den Schlüssel)
-  \item  Intuition, Raten, etc.
-  \item  Häufigkeitsanalyse der Buchstaben. Die 10 häufigsten Buchstaben der englischen Sprache in abnehmender
-  Reihenfolge sind: e, t, a, o, i, n, s, h, r, d, l.
-  \item  Erraten einer Teillösung und fortlaufendes Erraten von zusätzlichen Buchstaben
-  \item  Weitere intelligente Methoden (beachten Sie, dass der Plaintext aus lesbaren Zeichen besteht)
+  \item Brute force (es gibt 26 * 26 * 26 = 17'576 Möglichkeiten für den Schlüssel)
+  \item Intuition, Raten, etc.
+  \item Häufigkeitsanalyse der Buchstaben. Die 10 häufigsten Buchstaben der englischen Sprache in abnehmender Reihenfolge sind: e, t, a, o, i, n, s, h, r, d, l.
+  \item Erraten einer Teillösung und fortlaufendes Erraten von zusätzlichen Buchstaben
+  \item Weitere intelligente Methoden (beachten Sie, dass der Plaintext aus lesbaren Zeichen besteht)
 \end{itemize}
+
+\subsubsection{Lösung}
+Der folgende Ansatz nutzt die Häufigkeit der verschlüsselten Buchstaben. Bei der verwendeten Verschlüsselungsart (XOR-Verknüpfung) kann aus den Häufigkeiten der verschlüsselten Buchstaben direkt auf die Häufigkeit der unverschlüsselten Buchstaben geschlossen werden.
+In der englischen Sprache ist der Buchstabe 'e' der häufigste. Da es sich beim Originaltext um einen Prosatext handelt, ist aber das Leerzeichen (ASCII 0x20) der häufigste Buchstabe.
+Der Schlüssel besteht aus drei Kleinbuchstaben. Jeder dritte Originalbuchstabe $x_i, x_{i+3}, x_{i+6}, \ldots$ wurde deshalb mit demselben Schlüsselbuchstaben $k_i$ verschlüsselt, d.h. $y_{i+n\cdot3} = x_{i+n\cdot3} \oplus k_i$. Für den häufigsten (nun bekannten) Buchstaben $y_{i,f}$ gilt:\\
+$y_{i,f} = 0x20 \oplus k_i \quad \Rightarrow \quad k_i = 0x20 \oplus y_{i,f}$\\
+Dieses Vorgehen muss mit $i = 0, 1, 2$ durchgeführt werden. Damit erhält man direkt den Schlüssel bestehend aus den drei Kleinbuchstaben.
+
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak13/Loesung/Cipher/CipherFreq/src/CipherFreq.cpp}

@@ -1,47 +1,39 @@
+%!TEX root = ../prak.tex
+\section{Lab 12 Zufallszahlengeneratoren}
 \subsection{Aufgabe 1: Wahrscheinlichkeitsverteilungen}
-Implementieren Sie die Klasse RandIntGen, die Ihnen unterschiedlich verteilte ganze Zahlen liefert. Als User
-Interface genügt die Console. In der Klasse sollen keinerlei Userinteraktionen (cin, cout, etc.) vorhanden
-sein. Die Klasse soll die folgenden Methoden anbieten:
+Implementieren Sie die Klasse RandIntGen, die Ihnen unterschiedlich verteilte ganze Zahlen liefert. Als User Interface genügt die Console. In der Klasse sollen keinerlei Userinteraktionen (cin, cout, etc.) vorhanden sein. Die Klasse soll die folgenden Methoden anbieten:
 
 \noindent
-\texttt{
-getUniform(); // liefert eine gleichverteilte ganze Zahl\\
+\texttt{getUniform(); // liefert eine gleichverteilte ganze Zahl\\
 getNormal(); // liefert eine normalverteilte ganze Zahl\\
 getWeibull(); // liefert eine Weibull‐verteilte ganze Zahl}
 
 \begin{enumerate}
-  \item Definieren Sie die Schnittstelle. Überlegen Sie sich dabei, welche Methoden notwendig sind, und wie die
-Parameter und Returnwerte aussehen müssen, inkl. die korrekte Anwendung von const.
-\item Implementieren Sie Stubs der Klasse.
-\item Implementieren Sie ein Testprogramm, das die Häufigkeit der einzelnen Werte ermittelt und stellen Sie
-diese Resultate in einem Histogramm (intern oder extern z.B. mit Excel/Matlab/gnuplot) dar.
-\item Führen Sie dieses Programm aus.
-\item Implementieren Sie die Klasse (Methode um Methode).
-\item Verwenden sie die Pseudo-random number generators von C++ und vergleichen Sie die Verteilungen
-mit den Verteilungen generiert mit der Klasse RandIntGen. Informationen über die Pseudo-random
-number generators finden sie hier: https://en.cppreference.com/w/cpp/numeric/random
+  \item Definieren Sie die Schnittstelle. Überlegen Sie sich dabei, welche Methoden notwendig sind, und wie die Parameter und Returnwerte aussehen müssen, inkl. die korrekte Anwendung von const.
+  \item Implementieren Sie Stubs der Klasse.
+  \item Implementieren Sie ein Testprogramm, das die Häufigkeit der einzelnen Werte ermittelt und stellen Sie diese Resultate in einem Histogramm (intern oder extern z.B. mit Excel/Matlab/gnuplot) dar.
+  \item Führen Sie dieses Programm aus.
+  \item Implementieren Sie die Klasse (Methode um Methode).
+  \item Verwenden sie die Pseudo-random number generators von C++ und vergleichen Sie die Verteilungen mit den Verteilungen generiert mit der Klasse RandIntGen. Informationen über die Pseudo-random number generators finden sie hier: https://en.cppreference.com/w/cpp/numeric/random
 \end{enumerate}
 
 \textbf{Hinweise:}
 \begin{itemize}
   \item  Verwenden Sie die in den Vorlesungsunterlagen beschriebenen Formeln.
-  \item Die Weibullverteilung besitzt zwei reelle Parameter $\alpha$ und $\beta$. Aus der Gleichverteilung erhält man
-eine Weibull-verteilte Zahl $w$ wie folgt:
-\begin{enumerate}
-  \item i. Erzeuge eine gleichverteilte Zahl u im Bereich [0, 1[
-  \item $w = \beta(-\log(1.0-u)^{\frac{1}{a}})$
-\end{enumerate}
-\item  Seien Sie vorsichtig bei der Umrechnung von Gleitpunktwerten in ganzzahlige Werte. Überlegen Sie
-sich, wann\texttt{ lround()} verwendet werden kann und wann \texttt{static\_cast$<$int$>$}. Zur Erinnerung: bei
-der zweiten Methode wird ohne zu runden einfach der ganzzahlige Teil genommen.
-\item Bei gewissen Verteilungen müssen Sie \texttt{lround()} nehmen, bei anderen \texttt{static\_cast$<$int$>$}.
+  \item Die Weibullverteilung besitzt zwei reelle Parameter $\alpha$ und $\beta$. Aus der Gleichverteilung erhält man eine Weibull-verteilte Zahl $w$ wie folgt:
+  \begin{enumerate}
+    \item Erzeuge eine gleichverteilte Zahl u im Bereich [0, 1[
+    \item $w = \beta(-\log(1.0-u)^{\frac{1}{a}})$
+  \end{enumerate}
+  \item Seien Sie vorsichtig bei der Umrechnung von Gleitpunktwerten in ganzzahlige Werte. Überlegen Sie sich, wann \texttt{lround()} verwendet werden kann und wann \texttt{static\_cast<int>}. Zur Erinnerung: bei der zweiten Methode wird ohne zu runden einfach der ganzzahlige Teil genommen.
+  \item Bei gewissen Verteilungen müssen Sie \texttt{lround()} nehmen, bei anderen \texttt{static\_cast<int>}.
 \end{itemize}
 
 \subsubsection{Lösung}
 
-\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak12/Distributions/src/Distributions.cpp}
-\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+
 \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak12/Distributions/src/RandIntGen.h}
 \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
 \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak12/Distributions/src/RandIntGen.cpp}
 \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak12/Distributions/src/Distributions.cpp}

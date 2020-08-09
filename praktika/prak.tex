@@ -36,6 +36,9 @@ numbers=left,
   numberstyle=\ttfamily\tiny,
   backgroundcolor=\color{backcolour}
 }
+\lstset{
+    literate={~} {$\sim$}{1}
+}
 
 \setitemize{noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt}
 \setlength\parindent{0pt}
@@ -48,42 +51,17 @@ numbers=left,
 \setcounter{tocdepth}{2}
 \tableofcontents
 
-\section{Lab 1 Listen}
-\input{900-Praktika/lab1}
-\newpage
-\section{Lab 2 Listen, Algorithmen und Komplexitätstheorie}
-\input{900-Praktika/lab2}
-\newpage
-\section{Lab 3 Sortieralgorithmen und Komplexitätstheorie}
-\input{900-Praktika/lab3}
-\newpage
-\section{Lab 4 Zufallszahlengeneratoren}
-\input{900-Praktika/lab4}
-\newpage
-\section{Lab 5 Dinierende Philosophen}
-\input{900-Praktika/lab5}
-\newpage
-\section{Lab 6 CRC - Berechnung und -Implementation in C++}
-\input{900-Praktika/lab6}
-\newpage
-\section{Lab 7 inline und Bitfelder}
-\input{900-Praktika/lab7}
-\newpage
-\section{Lab 8 Digitale Ableitung und Pulsdetektion auf dem EmbSW-Roboter}
-\input{900-Praktika/lab8}
-\newpage
-\section{Lab 9 Code Bloat bei Templates, Code Hoisting}
-\input{900-Praktika/lab9}
-\newpage
-\section{Lab 10 Dynamic Memory Management}
-\input{900-Praktika/lab10}
-\newpage
-\section{Lab 11 C++ and ROMability, Hardware Abstraction Layer (HAL)}
-\input{900-Praktika/lab11}
-\newpage
-\section{Lab 12 Zufallszahlengeneratoren}
-\input{900-Praktika/lab12}
-\newpage
-\section{Lab 13 Security}
-\input{900-Praktika/lab13}
+\include{900-Praktika/lab1}
+\include{900-Praktika/lab2}
+\include{900-Praktika/lab3}
+\include{900-Praktika/lab4}
+\include{900-Praktika/lab5}
+\include{900-Praktika/lab6}
+\include{900-Praktika/lab7}
+\include{900-Praktika/lab8}
+\include{900-Praktika/lab9}
+\include{900-Praktika/lab10}
+\include{900-Praktika/lab11}
+\include{900-Praktika/lab12}
+\include{900-Praktika/lab13}
 \end{document}

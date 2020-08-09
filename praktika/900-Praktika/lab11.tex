@@ -1,69 +1,54 @@
-\subsection{Aufgabe 1: C++ and ROMability, Hardware Abstraction Layer (HAL)}
+%!TEX root = ../prak.tex
+\section{Lab 11 C++ and ROMability, Hardware Abstraction Layer (HAL)}
+\subsection{Aufgabe 1: C++ and ROMability}
 
-In der Vorlesung haben wir gesehen, dass unterschiedliche Konstrukte ROMable sind, jedoch nicht jeder
-Compiler diese Konstrukte auch im ROM platziert. In dieser Aufgabe untersuchen Sie die ROMability und die
-Optimierung von ROMable Konstrukten des g++-Compilers. Für die Untersuchung müssen Sie unter Umständen
-Optimierungsstufen setzen.
+In der Vorlesung haben wir gesehen, dass unterschiedliche Konstrukte ROMable sind, jedoch nicht jeder Compiler diese Konstrukte auch im ROM platziert. In dieser Aufgabe untersuchen Sie die ROMability und die Optimierung von ROMable Konstrukten des g++-Compilers. Für die Untersuchung müssen Sie unter Umständen Optimierungsstufen setzen.
 
 Die folgenden Optionen des GNU-Compilers können für diese Aufgabe nützlich sein:
 
 \medskip
-\noindent<
+\noindent
 ‐E  \qquad Precompile only, der Output wird auf stdout geschrieben\\
 ‐S  \qquad Assembleroutput, ohne Objectfile erzeugen\\
 ‐c \qquad nur compilieren\\
-‐O0 \qquad keine Optimierung\\
-‐O1 \qquad Optimierungsstufe 1 (siehe g++ ‐‐help oder man g++ für Details)\\
-‐O2 \qquad Optimierungsstufe 2\\
-‐O3 \qquad Optimierungsstufe 3\\
-‐Os \qquad Optimierung auf Codegrösse\\
+‐O0 \quad keine Optimierung\\
+‐O1 \quad Optimierungsstufe 1 (siehe g++ ‐‐help oder man g++ für Details)\\
+‐O2 \quad Optimierungsstufe 2\\
+‐O3 \quad Optimierungsstufe 3\\
+‐Os \quad Optimierung auf Codegrösse\\
 
-\textbf{Achten Sie bei allen Untersuchungen darauf, dass Ihre kleinen Testprogramme nicht vollständig
-wegoptimiert werden, da die definierten Variablen nicht weiterverwendet werden. Damit das nicht
-passiert, können Sie den Inhalt der Variablen in die Console schreiben.}
+\textbf{Achten Sie bei allen Untersuchungen darauf, dass Ihre kleinen Testprogramme nicht vollständig wegoptimiert werden, da die definierten Variablen nicht weiterverwendet werden. Damit das nicht passiert, können Sie den Inhalt der Variablen in die Console schreiben.}
 
 \begin{enumerate}
-  \item  Umsetzung von Strings: Untersuchen Sie, wie die untenstehenden Stringdefinitionen umgesetzt werden.
-Wird \textit{World} mit \textit{Hello World} gemeinsam verwendet? Gibt es allenfalls Unterschiede in Abhängigkeit
-der Optimierungsstufen?
+  \item  Umsetzung von Strings: Untersuchen Sie, wie die untenstehenden Stringdefinitionen umgesetzt werden. Wird \textit{World} mit \textit{Hello World} gemeinsam verwendet? Gibt es allenfalls Unterschiede in Abhängigkeit der Optimierungsstufen?
 
-\texttt{
-const char* pc1 = "Hello World";\\
+\texttt{const char* pc1 = "Hello World";\\
 const char* const pc2 = "World";}
 
-\item Wie werden Tabellen umgesetzt? Gibt es einen Unterschied in der Umsetzung der folgenden beiden Definitionen?
-Was passiert, wenn Sie beiden Definitionen das Schlüsselwort static voranstellen?
+  \item Wie werden Tabellen umgesetzt? Gibt es einen Unterschied in der Umsetzung der folgenden beiden Definitionen? Was passiert, wenn Sie beiden Definitionen das Schlüsselwort static voranstellen?
 
 \texttt{const int table1[] = {1, 2, 3};\\
 int table2[] = {1, 2, 3};}
 
-\item Integerkonstanten: Für die Definition von Integerkonstanten stehen Ihnen drei Möglichkeiten zur Verfügung:
-const int, enum und \#define. Wie werden diese Varianten umgesetzt? Geben Sie in Ihrem
-Testprogramm dem Compiler die Chance, eine Immediate-Adressierung zu verwenden. Um herauszufinden,
-ob eine Konstante mehrfach im Speicher angelegt wird (ohne Immediate-Adressierung), müssen
-Sie die definierte Konstante mehrfach im Programm verwenden.
-\item Floating Point-Konstanten: Für die Definition von Floating Point-Konstanten stehen Ihnen const double
-und \#define zur Verfügung. Wie werden diese Varianten umgesetzt? Eine Immediate-Adressierung ist
-mit doubles kaum möglich. Um herauszufinden, ob eine Konstante mehrfach im Speicher angelegt wird,
-müssen Sie die definierte Konstante mehrfach im Programm verwenden.
-\item Können Sie herausfinden, ob vtbl's im ROM abgelegt werden?
+  \item Integerkonstanten: Für die Definition von Integerkonstanten stehen Ihnen drei Möglichkeiten zur Verfügung: const int, enum und \#define. Wie werden diese Varianten umgesetzt? Geben Sie in Ihrem Testprogramm dem Compiler die Chance, eine Immediate-Adressierung zu verwenden. Um herauszufinden, ob eine Konstante mehrfach im Speicher angelegt wird (ohne Immediate-Adressierung), müssen Sie die definierte Konstante mehrfach im Programm verwenden.
+
+  \item Floating Point-Konstanten: Für die Definition von Floating Point-Konstanten stehen Ihnen const double und \#define zur Verfügung. Wie werden diese Varianten umgesetzt? Eine Immediate-Adressierung ist mit doubles kaum möglich. Um herauszufinden, ob eine Konstante mehrfach im Speicher angelegt wird, müssen Sie die definierte Konstante mehrfach im Programm verwenden.
+
+  \item Können Sie herausfinden, ob vtbl's im ROM abgelegt werden?
 \end{enumerate}
 
 \subsubsection{Lösung}
 
 \begin{enumerate}
-  \item  siehe ./Loesung/A1-0
-Solange die Strings völlig identisch sind (Formatstring), wird der String nur einmal im Speicher abgelegt. Bei Teilstrings werden bei jeder Optimierungsstufe beide Strings vollständig gespeichert (doppelt). Wenn nur der String ausgegeben wird, ersetzt der Compiler printf() durch puts(). Bei dieser speziellen An-wendung spart man sich dadurch den Formatstring (hier ist g++ smart).
+  \item Solange die Strings völlig identisch sind (Formatstring), wird der String nur einmal im Speicher abgelegt. Bei Teilstrings werden bei jeder Optimierungsstufe beide Strings vollständig gespeichert (doppelt). Wenn nur der String ausgegeben wird, ersetzt der Compiler printf() durch puts(). Bei dieser speziellen Anwendung spart man sich dadurch den Formatstring (hier ist g++ smart).
 \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak11/Loesung/A1-0/main.cpp}
 \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
 \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak11/Loesung/A1-0/main.s}
 \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
-  \item siehe ./Loesung/A1-1
-Solange von beiden Tabellen nur gelesen wird, könnten beide Tabellen geROMt werden, bzw. sogar nur einfach gespeichert werden, da der Inhalt identisch ist.
-Diese kurzen Tabellen werden sogar auf dem Stack abgespeichert. Sobald sie grösser sind, werden sie ebenfalls im Datenbereich gespeichert.
-Interessant sind vor allem noch die folgenden Deklarationen mit static. static bewirkt, dass die Ta-bellen auf jeden Fall im Datenbereich gespeichert werden, d.h. keinesfalls mehr auf dem Stack. const bewirkt, dass die Tabellen in den read-only Bereich gehen.
+  \item Solange von beiden Tabellen nur gelesen wird, könnten beide Tabellen geROMt werden, bzw. sogar nur einfach gespeichert werden, da der Inhalt identisch ist. Diese kurzen Tabellen werden sogar auf dem Stack abgespeichert. Sobald sie grösser sind, werden sie ebenfalls im Datenbereich gespeichert. Interessant sind vor allem noch die folgenden Deklarationen mit static. static bewirkt, dass die Tabellen auf jeden Fall im Datenbereich gespeichert werden, d.h. keinesfalls mehr auf dem Stack. const bewirkt, dass die Tabellen in den read-only Bereich gehen.
 
-\texttt{static const int table1[] = {1, 2, 3}; static int table2[] = {1, 2, 3};}
+\texttt{static const int table1[] = \{1, 2, 3\};\\
+static int table2[] = \{1, 2, 3\};}
 
 
 \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak11/Loesung/A1-1/main.cpp}
@@ -71,9 +56,7 @@ Interessant sind vor allem noch die folgenden Deklarationen mit static. static b
 \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak11/Loesung/A1-1/main.s}
 \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
 
-  \item siehe ./Loesung/A1-2
-Integerkonstanten, die mit \#define oder enum definiert sind, jedoch nicht gebraucht werden, ergeben weder Code noch Daten. Integerkonstanten, die mit const definiert sind, werden auch dann gespeichert, wenn sie gar nicht verwendet werden, damit die Konstanten vorhanden sind, falls eine andere Compilationseinheit diese Konstanten verwenden würde. Innerhalb des .cpp-Files der Konstantendefinition wer-den diese Konstanten ebenfalls mittels Immediate-Adressierung verwendet.
-Die beste Variante, um Integerkonstanten zu definieren, ist eindeutig mittels enum. \#defines haben die bekannten Makroprobleme, consts brauchen unnötigerweise Speicher.
+  \item Integerkonstanten, die mit \#define oder enum definiert sind, jedoch nicht gebraucht werden, ergeben weder Code noch Daten. Integerkonstanten, die mit const definiert sind, werden auch dann gespeichert, wenn sie gar nicht verwendet werden, damit die Konstanten vorhanden sind, falls eine andere Compilationseinheit diese Konstanten verwenden würde. Innerhalb des .cpp-Files der Konstantendefinition werden diese Konstanten ebenfalls mittels Immediate-Adressierung verwendet. Die beste Variante, um Integerkonstanten zu definieren, ist eindeutig mittels enum. \#defines haben die bekannten Makroprobleme, consts brauchen unnötigerweise Speicher.
 
 \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak11/Loesung/A1-2/main.cpp}
 \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
@@ -85,9 +68,10 @@ Die beste Variante, um Integerkonstanten zu definieren, ist eindeutig mittels en
 \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
 \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak11/Loesung/A1-2/subs.s}
 \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
-  \item siehe ./Loesung/A1-3
-Gleitpunktkonstanten können normalerweise (speziell bei Mikrocontrollern) nicht mittels Immediate-Ad-ressierung verwendet werden, d.h. es ist immer eine Konstante im Datenbereich vorhanden. Bei 64 Bit-Systemen (z.B. unsere Laborrechner) kann ein Register einen ganzen double-Wert (8 Byte) beinhalten, die Instruktion MOVABSQ (Move quad word to register) lädt einen double-Wert mittels Immediateadressie-rung direkt in ein solches Register. Konstanten, die mit \#define definiert sind, jedoch nicht gebraucht werden, ergeben weder Code noch Daten. Gleitpunktkonstanten, die mit const definiert sind, werden auch dann gespeichert, wenn sie gar nicht verwendet werden, damit die Konstanten vorhanden sind, falls eine andere Compilationseinheit diese Konstanten verwenden würde. Allerdings sind diese Konstanten immer nur einfach vorhanden. Konstanten, die mit \#define definiert wurden, sind in jeder Compilationseinheit separat, d.h. mehrfach vorhanden.Die beste Variante, um Gleitpunktkonstanten zu definieren, ist nicht so eindeutig festzulegen. \#defines haben die bekannten Makroprobleme und benötigen allenfalls mehrfach Speicher für densel-ben Wert, jedoch nur, wenn sie wirklich verwendet werden. consts brauchen leider auch Speicher, wenn sie gar nicht verwendet werden, allerdings nur einmal. Solange nicht zu viele consts auf Vorrat definiert werden, schlage ich vor, auch hier auf \#defines zu verzichten und consts zu verwenden. Gute Compiler/ Linker mit Link-Time Optimization (LTO) sollten nicht verwendete Konstanten entfernen.
-  \item siehe ./Loesung/A1-4
+
+  \item Gleitpunktkonstanten können normalerweise (speziell bei Mikrocontrollern) nicht mittels Immediate-Adressierung verwendet werden, d.h. es ist immer eine Konstante im Datenbereich vorhanden. Bei 64 Bit-Systemen (z.B. unsere Laborrechner) kann ein Register einen ganzen double-Wert (8 Byte) beinhalten, die Instruktion MOVABSQ (Move quad word to register) lädt einen double-Wert mittels Immediateadressierung direkt in ein solches Register. Konstanten, die mit \#define definiert sind, jedoch nicht gebraucht werden, ergeben weder Code noch Daten. Gleitpunktkonstanten, die mit const definiert sind, werden auch dann gespeichert, wenn sie gar nicht verwendet werden, damit die Konstanten vorhanden sind, falls eine andere Compilationseinheit diese Konstanten verwenden würde. Allerdings sind diese Konstanten immer nur einfach vorhanden. Konstanten, die mit \#define definiert wurden, sind in jeder Compilationseinheit separat, d.h. mehrfach vorhanden. Die beste Variante, um Gleitpunktkonstanten zu definieren, ist nicht so eindeutig festzulegen. \#defines haben die bekannten Makroprobleme und benötigen allenfalls mehrfach Speicher für denselben Wert, jedoch nur, wenn sie wirklich verwendet werden. consts brauchen leider auch Speicher, wenn sie gar nicht verwendet werden, allerdings nur einmal. Solange nicht zu viele consts auf Vorrat definiert werden, schlage ich vor, auch hier auf \#defines zu verzichten und consts zu verwenden. Gute Compiler/Linker mit Link-Time Optimization (LTO) sollten nicht verwendete Konstanten entfernen.
+
+  \item
   \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak11/Loesung/A1-3/main.cpp}
   \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
   \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak11/Loesung/A1-3/main.s}
@@ -100,26 +84,18 @@ Gleitpunktkonstanten können normalerweise (speziell bei Mikrocontrollern) nicht
   \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
 \end{enumerate}
 
-Die vtbl's werden in den Abschnitt rodata, d.h. read-only data gelegt (\_ZTV1A und \_ZTV1B). Bei einem Embedded System mit ROM könnte dieser Bereich ins ROM gelegt werden.
+  Die vtbl's werden in den Abschnitt rodata, d.h. read-only data gelegt (\_ZTV1A und \_ZTV1B). Bei einem Embedded System mit ROM könnte dieser Bereich ins ROM gelegt werden.
 
 \subsection{Aufgabe 2: Ohne Hardware Abstraction Layer}
 
-Im Vorgabeordner finden Sie eine Beispielapplikation für den EswRobot. Die Applikation initialisiert den Roboter
-und lässt LED 1 leuchten solange Switch 1 gedrückt wird und lässt LED 2 leuchten solange Switch 2
-gedrückt wird. Die komplette Funktionalität wurde im File main.c implementiert, ohne eine HAL zu verwenden.
+Im Vorgabeordner finden Sie eine Beispielapplikation für den EswRobot. Die Applikation initialisiert den Roboter und lässt LED 1 leuchten solange Switch 1 gedrückt wird und lässt LED 2 leuchten solange Switch 2 gedrückt wird. Die komplette Funktionalität wurde im File main.c implementiert, ohne eine HAL zu verwenden.
 
-Die folgenden Aufgaben sollen aufzeigen wie eine HAL eingesetzt und implementiert werden kann. Durch
-den HAL soll der Code leserlich und erweiterbar gestaltet werden können, ohne dabei auf Performance verzichten
-zu müssen. Die Implementation ohne HAL stellt die Baseline für die Implementation mit HAL dar.
+Die folgenden Aufgaben sollen aufzeigen wie eine HAL eingesetzt und implementiert werden kann. Durch den HAL soll der Code leserlich und erweiterbar gestaltet werden können, ohne dabei auf Performance verzichten zu müssen. Die Implementation ohne HAL stellt die Baseline für die Implementation mit HAL dar.
 
 \begin{enumerate}
-  \item Importieren Sie das Projekte NoHAL (./Vorgabe/NoHAL) ins Code Composer Studio und studieren Sie
-den Code im File main.c.
-\item Definieren Sie die fehlenden GIO A Registeradressen. Informationen über die Register finden Sie im
-"Technical Reference Manual". Das Memory Map und die Registeradressen finden Sie im Datenblatt des
-TMS320F2806x Microcontrollers. In "Table 6-70. GPIO Registers" sind die Registeradressen für die GIO
-Peripherie aufgelistet.
-\item Verifizieren Sie die Funktionalität der Applik
+  \item Importieren Sie das Projekte NoHAL (./Vorgabe/NoHAL) ins Code Composer Studio und studieren Sie den Code im File main.c.
+  \item Definieren Sie die fehlenden GIO A Registeradressen. Informationen über die Register finden Sie im "Technical Reference Manual". Das Memory Map und die Registeradressen finden Sie im Datenblatt des TMS320F2806x Microcontrollers. In "Table 6-70. GPIO Registers" sind die Registeradressen für die GIO Peripherie aufgelistet.
+  \item Verifizieren Sie die Funktionalität der Applikation auf dem EswRobot, indem Sie das Programm compilieren, auf den Roboter laden und ausführen.
 \end{enumerate}
 
 \subsubsection{Lösung}
@@ -131,17 +107,12 @@ Peripherie aufgelistet.
 
 \subsection{Aufgabe 3: Hardware Abstraction Layer in C}
 
-Um die Applikation leserlich und erweiterbar zu gestalten, wird der Microcontroller in einer Chip Support Library
-(CSL) und das PCB des EswRobot in einer Board Support Library (BSL) abstrahiert. Diese beiden Libraries
-bilden den Hardware Abstraction Layer (HAL). Diese Abstraktion wurde für den EswRobot im Projekt
-CHAL in C vorgenommen.
+Um die Applikation leserlich und erweiterbar zu gestalten, wird der Microcontroller in einer Chip Support Library (CSL) und das PCB des EswRobot in einer Board Support Library (BSL) abstrahiert. Diese beiden Libraries bilden den Hardware Abstraction Layer (HAL). Diese Abstraktion wurde für den EswRobot im Projekt CHAL in C vorgenommen.
 
 \begin{enumerate}
-  \item Importieren Sie das Projekte CHAL (./Vorgabe/CHAL) ins Code Composer Studio und studieren Sie die
-CSL und die BSL.
-\item  Implementieren Sie die gleiche Funktionalität wie im Projekt NoHAL mit Hilfe des vorgegebenen HALs in
-main.c.
-\item Verifizieren Sie, ob Ihr Testprogramm einwandfrei funktioniert.
+  \item Importieren Sie das Projekt CHAL (./Vorgabe/CHAL) ins Code Composer Studio und studieren Sie die CSL und die BSL.
+  \item Implementieren Sie die gleiche Funktionalität wie im Projekt NoHAL mit Hilfe des vorgegebenen HALs in main.c.
+  \item Verifizieren Sie, ob Ihr Testprogramm einwandfrei funktioniert.
 \end{enumerate}
 
 \subsubsection{Lösung}
@@ -156,11 +127,11 @@ main.c.
   \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
   \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak11/Loesung/CHAL/csl/include/hwreg.h}
   \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
-  \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
   \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak11/Loesung/CHAL/csl/include/pin.h}
-  \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak11/Loesung/CHAL/csl/include/port.h}
   \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
   \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak11/Loesung/CHAL/csl/src/pin.c}
+  \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+  \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak11/Loesung/CHAL/csl/include/port.h}
   \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
   \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak11/Loesung/CHAL/csl/src/port.c}
   \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
@@ -170,86 +141,63 @@ main.c.
 \end{enumerate}
 
 \subsection{Aufgabe 4: Hardware Abstraction Layer in C++}
-Im Projekt CHAL wurde die Applikation vom Projekt NoHAL mit einem HAL in C implementiert. In dieser Aufgabe
-wird dieselbe Funktionalität mit einem HAL in C++ implementiert.
+Im Projekt CHAL wurde die Applikation vom Projekt NoHAL mit einem HAL in C implementiert. In dieser Aufgabe wird dieselbe Funktionalität mit einem HAL in C++ implementiert.
 
 \begin{enumerate}
-  \item  Importieren Sie das Projekte CPPHAL (./Vorgabe/CPPHAL) ins Code Composer Studio und studieren Sie
-die CSL, die BSL und die main()-Funktion.
-\item  Die Schnittstelle für die BSL Klassen Led und Switch sind definiert, aber nicht implementiert. Implementieren
-Sie die beiden Klassen vollständig. Alle Funktionen müssen implizit inline implementiert werden.
-\item Verifizieren Sie, ob das vorgegebene Testprogramm einwandfrei funktioniert.
+  \item Importieren Sie das Projekt CPPHAL (./Vorgabe/CPPHAL) ins Code Composer Studio und studieren Sie die CSL, die BSL und die main()-Funktion.
+  \item Die Schnittstelle für die BSL Klassen Led und Switch sind definiert, aber nicht implementiert. Implementieren Sie die beiden Klassen vollständig. Alle Funktionen müssen implizit inline implementiert werden.
+  \item Verifizieren Sie, ob das vorgegebene Testprogramm einwandfrei funktioniert.
 \end{enumerate}
 
 \subsubsection{Lösung}
-
-
 \begin{enumerate}
   \item just do it
   \item \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak11/Loesung/CPPHAL/bsl/include/Led.h}
   \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
   \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak11/Loesung/CPPHAL/bsl/include/Switch.h}
-  \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
 \end{enumerate}
 
 \subsection{Aufgabe 5: Hardware Abstraction Layer in C++ mit Memory-mapped IO (MMIO)}
 
-Bei Microcontrollern werden die peripheren Module direkt in den Speicher eingebunden und können über
-Adressen angesteuert werden. Die Klassen Pin und Port aus der CSL abstrahieren die GPIO-Module des
-Microcontrollers und verwenden für die Registerzugriffe Instanzen der Klasse HwReg, welche direkt an die
-entsprechende Registeradresse platziert werden.
+Bei Microcontrollern werden die peripheren Module direkt in den Speicher eingebunden und können über Adressen angesteuert werden. Die Klassen Pin und Port aus der CSL abstrahieren die GPIO-Module des Microcontrollers und verwenden für die Registerzugriffe Instanzen der Klasse HwReg, welche direkt an die entsprechende Registeradresse platziert werden.
 
 \begin{enumerate}
-  \item  Importieren Sie das Projekte CPPHAL\_advanced (./Vorgabe/CPPHAL\_advanced) ins Code Composer
-Studio und studieren Sie die CSL, die BSL und die main()-Funktion.
-\item Implementieren Sie die Klasse HwReg vollständig. Alle Funktionen müssen implizit inline implementiert
-werden.
-\item  Platzieren Sie die benötigten HwReg-Objekte in der Pin Klasse an der korrekten Stelle und implementieren
-Sie damit die Stubs. Verwenden Sie die bereits implementierte toggle Methode als Inspiration.
-Überlegen Sie sich, ob für die Platzierung placement new oder ein reinterpret\_cast bevorzugt wird?
-Hinweis: Für placement new müssen Sie den Header $<$new$>$ inkludieren.
-\item Verifizieren Sie, ob das vorgegebene Testprogramm einwandfrei funktioniert.
-\item  Compilieren Sie ihren Code mit der Optimierungsstufe O3 und beantworten Sie die folgenden Fragen.
-Um die Optimierungsstufe festzulegen, müssen Sie in den Projekteinstellungen unter Build $->$ C2000
-Compiler $->$ Optimization das Optimization level 3-Interprocedure Optimization in der Dropdownliste
-auswählen.
-\begin{enumerate}
-  \item  Wie wird die Abfrage if(statusSwitch.pressed()) im main auf Zeile 22 umgesetzt?
-  \item  Wie wird die Anweisung statusIndicator.off(); im main auf Zeile 25 umgesetzt?
-
-\end{enumerate}
+  \item Importieren Sie das Projekt CPPHAL\_advanced (./Vorgabe/CPPHAL\_advanced) ins Code Composer Studio und studieren Sie die CSL, die BSL und die main()-Funktion.
+  \item Implementieren Sie die Klasse HwReg vollständig. Alle Funktionen müssen implizit inline implementiert werden.
+  \item Platzieren Sie die benötigten HwReg-Objekte in der Pin Klasse an der korrekten Stelle und implementieren Sie damit die Stubs. Verwenden Sie die bereits implementierte toggle Methode als Inspiration. Überlegen Sie sich, ob für die Platzierung placement new oder ein reinterpret\_cast bevorzugt wird? Hinweis: Für placement new müssen Sie den Header $<$new$>$ inkludieren.
+  \item Verifizieren Sie, ob das vorgegebene Testprogramm einwandfrei funktioniert.
+  \item Compilieren Sie ihren Code mit der Optimierungsstufe O3 und beantworten Sie die folgenden Fragen. Um die Optimierungsstufe festzulegen, müssen Sie in den Projekteinstellungen unter Build $->$ C2000 Compiler $->$ Optimization das Optimization level 3-Interprocedure Optimization in der Dropdownliste auswählen.
+  \begin{enumerate}
+    \item Wie wird die Abfrage \texttt{if(statusSwitch.pressed())} im main auf Zeile 22 umgesetzt?
+    \item Wie wird die Anweisung \texttt{statusIndicator.off();} im main auf Zeile 25 umgesetzt?
+  \end{enumerate}
 \end{enumerate}
 
 \subsubsection{Lösung}
 
 \begin{enumerate}
-  \item  just do it
-\item  siehe ./Loesung/CPPHAL\_advanced/csl/include/HwReg.h
-\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak11/Loesung/CPPHAL_advanced/csl/include/HwReg.h}
-
-
-\item In diesem Fall macht ein reinterpret\_cast$<$ HwRegister<uint32\_t$>$*$>$ mehr Sinn, da keine Konstruktoraufruf erwünscht ist. Zudem wird Placement new nicht auf null Instruktionen reduziert. Es wird ein Call und ein Return durchgeführt, obwohl der Placement new Operator nur die übergebene Adresse zurückgibt. Immerhin wird der Konstruktoraufruf auf null Instruktionen reduziert.
-Siehe ./Loesung/CPPHAL\_advanced/csl/include/Pin.h
-\lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak11/Loesung/CPPHAL_advanced/csl/include/Pin.h}
-\item Bei der Umsetzung mit Optimierungsstufe O3 wurden alle Funktionen von Pin inline, d.h. es wird direkt mit Bitmasken auf den Registern operiert, ohne Overhead zu verursachen.
-\begin{enumerate}
-  \item Die Adresse des Registers GPADAT wird ins Register XAR4 geladen. Bit 10 im High Byte (Bit 26) wird überprüft und je nach Testergebnis wird gesprungen. Ab Zeile 1354 in Debug/main.asm.
-  \begin{lstlisting}[language=C++, style=C++]
-  ...
-  MOVL       XAR4,#28608      ; [CPU_ARAU] |60|
-  TBIT       *+XAR4[1],#10    ; [CPU_ALU] |60|
-  B          $C$L24,TC        ; [CPU_ALU] |60|
-  ...
-  \end{lstlisting}
-  \item Die Adresse des Registers GPACLEAR wird ins Register XAR4 geladen. Der Inhalt des Registers wird dann direkt OR verknüpft mit 0x40 (Bit 6) um den LED 1 Pin auf 0 zu setzen. Ab Zeile 1363 in Debug/main.asm.
-  \begin{lstlisting}[language=C++, style=C++]
-  ...
-  $C$L24:
-  MOVL        XAR4,#28612 ; [CPU_ARAU] |38|
-  $C$L25:
-  OR          *+XAR4[0],#64 ; [CPU_ALU] |38|
-  ...
-  \end{lstlisting}
-
-\end{enumerate}
+  \item just do it
+  \item \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak11/Loesung/CPPHAL_advanced/csl/include/HwReg.h}
+  \item In diesem Fall macht ein \texttt{reinterpret\_cast<HwRegister<uint32\_t>*>} mehr Sinn, da kein Konstruktoraufruf erwünscht ist. Zudem wird Placement new nicht auf null Instruktionen reduziert. Es wird ein Call und ein Return durchgeführt, obwohl der Placement new Operator nur die übergebene Adresse zurückgibt. Immerhin wird der Konstruktoraufruf auf null Instruktionen reduziert.
+  \lstinputlisting[language=C++, style=C++, multicols=2]{900-Praktika/prak11/Loesung/CPPHAL_advanced/csl/include/Pin.h}
+  \item Bei der Umsetzung mit Optimierungsstufe O3 wurden alle Funktionen von Pin inline, d.h. es wird direkt mit Bitmasken auf den Registern operiert, ohne Overhead zu verursachen.
+  \begin{enumerate}
+    \item Die Adresse des Registers GPADAT wird ins Register XAR4 geladen. Bit 10 im High Byte (Bit 26) wird überprüft und je nach Testergebnis wird gesprungen. Ab Zeile 1354 in Debug/main.asm.
+    \begin{lstlisting}[language=C++, style=C++]
+    ...
+    MOVL       XAR4,#28608      ; [CPU_ARAU] |60|
+    TBIT       *+XAR4[1],#10    ; [CPU_ALU] |60|
+    B          $C$L24,TC        ; [CPU_ALU] |60|
+    ...
+    \end{lstlisting}
+    \item Die Adresse des Registers GPACLEAR wird ins Register XAR4 geladen. Der Inhalt des Registers wird dann direkt OR verknüpft mit 0x40 (Bit 6) um den LED 1 Pin auf 0 zu setzen. Ab Zeile 1363 in Debug/main.asm.
+    \begin{lstlisting}[language=C++, style=C++]
+    ...
+    $C$L24:
+    MOVL        XAR4,#28612 ; [CPU_ARAU] |38|
+    $C$L25:
+    OR          *+XAR4[0],#64 ; [CPU_ALU] |38|
+    ...
+    \end{lstlisting}
+  \end{enumerate}
 \end{enumerate}
