@@ -33,26 +33,7 @@ Embedded systems using C++ are diverse:
 	\end{itemize}
 \end{itemize}
 
-\subsubsection{Implementing C++}
-\begin{itemize}
-	\item Why do you care?
-	\begin{itemize}
-		\item You're just curious: how do they do that?
-		\item You're trying to figure out what's going on while debugging.
-		\item You're concerned: do they do that efficiently enough?
-		\begin{itemize}
-			\item Our focus.
-			\item Baseline: C size/speed
-		\end{itemize}
-	\end{itemize}
-	\item Have faith:
-	\begin{itemize}
-		\item C++ was designed to be competitive in performance with C.
-		\item Generally speaking, you don't pay for what you don't use.
-	\end{itemize}
-\end{itemize}
-
-\subsection{Performance (Zeit und Codegrösse)}
+\subsection{Performancebetrachtungen (Zeit und Codegrösse)}
 \subsubsection{C++ vs. C}
 \begin{itemize}
 	\item No-Cost C++ features
@@ -77,7 +58,7 @@ void doThat(const std::string& name = defaultName); // Better
 		\begin{itemize}
 			\item Exceptions: a small speed and/or size penalty (code)\\
 			When evaluating the cost of exceptions, be sure to do a fair comparison. Error handling costs you something, no matter how it is implemented.\\
-			E.g., Saks reports object code increases of 15-40\% for error handling based on return values.
+			E.g., Ben Saks reports object code increases of 15-40\% for error handling based on return values.
 		\end{itemize}
 	\item C++ features that can surprise inexperienced C++ programmers\\
 	These \textbf{can} cost you if you're not careful:
@@ -104,11 +85,11 @@ void doThat(const std::string& name = defaultName); // Better
 			\item Why do C developers moving to C++ often find their code is big and slow?
 			\begin{itemize}
 				\item C++ isn't C, and C programmers aren't C++ programmers
-				\item C++ from good C++ developers as good as C from good C developers
+				\item C++ from good C++ developers is as good as C from good C developers
 			\end{itemize}
 		\end{itemize}
 	\end{itemize}
-	\item Efficiency beyond C: C++ can be more efficient than C
+	\item Efficiency beyond C: C++ can be more \textit{efficient} than C
 	\begin{itemize}
 		\item C++ feature implementation often better than C approximations:
 		\begin{itemize}
@@ -122,7 +103,7 @@ void doThat(const std::string& name = defaultName); // Better
 				\item May employ ''the small string optimization''
 			\end{itemize}
 		\end{itemize}
-		\item STL-proven techniques have revolutionized library design:
+		\item STL(Standard Template Library)-proven techniques have revolutionized library design:
 		\begin{itemize}
 			\item Shift work from runtime to compile-time:
 			\begin{itemize}
@@ -199,9 +180,9 @@ uint_fastN_t
 \lstinline{i++;} entspricht:
 \begin{lstlisting}
 {
-  tmp = i;
+  temp = i;
   i += 1;
-  "return" tmp;
+  "return" temp;
 }
 \end{lstlisting}
 \vfill\null
@@ -215,11 +196,11 @@ uint_fastN_t
 \end{lstlisting}
 \vfill\null
 \end{multicols}
-Die Postfix-Operatoren bedingen im Prinzip ein tmp-Objekt. Gute Compiler werden das optimieren, schlechte jedoch nicht.
+Die Postfix-Operatoren bedingen im Prinzip ein temp-Objekt. Gute Compiler werden das optimieren, schlechte jedoch nicht.
 
 \subsubsection{Taking address of local variables}
 \textbf{Hidden Cost}\\
-Local variables are only allocated to the stack if they have to be. Keeping them in registers (and sharing a register between different ones not used at the same time) gives big gains in performance (that is, not having to do loads and stores). Taking the address of a local will force it to the stack regardless of optimization level.\\
+Local variables are only allocated to the stack if they have to be. Keeping them in registers (and sharing a register between different ones not used at the same time) gives big gains in performance (that is, not having to do loads and stores). \textbf{Taking the address of a local will force it to the stack regardless of optimization level.}\\
 \\
 \textbf{Cortex-M3}\\
 All Cortex-M3 compilers support all-in-register locals when optimizations are turned on (size or speed).
@@ -245,7 +226,7 @@ All Cortex-M3 compilers support all-in-register locals when optimizations are tu
 			\item Virtuelle Funktionen werden kaum inlined (inline: compile-time, virtual: run-time)
 			\item ''Komplizierte'' Funktionen ebenfalls nicht (der jeweilige Compiler entscheidet, was ''kompliziert'' ist)
 			\item Rekursive Funktionen werden nie inlined
-			\item (Ältere) Linker können kaum Inlining, d.h. die inline-Funktionen sollten bereits dem Compiler vollständig bekannt sein. Dies kann erreicht werden, indem die Inline-Funktionen direkt im Header definiert werden.
+			\item (Ältere) \textbf{Linker} können kaum Inlining, d.h. die inline-Funktionen sollten bereits dem Compiler vollständig bekannt sein. Dies kann erreicht werden, indem die Inline-Funktionen direkt im Header definiert werden.
 		\end{itemize}
 \end{itemize}
 
@@ -261,7 +242,7 @@ Compilers may inline functions not declared inline, but this is uncommon.
 \begin{itemize}
 	\item To inline a function, compilers need its definition, but non-inline functions are not defined in header files.
 	\item They'd cause duplicate symbol errors during linking
-	\item Non-inline functions are thus declared in headers, not defined there.
+	\item \textbf{Non-inline functions are thus \textit{declared} in headers, not defined there.}
 	\item The rules for function templates are a bit different...
 \end{itemize}
 \vfill\null
@@ -320,8 +301,8 @@ Nützlich zum Beispiel für eine shared library / DLL.
 
 \subsubsection{Lösung}
 \begin{itemize}
-\item ''Versteckte'' Implementierung im .cpp File wird in einem separaten File versteckt
-\item Im Header nur noch die öffentliche Schnittstelle mit einem privaten Pointer auf die ''versteckte'' Implementierung
+\item  Man ''versteckt'' die eigentliche Implementierung der Klasse im .cpp File
+\item  Im Header der Klasse definiert man die öffentliche Schnittstelle und einen privaten Zeiger auf die ''versteckte'' Implementierung
 \begin{itemize}
   \item am besten: ein \lstinline[language=C++]{shared_ptr<Impl>}
 \end{itemize}
@@ -1517,7 +1498,7 @@ Four common worries
   \end{itemize}
   \item \textbf{Memory leaks}
   \begin{itemize}
-    \item Will some allocations go unallocated?
+    \item Will some allocations go undeallocated?
   \end{itemize}
   \item \textbf{Memory exhaustion}
   \begin{itemize}
@@ -1641,7 +1622,7 @@ Here we focus on allocation strategies suitable for embedded systems.\\
 \includegraphics[width=0.7\linewidth]{images/AdvancedCPP/lifo}
 
 \begin{lstlisting}[language=C++]
-class LIFOAllocator {
+class LIFOAllocator { // provides behavior of new/delete via allocate/deallocate
 public:
   LIFOAllocator(uint8_t* heapAddr, std::size_t heapSize)
     : heapBase(heapAddr), heapEnd(heapAddr+heapSize), heapTop(heapAddr)

@@ -6,8 +6,7 @@ Crc crcFast(const uint8_t message[], unsigned int nBytes)
 {
   Crc remainder = 0;
   uint8_t data;
-  unsigned int byte;
-  for (byte = 0; byte < nBytes; ++byte)
+  for (unsigned int byte = 0; byte < nBytes; ++byte)
   {
     data = message[byte] ^ remainder;
     remainder = crcTable[data];

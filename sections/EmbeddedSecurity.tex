@@ -39,19 +39,19 @@ Remark: not all of these requirements are mandatory for all applications
 PCs: may be more secure than ''typical'' embedded systems!
 \begin{itemize}
   \item Users are tpyically weakest link
-  \begin{itemize}
-    \item Phishing, Social Engineering
-    \item Bad habits (no VPN, passwords taped to monitor)
-    \item Weak passwords
-    \item Ignoring browser's certificate warnings
-  \end{itemize}
+        \begin{itemize}
+          \item Phishing, Social Engineering
+          \item Bad habits (no VPN, passwords taped to monitor)
+          \item Weak passwords
+          \item Ignoring browser's certificate warnings
+        \end{itemize}
 \end{itemize}
 Embedded systems: often no direct user interaction
 \begin{itemize}
   \item Weakest link is hardware and/or firmware
-  \begin{itemize}
-    \item Last line of defense!
-  \end{itemize}
+        \begin{itemize}
+          \item Last line of defense!
+        \end{itemize}
   \item Our responsibility: advance product security!
 \end{itemize}
 
@@ -61,67 +61,67 @@ Embedded systems: often no direct user interaction
 Processor features:
 \begin{itemize}
   \item Powerful core (Cortex M4)
-  \begin{itemize}
-    \item Memory Protection Unit (MPU)
-  \end{itemize}
+        \begin{itemize}
+          \item Memory Protection Unit (MPU)
+        \end{itemize}
   \item Crypto Processor
-  \begin{itemize}
-    \item Performance, Power, Correctness
-  \end{itemize}
+        \begin{itemize}
+          \item Performance, Power, Correctness
+        \end{itemize}
   \item Analog True Random Number Generation
   \item Secure JTAG \& Internal Memories
   \item Secure Boot \& Secure Firmware Upload
   \item Network capable (100 Mbit Ethernet)
   \item Device-specific unique 96 bit identifier
-  \begin{itemize}
-    \item Can never be modified
-    \item Guaranteed unique serial \# (not random)
-    \item Used e.g. for device-specific key generation
-  \end{itemize}
+        \begin{itemize}
+          \item Can never be modified
+          \item Guaranteed unique serial \# (not random)
+          \item Used e.g. for device-specific key generation
+        \end{itemize}
 \end{itemize}
 
 \subsubsection{ARM Cortex M4}
 \begin{itemize}
   \item Powerful CPU running at 180MHz
-  \begin{itemize}
-    \item Cryptography, particularly public key, is CPU-intensive
-    \item On-chip FPU
-    \begin{itemize}
-      \item Nice, but unused for crypto
-    \end{itemize}
-  \end{itemize}
+        \begin{itemize}
+          \item Cryptography, particularly public key, is CPU-intensive
+          \item On-chip FPU
+                \begin{itemize}
+                  \item Nice, but unused for crypto
+                \end{itemize}
+        \end{itemize}
   \item 2 privilege levels \& 2 separate stacks
-  \begin{itemize}
-    \item Separation of kernel/driver code from user code
-  \end{itemize}
+        \begin{itemize}
+          \item Separation of kernel/driver code from user code
+        \end{itemize}
   \item Extensive fault-handling exceptions
-  \begin{itemize}
-    \item Bus Fault, Usage Fault, MPU Fault, Hard Fault, NMI
-  \end{itemize}
+        \begin{itemize}
+          \item Bus Fault, Usage Fault, MPU Fault, Hard Fault, NMI
+        \end{itemize}
   \item Widely-supported architecture
-  \begin{itemize}
-    \item Tools, RTOSs, 3rd-party libraries, etc.
-  \end{itemize}
+        \begin{itemize}
+          \item Tools, RTOSs, 3rd-party libraries, etc.
+        \end{itemize}
 \end{itemize}
 
 \subsubsection{ARM Cortex Memory Protection Unit (MPU)}
 \begin{itemize}
   \item Partitions memory map into regions with attributes
   \item Traps invalid/disallowed memory accesses
-  \begin{itemize}
-    \item Programming Errors
-    \begin{itemize}
-      \item Write to Flash
-      \item Write to holes in memory map
-      \item Reads from write-only registers
-    \end{itemize}
-    \item Access Violations
-    \begin{itemize}
-      \item Execute Code from RAM
-      \item Read/Write from Private Area
-      \item Manipulation of Device/Peripheral
-    \end{itemize}
-  \end{itemize}
+        \begin{itemize}
+          \item Programming Errors
+                \begin{itemize}
+                  \item Write to Flash
+                  \item Write to holes in memory map
+                  \item Reads from write-only registers
+                \end{itemize}
+          \item Access Violations
+                \begin{itemize}
+                  \item Execute Code from RAM
+                  \item Read/Write from Private Area
+                  \item Manipulation of Device/Peripheral
+                \end{itemize}
+        \end{itemize}
   \item Check your $\mu$C's errata sheet!
 \end{itemize}
 
@@ -129,63 +129,63 @@ Processor features:
 Flash controller option bytes
 \begin{itemize}
   \item Configure device's Read Protection Mode
-  \begin{itemize}
-    \item Level 0 - no protection
-    \item Level 1 - read protection enabled
-    \begin{itemize}
-      \item Flash and Backup SRAM memories read-protected
-      \item Limited debug ability
-    \end{itemize}
-    \item Level 2 - chip protection enabled
-    \begin{itemize}
-      \item Permanent \& irreversible
-      \item JTAG interface disabled (fuses blown)
-      \item Memories only accessible from code programmed in flash
-      \item Boot from System ROM and from RAM: disabledTraps invalid/disallowed memory accesses
-    \end{itemize}
-  \end{itemize}
+        \begin{itemize}
+          \item Level 0 - no protection
+          \item Level 1 - read protection enabled
+                \begin{itemize}
+                  \item Flash and Backup SRAM memories read-protected
+                  \item Limited debug ability
+                \end{itemize}
+          \item Level 2 - chip protection enabled
+                \begin{itemize}
+                  \item Permanent \& irreversible
+                  \item JTAG interface disabled (fuses blown)
+                  \item Memories only accessible from code programmed in flash
+                  \item Boot from System ROM and from RAM: disabledTraps invalid/disallowed memory accesses
+                \end{itemize}
+        \end{itemize}
 \end{itemize}
 
 \subsubsection{Secure Firmware Update}
 \begin{itemize}
   \item Firmware updates are common attack vectors
   \item Secure firmware update requirements
-  \begin{itemize}
-    \item Secrecy {\textemdash} object code transmitted in encrypted form ($\rightarrow$ maybe required)
-    \item Authentication (integrity) ($\rightarrow$ mandatory)
-    \begin{itemize}
-      \item Code has not been tampered with or corrupted
-      \item Code is from a ''live'' party that we trust
-    \end{itemize}
-  \end{itemize}
+        \begin{itemize}
+          \item Secrecy {\textemdash} object code transmitted in encrypted form ($\rightarrow$ maybe required)
+          \item Authentication (integrity) ($\rightarrow$ mandatory)
+                \begin{itemize}
+                  \item Code has not been tampered with or corrupted
+                  \item Code is from a ''live'' party that we trust
+                \end{itemize}
+        \end{itemize}
   \item 2 phases to secure firmware update
-  \begin{itemize}
-    \item Before shipping: Device is ''personalized''
-    \item In field, device receives, decrypts, authenticates
-  \end{itemize}
+        \begin{itemize}
+          \item Before shipping: Device is ''personalized''
+          \item In field, device receives, decrypts, authenticates
+        \end{itemize}
 \end{itemize}
 
 \subsubsection{STM32F437IG Crypto/Hash Processor (Hardware Acceleration)}
 Built in symmetric ciphers
 \begin{itemize}
   \item AES (Advanced Encryption Standard)
-  \begin{itemize}
-    \item CBC (cipher block chaining), GCM (galois counter), CCM (Counter with CBC-MAC) and CTR (counter) modes (Dont' use ECB (electronic codebook))
-    \item AES-128, AES-192, AES-256
-  \end{itemize}
+        \begin{itemize}
+          \item CBC (cipher block chaining), GCM (galois counter), CCM (Counter with CBC-MAC) and CTR (counter) modes (Dont' use ECB (electronic codebook))
+          \item AES-128, AES-192, AES-256
+        \end{itemize}
   \item 3DES (Triple-DES, Data Encryption Standard)
-  \begin{itemize}
-    \item CBC (cipher block chaining) mode (Don't use ECB (electronic codebook))
-    \item 64, 128, 192 bit keys
-  \end{itemize}
+        \begin{itemize}
+          \item CBC (cipher block chaining) mode (Don't use ECB (electronic codebook))
+          \item 64, 128, 192 bit keys
+        \end{itemize}
   \item Cryptographic Hash Processor
-  \begin{itemize}
-    \item MD5, SHA-1, SHA-2
-  \end{itemize}
+        \begin{itemize}
+          \item MD5, SHA-1, SHA-2
+        \end{itemize}
   \item Message authentication
-  \begin{itemize}
-    \item HMAC
-  \end{itemize}
+        \begin{itemize}
+          \item HMAC
+        \end{itemize}
 \end{itemize}
 
 \subsection{The security threats in embedded systems}
@@ -208,9 +208,9 @@ The solutions and countermeasures are different:
 Big-iron approaches don't scale down very well
 \begin{itemize}
   \item There is no standard set of ''must have'' defenses
-  \begin{itemize}
-    \item Depends on threats, assets, security goals
-  \end{itemize}
+        \begin{itemize}
+          \item Depends on threats, assets, security goals
+        \end{itemize}
 \end{itemize}
 \textbf{Can't} make any of these assumptions:
 \begin{itemize}
@@ -252,34 +252,34 @@ Problem: The moment an incorrect digit is entered, buzzer sounds, PIN entry is r
 \textbf{Security through obscurity is no security at all}
 \begin{itemize}
   \item No homebrew ciphers, no secret algorithms!
-  \begin{itemize}
-    \item The algorithm must not be secret
-    \item The secrecy is in the keys, not in the algorithm (Kerckhoff's principle)
-  \end{itemize}
+        \begin{itemize}
+          \item The algorithm must not be secret
+          \item The secrecy is in the keys, not in the algorithm (Kerckhoff's principle)
+        \end{itemize}
   \item Breaking one device vs. breaking all devices
-  \begin{itemize}
-    \item Code is the same, keys are different
-  \end{itemize}
+        \begin{itemize}
+          \item Code is the same, keys are different
+        \end{itemize}
   \item Real world analogy
-  \begin{itemize}
-    \item Attacker sees lock maker \& model
-    \item Best option is brute force attack
-  \end{itemize}
+        \begin{itemize}
+          \item Attacker sees lock maker \& model
+          \item Best option without the key is a brute force attack
+        \end{itemize}
 \end{itemize}
 
 \subsection{Cryptography \& Random Numbers}
 \begin{itemize}
   \item Many cryptographic operations require randomness
-  \begin{itemize}
-    \item Key generation
-    \item Certain block cipher modes
-    \item Secure protocols
-  \end{itemize}
+        \begin{itemize}
+          \item Key generation
+          \item Certain block cipher modes
+          \item Secure protocols
+        \end{itemize}
   \item But generating \& using random numbers is hard
-  \begin{itemize}
-    \item Computers are deterministic
-    \item Estimating entropy is hard
-  \end{itemize}
+        \begin{itemize}
+          \item Computers are deterministic
+          \item Estimating entropy is hard
+        \end{itemize}
   \item PRNGs require a (truly) random seed, some usages don't seed at all(!!!)
   \item Use a CSPRNG (CS = Cryptographically Secure) if you have one
 \end{itemize}
@@ -297,7 +297,12 @@ Problem: The moment an incorrect digit is entered, buzzer sounds, PIN entry is r
 \begin{itemize}
   \item Secret key (symmetric) cryptography (AES, 3DES)
   \item Public key (asymmetric) cryptography
-  \item Hashing
+  \begin{itemize}
+    \item Integer factorization (RSA)
+    \item Discrete logarithm (DH, DSA, Elgamal)
+    \item Eliptic Curves (ECDH, ECDSA)
+  \end{itemize}
+  \item Hashing (MD4, MD5, SHA)
   \item \textbf{All secure data flows rely on more or less complex combinations of these algorithms}
 \end{itemize}
 
@@ -305,27 +310,27 @@ Problem: The moment an incorrect digit is entered, buzzer sounds, PIN entry is r
 
 \begin{itemize}
   \item Very similar to lock \& key system
-  \begin{itemize}
-    \item Without the key, you can't get in
-  \end{itemize}
+        \begin{itemize}
+          \item Without the key, you can't get in
+        \end{itemize}
   \item The lock is publicly viewable
-  \begin{itemize}
-    \item Key must remain with owner only
-  \end{itemize}
+        \begin{itemize}
+          \item Key must remain with owner only
+        \end{itemize}
   \item If the lock is weak, the key isn't necessary
-  \begin{itemize}
-    \item Same is true of a weak cipher
-  \end{itemize}
+        \begin{itemize}
+          \item Same is true of a weak cipher
+        \end{itemize}
   \item One key used to lock \& unlock the mechanism
-  \begin{itemize}
-    \item Symmetric crypto: same key used to encrypt and decrypt
-  \end{itemize}
+        \begin{itemize}
+          \item Symmetric crypto: same key used to encrypt and decrypt
+        \end{itemize}
 \end{itemize}
 \begin{tabular}{|l|l|}
   \hline
-  \textbf{Encryption:} & Ciphertext = Plaintext $\oplus$ Key\\
+  \textbf{Encryption:} & Ciphertext = Plaintext $\oplus$ Key \\
   \hline
-  \textbf{Decryption:} & Plaintext = Ciphertext $\oplus$ Key\\
+  \textbf{Decryption:} & Plaintext = Ciphertext $\oplus$ Key \\
   \hline
 \end{tabular}
 
@@ -338,21 +343,21 @@ Key: random string of bits, same length as plaintext
 Complications:
 \begin{itemize}
   \item Generating true random numbers
-  \begin{itemize}
-    \item ''Bad'' random numbers are way too common
-  \end{itemize}
+        \begin{itemize}
+          \item ''Bad'' random numbers are way too common
+        \end{itemize}
   \item Never reuse the pad
-  \begin{itemize}
-    \item It's called ''one time'' for a reason
-  \end{itemize}
+        \begin{itemize}
+          \item It's called ''one time'' for a reason
+        \end{itemize}
   \item Key distribution
-  \begin{itemize}
-    \item Requires its own secure channel / method
-  \end{itemize}
+        \begin{itemize}
+          \item Requires its own secure channel / method
+        \end{itemize}
   \item Key synchronization
-  \begin{itemize}
-    \item Start at what character on what page of the pad?
-  \end{itemize}
+        \begin{itemize}
+          \item Start at what character on what page of the pad?
+        \end{itemize}
   \item Key disposal
 \end{itemize}
 
@@ -360,26 +365,26 @@ Complications:
 \begin{itemize}
   \item Use shorter key
   \item Should be easier to handle
-  \begin{itemize}
-    \item Later: Key exchange with Asymmetric Cryptography
-  \end{itemize}
+        \begin{itemize}
+          \item Later: Key exchange with Asymmetric Cryptography
+        \end{itemize}
   \item Goal:
-  \begin{itemize}
-    \item Change 1 bit of plaintext $\rightarrow$ Flip $\approx$ 50 \% of bits in ciphertext
-  \end{itemize}
+        \begin{itemize}
+          \item Change 1 bit of plaintext $\rightarrow$ Flip $\approx$ 50 \% of bits in ciphertext
+        \end{itemize}
   \item Key length is relevant if best attack is brute force
-  \begin{itemize}
-    \item each additional bit doubles the effort
-    \item Example AES: 128, 192, 256 bits
-  \end{itemize}
+        \begin{itemize}
+          \item each additional bit doubles the effort
+          \item Example AES: 128, 192, 256 bits
+        \end{itemize}
   \item Old ciphers
-  \begin{itemize}
-    \item DES, 3DES
-  \end{itemize}
+        \begin{itemize}
+          \item DES, 3DES
+        \end{itemize}
   \item For today's use
-  \begin{itemize}
-    \item AES (Advanced Encryption Standard, Block Cipher)
-  \end{itemize}
+        \begin{itemize}
+          \item AES (Advanced Encryption Standard, Block Cipher)
+        \end{itemize}
 \end{itemize}
 
 \subsubsection{Block Ciphers and their Modes}
@@ -387,20 +392,20 @@ Complications:
   \begin{itemize}
     \item AES block size: 128 bit
     \item How blocks of plaintext are processed
-    \begin{itemize}
-      \item Tradeoffs \& considerations
-      \item We will look at several but not all modes
-    \end{itemize}
+          \begin{itemize}
+            \item Tradeoffs \& considerations
+            \item We will look at several but not all modes
+          \end{itemize}
     \item Initialization vectors
-    \begin{itemize}
-      \item Very important
-      \item Typically required to be unique, sometimes also must be unpredictable
-    \end{itemize}
+          \begin{itemize}
+            \item Very important
+            \item Typically required to be unique, sometimes also must be unpredictable
+          \end{itemize}
     \item Padding
-    \begin{itemize}
-      \item Most of the time, (msgLen \% blockSize) != 0
-      \item Padding correctly is very important
-    \end{itemize}
+          \begin{itemize}
+            \item Most of the time, (msgLen \% blockSize) != 0
+            \item Padding correctly is very important (Don't just add ones or zeros at the end!)
+          \end{itemize}
   \end{itemize}
 \end{minipage}
 \begin{minipage}{0.3\linewidth}
@@ -408,7 +413,7 @@ Complications:
 \end{minipage}
 
 \subsubsection{Electronic Codebook Mode (ECB)}
-Don't use this mode\\
+Don't use this mode. Same block is always encrypted the same way.\\
 \begin{minipage}{0.6\linewidth}
   \includegraphics[width=0.8\linewidth]{images/EmbeddedSecurity/ecbBlock}
 \end{minipage}
@@ -418,10 +423,10 @@ Don't use this mode\\
 
 \subsubsection{Cipher Block Chaining (CBC) Mode}
 \begin{minipage}{0.3\linewidth}
-\begin{itemize}
-  \item Good mode
-  \item IV (Initialization Vector) (aka Nonce: number only used once) must be set and unique, but may not be secret!
-\end{itemize}
+  \begin{itemize}
+    \item Good mode. Same block isn't always encrypted the same way.
+    \item IV (Initialization Vector) \textbf{(aka Nonce: number only used once)} must be set and unique, but may not be secret!
+  \end{itemize}
 \end{minipage}
 \begin{minipage}{0.7\linewidth}
   \includegraphics[width=\linewidth]{images/EmbeddedSecurity/cbcBlock}
@@ -429,11 +434,11 @@ Don't use this mode\\
 
 \subsubsection{Counter (CTR) Mode}
 \begin{minipage}{0.5\linewidth}
-\begin{itemize}
-  \item Good mode
-  \item IV (Initialization Vector) (aka Nonce) must be set and unique, but may not be secret!
-  \item Counter is incremented for each block
-\end{itemize}
+  \begin{itemize}
+    \item Good mode. Same block isn't always encrypted the same way.
+    \item IV (Initialization Vector) (aka Nonce) must be set and unique, but may not be secret!
+    \item Counter is incremented for each block
+  \end{itemize}
 \end{minipage}
 \begin{minipage}{0.5\linewidth}
   \includegraphics[width=\linewidth]{images/EmbeddedSecurity/ctrBlock}
@@ -442,17 +447,17 @@ Don't use this mode\\
 \subsubsection{Which Cipher Mode Should I Use?}
 \begin{itemize}
   \item Says Bruce Schneier:
-  \begin{itemize}
-    \item CBC with random IV
-    \item Previously recommended CTR mode
-  \end{itemize}
+        \begin{itemize}
+          \item CBC with random IV
+          \item Previously recommended CTR mode
+        \end{itemize}
   \item Why the change?
-  \begin{itemize}
-    \item Too often, CTR's nonce was not unique
-    \begin{itemize}
-      \item Implementation issues (e.g. bugs) or deliberate attacks
-    \end{itemize}
-  \end{itemize}
+        \begin{itemize}
+          \item Too often, CTR's nonce was not unique
+                \begin{itemize}
+                  \item Implementation issues (e.g. bugs) or deliberate attacks
+                \end{itemize}
+        \end{itemize}
 \end{itemize}
 
 \subsubsection{Authenticated Encryption Modes}
@@ -460,77 +465,75 @@ Don't use this mode\\
 Most common of these modes:
 \begin{itemize}
   \item OCB (Offset Cookbook Mode)
-  \begin{itemize}
-    \item Essentially integrates a MAC into operation
-    \item Doesn't require separate MAC \& encryption computations
-    \item Covered by two patents (free license for OSS)
-  \end{itemize}
+        \begin{itemize}
+          \item Essentially integrates a MAC into operation
+          \item Doesn't require separate MAC \& encryption computations
+          \item \textbf{Covered by two patents (free license for OSS)} (only free for opensource)
+        \end{itemize}
   \item GCM (Galois Counter Mode), supported by STM32
-  \begin{itemize}
-    \item Combines CTR mode with Galois field multiplication
-    \item Block sizes of 128, 192 and 256 bits
-    \item Unencumbered by patents
-  \end{itemize}
+        \begin{itemize}
+          \item Combines CTR mode with Galois field multiplication
+          \item Block sizes of 128, 192 and 256 bits
+          \item \textbf{Unencumbered by patents}
+        \end{itemize}
 \end{itemize}
 
 \subsubsection{Stream Cipher Basics}
 \begin{itemize}
   \item Stram Ciphers generate a key stream
-  \begin{itemize}
-    \item Key stream used to encrypt plaintext\\
-    Ciphertext = Plaintext $\oplus$ Key stream
-  \end{itemize}
+        \begin{itemize}
+          \item Key stream used to encrypt plaintext\\
+                Ciphertext = Plaintext $\oplus$ Key stream
+        \end{itemize}
   \item Plaintext, Ciphertext and Key
-  \begin{itemize}
-    \item All the same length
-    \item No padding required for stream cipher (it's not a block)
-  \end{itemize}
+        \begin{itemize}
+          \item All the same length
+          \item No padding required for stream cipher (it's not a block)
+        \end{itemize}
   \item Security of system
-  \begin{itemize}
-    \item It's the key stream generator
-    \item Output must be pseudorandom bit stream
-  \end{itemize}
+        \begin{itemize}
+          \item It's the key stream generator
+          \item Output must be pseudorandom bit stream
+        \end{itemize}
 \end{itemize}
 
 \subsubsection{Stream Cipher Inputs}
 \begin{itemize}
   \item Key stream generator inputs
-  \begin{itemize}
-    \item Initialization Vector (IV), secret key
-  \end{itemize}
+        \begin{itemize}
+          \item Initialization Vector (IV), secret key
+        \end{itemize}
   \item IV must be a nonce
-  \begin{itemize}
-    \item Number used once
-    \item \textbf{Must be different each time}
-    \item Otherwise identical key stream generated
-  \end{itemize}
+        \begin{itemize}
+          \item Number used once
+          \item \textbf{Must be different each time}
+          \item Otherwise identical key stream generated
+        \end{itemize}
   \item IV doesn't need to be secret or random
-  \begin{itemize}
-    \item Generally transmitted in clear alongside ciphertext
-    \item Needed by receiving party to generate same key
-  \end{itemize}
+        \begin{itemize}
+          \item Generally transmitted in clear alongside ciphertext
+          \item Needed by receiving party to generate same key
+        \end{itemize}
 \end{itemize}
-
-\subsection{Public key (asymmetric) cryptography}
 
 \subsubsection{Hashing}
 \paragraph{Hash function}
 \begin{itemize}
   \item Input: an arbitrarily long message (stream, file, etc.)
   \item Output: ''Digests'' input into a shorter, fixed-length representation
-  \begin{itemize}
-    \item The message's ''digital fingerprint''
-  \end{itemize}
+        \begin{itemize}
+          \item The message's ''digital fingerprint''
+        \end{itemize}
   \item Digest is not an encrypted form
   \item It's irreversible
-  \begin{itemize}
-    \item There are an infinite number of inputs for any given digest/output
-  \end{itemize}
+        \begin{itemize}
+          \item There are an infinite number of inputs for any given digest/output
+        \end{itemize}
   \item But: it's very hard to manipulate the long message and still get the same digest
-  \item Examples: MD5, SHA-1, SHA-2 (all supported by STM32)
+  \item Examples: MD5, SHA-1 (SHA Gen 1 old ), SHA-2 (SHA Gen 2 e.g. SHA-256) (all supported by STM32)
 \end{itemize}
 
-\paragraph{Common uses of hash function}
+\paragraph{Common uses of hash functions}
 \begin{itemize}
   \item Integrity Check
   \item File de-duplication
@@ -541,3 +544,82 @@ Most common of these modes:
   \item Pseudo-Random Number Generation
   \item Proof of work (e.g. HashCash, Bitcoin)
 \end{itemize}
+
+\subsection{Public key (asymmetric) cryptography}
+
+\subsubsection{Key exchange}
+
+\paragraph{Problem}
+\begin{itemize}
+  %\item Bei der symetrischen Verschlüsselung müssen die Schlüssel jeweils ausgetauscht werden. \newline Wie wird dies bewerkstelligt?
+
+  \item Do the partners need to meet?
+  \item Do we need a messenger?
+        \begin{itemize}
+          \item Can we trust the messenger?
+          \item The messenger may be attacked or robbed.
+        \end{itemize}
+\end{itemize}
+\paragraph{Scenario}
+\begin{minipage}{0.8\linewidth}
+  \begin{itemize}
+    \item 6 friends want to communicate securely as pairs
+    \item One secret key per pairs
+    \item N people require \( (N * (N-1)) / 2 \) key pairs
+    \item For 6 people one does need 15 keys and every person has to remember five.
+    \item The scalability is horrible imagine 100 people. \\This ends up in 4950 keys.
+  \end{itemize}
+\end{minipage}
+\begin{minipage}{0.2\linewidth}
+  \includegraphics[width=\linewidth]{images/EmbeddedSecurity/KeyExchange.png}
+\end{minipage}
+\paragraph{Possible Solution}
+\begin{minipage}{0.8\linewidth}
+  \begin{itemize}
+    \item All 100 people trust in a single individual, Terrence.
+    \item All communication between Alice \& Bob uses Terrence
+          \begin{enumerate}
+            \item Alice encrypts msg m with the key between her and Terrence (ciphertext c)
+            \item Terrence decrypts ciphertext c
+            \item Terrence encrypts msg m with key between him and Bob (ciphertext c')
+            \item Bob decrypts ciphertext c'
+          \end{enumerate}
+  \end{itemize}
+\end{minipage}
+\begin{minipage}{0.2\linewidth}
+  \includegraphics[width=\linewidth]{images/EmbeddedSecurity/AliceBob.png}
+\end{minipage}
+\paragraph{Problem of Terrence}
+\begin{itemize}
+  \item Terrence is involved with every exchange
+  \item Bottleneck (What if 50 people send at the same time)
+  \item Single point of failure (Attack towards Terrence)
+  \item All trust in a single party (What if Terrence  is malicious)
+\end{itemize}
+\pagebreak
+\paragraph{Better solution \textbf{Diffie-Hellman (D-H) Key Exchange}}
+\paragraph{D-H key exchange protocol}
+\begin{itemize}
+  \item Establish a shared secret for every session.
+  \item No need to know anything beforehand, everything is done in open.
+\end{itemize}
+\paragraph{D-H insecure channel}
+\begin{itemize}
+  \item Save from eavesdroppers (Abhörer)
+  \item Not save for Man in the middle attacks (No authentication, but there are workarounds)
+\end{itemize}
+\paragraph{D-H Exampel}
+\begin{minipage}{0.69\linewidth}
+  \begin{enumerate}
+    \item Alice and Bob publicly agree on a colour (yellow)
+    \item Alice and Bob also select a secret color that they keep to themselves (blue and green)
+    \item Now they mix the public colour with their private colour and exchange the result (orange and light-blue)
+    \item Finally, each of them mixes the received colour with their own private colour.
+    \item This is the shared secret colour (yellow-brown)
+  \end{enumerate}
+  \text{The colours represent large numbers.}
+\end{minipage}
+\begin{minipage}{0.3\linewidth}
+  \includegraphics[width=\linewidth]{images/EmbeddedSecurity/Diffie-Hellman_Key_Exchange.png}
+\end{minipage}
+
